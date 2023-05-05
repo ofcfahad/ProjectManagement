@@ -1,0 +1,445 @@
+import React, { Fragment, useCallback, useEffect, useState } from 'react'
+//OtherComponents
+import { Dialog, Transition, Tab } from '@headlessui/react'
+import { AnimatePresence, motion, progress } from 'framer-motion'
+import { Tooltip } from 'antd'
+//Icons
+import { IconContext } from 'react-icons'
+import { VscDebugAll } from 'react-icons/vsc'
+import { RxCross1 } from 'react-icons/rx'
+import { HiPlus } from 'react-icons/hi2'
+import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
+import { Info } from '../Popups'
+import { object } from 'prop-types'
+import axios from 'axios'
+import Cookies from 'js-cookie'
+
+export default function CreateProject(props) {
+
+    const userId = props.userId
+
+    interface Project {
+        title: string,
+        description: string,
+        tasks: Array<string>,
+        completedtasks: Array<string>,
+        progress: number,
+        Owner: string,
+        people: Array<object>,
+        attachments: number,
+        comments: number
+    }
+
+    const defaultProject: Project = {
+        title: '',
+        description: '',
+        tasks: [''],
+        completedtasks: [''],
+        progress: 0,
+        Owner: userId,
+        people: [{}],
+        attachments: 0,
+        comments: 0
+    };
+
+    const [isOpen, setIsOpen] = useState(false)
+    //const [progressInputValue, setprogressInputValue] = useState('')
+    const [titleInput, settitleInput] = useState('')
+    const [projectTitle, setProjectTitle] = useState('')
+    const [descriptionInput, setDescriptionInput] = useState('')
+    const [description, setDescription] = useState('')
+    const [tasksInput, setTasksInput] = useState('')
+    const [tasksData, setTasksData] = useState<Array<string>>([])
+    const [completedTasksInput, setCompletedTasksInput] = useState('')
+    const [completedTasks, setCompletedTasks] = useState<Array<string>>([])
+    const [finalProject, setFinalProject] = useState<Project>(defaultProject)
+    const [optionSelected, setoptionSelected] = useState(props.reference === 'main' ? 'started' : props.reference)
+    const [toolTip, setToolTip] = useState('')
+    const [secondIsOpen, setSecondIsOpen] = useState(false)
+    const [postDone, setPostDone] = useState(false)
+    const [handleSubmit, setHandleSubmit] = useState(false);
+
+
+    const handleTasksInput = (event: any) => {
+        setTasksInput(event.target.value)
+    }
+
+
+    const handleNewTask = () => {
+        if (tasksData.length <= 10) {
+            setTasksData([...tasksData, tasksInput]);
+            setTasksInput('');
+        }
+    }
+
+    const handleDeleteTask = (value: string) => {
+        const filteredTasksData = tasksData.filter((data) => data != value);
+        setTasksData(filteredTasksData)
+        setCompletedTasks(filteredTasksData)
+    }
+
+    const handleCompletedTask = () => {
+        const completedTask = tasksData.includes(completedTasksInput) ? completedTasksInput : null
+        console.log(completedTask);
+        setCompletedTasks([...completedTasks, completedTask!]),
+            console.log(completedTasks);
+        setCompletedTasksInput('')
+    }
+
+    const reset = () => {
+        props.setLoadNewData(true)
+        settitleInput('')
+        setDescriptionInput('')
+        setDescription('')
+        setTasksInput('')
+        setTasksData([])
+        setCompletedTasksInput('')
+        setCompletedTasks([])
+        setFinalProject(defaultProject)
+        setoptionSelected('started')
+        setToolTip('')
+        setHandleSubmit(false)
+    }
+
+
+    const session = Cookies.get('session')
+
+    const handleProjectPost = useCallback(async () => {
+        if (Object.keys(finalProject).length !== 0) {
+            try {
+                await axios.post(`http://localhost:5000/api/createProject`, { finalProject }, { headers: { Authorization: session } });
+            } catch (error) {
+                console.log(`from handleProjectPost: ${error}`);
+            }
+            setPostDone(true)
+            reset()
+        }
+    }, [finalProject, reset])
+
+
+    const onSubmit = async (event: { preventDefault: () => void }) => {
+        event.preventDefault();
+        setHandleSubmit(true)
+        setSecondIsOpen(true);
+        setFinalProject({
+            title: projectTitle,
+            description: description || `it is ${projectTitle}`,
+            tasks: tasksData,
+            completedtasks: completedTasks,
+            progress: ((completedTasks.length / tasksData.length) * 100),
+            Owner: userId,
+            people: [props.userData],
+            attachments: 0,
+            comments: 0
+        });
+    };
+
+    useEffect(() => {
+        if (handleSubmit) {
+            handleProjectPost()
+        }
+    }, [handleSubmit, handleProjectPost]);
+
+
+    const closeModule = () => {
+        setPostDone(false)
+        setSecondIsOpen(false)
+        setIsOpen(false)
+        setProjectTitle('')
+    }
+
+    const createDummyProject = () => {
+        setProjectTitle('testing'),
+            setDescription('its just a test description'),
+            setTasksData(['task1', 'task2', 'task3']),
+            setCompletedTasks(optionSelected === 'completed' ? ['task1', 'task2', 'task3'] : optionSelected === 'ongoing' ? ['task1', 'task2'] : [])
+    }
+
+
+    return (
+        <>
+            <div className=" flex items-center justify-center pl-4 text-white ">
+                {
+                    props.reference === 'main' ?
+                        <motion.button
+                            type="button"
+                            onClick={() => setIsOpen(true)}
+                            className="rounded-full bg-selectedicon px-3 py-2 span-white focus:outline-none "
+                            initial={{ scale: 0.5 }}
+                            animate={{ scale: 1 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            Create Project
+                        </motion.button>
+                        :
+                        <motion.button initial={{ scale: 0 }} animate={{ scale: 1 }} whileHover={{ scale: 1.1 }} transition={{ duration: 0 }} className={`bg-[#f5f5f5] backdrop-blur-sm rounded-full h-[25px] w-[25px] flex justify-center items-center  ${props.reference === 'started' ? 'hover:bg-selectedicon hover:shadow-selectedicon' : props.reference === 'ongoing' ? 'hover:bg-pink-400 hover:shadow-pink-400' : props.reference === 'completed' ? 'hover:bg-yellow-400 hover:shadow-yellow-400 ' : null} hover:shadow-sm backdrop-blur-sm transition-all ease-linear`} onClick={() => setIsOpen(true)} > <IconContext.Provider value={{ color: 'black', size: '15' }} > <HiPlus /> </IconContext.Provider> </motion.button>
+                }
+            </div>
+
+            <Transition appear show={isOpen} as={Fragment}>
+                <Dialog as="div" className="relative z-10" onClose={() => setIsOpen(false)}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-black bg-opacity-25" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-4 span-center">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0 scale-95"
+                                enterTo="opacity-100 scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
+                            >
+                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 span-left align-middle shadow-xl transition-all">
+                                    <div className='flex justify-between items-center'>
+                                        <Dialog.Title
+                                            as='h2'
+                                            className="span-3xl span-gray-900"
+                                        >
+                                            Create Project
+                                        </Dialog.Title>
+                                        <button onClick={createDummyProject} >
+                                            <VscDebugAll />
+                                        </button>
+                                    </div>
+                                    <div className='flex flex-col justify-between'>
+                                        <div className="mt-2 flex justify-between">
+                                            <Dialog.Title as='h6' className="span-lg font-medium leading-6 span-gray-900" >Title</Dialog.Title>
+                                            <Tooltip title={tasksData.length <= 10 ? '' : 'You can add more tasks later'} placement='top' color='red' trigger={'focus'} >
+                                                <div className='flex w-[54%] rounded-full border justify-between items-center px-2 focus:outline focus:outline-2 focus:outline-black'>
+                                                    <input type="span" placeholder={'here'} value={titleInput} onChange={(event) => settitleInput(event?.target?.value ?? '')} className=' rounded-3xl px-3 focus:outline-none w-[95%] ' />
+                                                    {
+                                                        titleInput &&
+                                                        <AnimatePresence>
+                                                            <motion.button disabled={projectTitle.length > 0} initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} onClick={() => { setProjectTitle(titleInput); settitleInput(''); }} >
+                                                                <ArrowRightIcon className='w-4' />
+                                                            </motion.button>
+                                                        </AnimatePresence>
+                                                    }
+                                                </div>
+                                            </Tooltip>
+                                        </div>
+
+                                        {
+                                            projectTitle &&
+                                            <div className='w-auto'>
+                                                <CustomBar content={projectTitle} reference={setProjectTitle} setTitle={setProjectTitle} optionSelected={optionSelected} setDescription={undefined} />
+                                            </div>
+                                        }
+
+                                        <div className="mt-2 flex justify-between">
+                                            <Dialog.Title as='h6' className="span-lg font-medium leading-6 span-gray-900" >Description</Dialog.Title>
+                                            <Tooltip title={tasksData.length <= 10 ? '' : 'You can add more tasks later'} placement='top' color='red' trigger={'focus'} >
+                                                <div className='flex w-[54%] rounded-full border justify-between items-center px-2 focus:outline focus:outline-2 focus:outline-black'>
+                                                    <input type="span" placeholder={'here'} value={descriptionInput} onChange={(event) => setDescriptionInput(event?.target?.value ?? '')} className=' rounded-3xl px-3 focus:outline-none w-[95%] ' />
+                                                    {
+                                                        descriptionInput &&
+                                                        <AnimatePresence>
+                                                            <motion.button disabled={description.length > 0} initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} onClick={() => { setDescription(descriptionInput); setDescriptionInput(''); }} >
+                                                                <ArrowRightIcon className='w-4' />
+                                                            </motion.button>
+                                                        </AnimatePresence>
+                                                    }
+                                                </div>
+                                            </Tooltip>
+                                        </div>
+
+                                        {
+                                            description &&
+                                            <CustomBar content={description} reference={setDescription} optionSelected={undefined} setTitle={undefined} setDescription={undefined} />
+                                        }
+
+                                        <div className="mt-2 flex justify-between">
+                                            <Dialog.Title as='h6' className="span-lg font-medium leading-6 span-gray-900" >Tasks</Dialog.Title>
+                                            <Tooltip title={tasksData.length <= 10 ? '' : 'You can add more tasks later'} placement='top' color='red' trigger={'focus'} >
+                                                <div className='flex w-[54%] rounded-full border justify-between items-center px-2 focus:outline focus:outline-2 focus:outline-black'>
+                                                    <input type="span" placeholder={'here'} value={tasksInput} onChange={handleTasksInput} className=' rounded-3xl px-3 focus:outline-none w-[95%] ' />
+                                                    {
+                                                        tasksInput &&
+                                                        <AnimatePresence>
+                                                            <motion.button initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} onClick={handleNewTask} >
+                                                                <ArrowRightIcon className='w-4' />
+                                                            </motion.button>
+                                                        </AnimatePresence>
+                                                    }
+                                                </div>
+                                            </Tooltip>
+                                        </div>
+
+                                        <div className="mt-4 flex justify-between">
+                                            <div className={` flex flex-wrap `}>
+                                                {
+                                                    tasksData.map((task) => (
+                                                        <div key={task} className={` mr-4 py-2 `}>
+                                                            <TaskButton task={task} handleDeleteTask={handleDeleteTask} completedTasks={completedTasks} />
+                                                        </div>
+                                                    ))
+                                                }
+                                            </div>
+                                        </div>
+
+                                        {
+                                            optionSelected != 'started' ?
+                                                <div className="mt-4 flex justify-between">
+                                                    <Dialog.Title as='h6' className="span-lg font-medium leading-6 span-gray-900" >Completed Tasks</Dialog.Title>
+                                                    <div className='flex w-[54%] rounded-full border justify-between items-center px-2 focus:outline focus:outline-2 focus:outline-black'>
+                                                        <Tooltip title={tasksData.length <= 10 ? '' : 'You can add more tasks later'} placement='top' color='red' trigger={'focus'} >
+                                                            <input type="span" placeholder={'here'} value={completedTasksInput} onChange={(event) => setCompletedTasksInput(event?.target?.value ?? '')} className=' rounded-3xl px-3 focus:outline-none w-[95%] ' />
+                                                        </Tooltip>
+                                                        {
+                                                            completedTasksInput &&
+                                                            <AnimatePresence>
+                                                                <motion.button initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} onClick={handleCompletedTask} >
+                                                                    <ArrowRightIcon className='w-4' />
+                                                                </motion.button>
+                                                            </AnimatePresence>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                : null
+                                        }
+
+                                        <div className='mt-4 span-black '>
+                                            <Dialog.Title as='h6' className="span-lg font-medium leading-6 span-gray-900" > Category </Dialog.Title>
+                                            <div className='flex justify-between'>
+                                                <OptionButton
+                                                    label={'Started'}
+                                                    value={'started'}
+                                                    selected={optionSelected}
+                                                    onChange={setoptionSelected}
+                                                    toolTip={'For new Projects'}
+                                                />
+
+                                                <OptionButton
+                                                    label={'On Going'}
+                                                    value={'ongoing'}
+                                                    selected={optionSelected}
+                                                    onChange={setoptionSelected}
+                                                    toolTip={'For already started Projects > 10% '}
+                                                />
+
+                                                <OptionButton
+                                                    label={'Completed'}
+                                                    value={'completed'}
+                                                    selected={optionSelected}
+                                                    onChange={setoptionSelected}
+                                                    toolTip={'Completed is it?'}
+                                                />
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div className="mt-4 flex justify-between items-center ">
+
+                                        <motion.button
+                                            type="button"
+                                            className="inline-flex justify-center items-center rounded-md border border-transparent bg-red-100 px-4 py-2 span-sm font-medium span-blue-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                            onClick={() => setIsOpen(false)}
+                                            whileHover={{ scale: 1.1 }}
+                                            transition={{ duration: 0.3 }}
+                                        >
+                                            <span className='mr-2'>
+                                                Close
+                                            </span>
+                                            <IconContext.Provider value={{ color: 'gray', size: '15' }}>
+                                                <RxCross1 />
+                                            </IconContext.Provider>
+                                        </motion.button>
+
+
+
+                                        {/* <Done button={<motion.button
+                                            type="button"
+                                            className="flex justify-around items-center rounded-md border border-transparent bg-blue-100 px-4 py-2 span-sm font-medium span-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                            onClick={onSubmit}
+                                            whileHover={{ scale: 1.1 }}
+                                            transition={{ duration: 0.3 }}
+                                        >
+                                            <span>
+                                                Do it !
+                                            </span>
+                                            <ArrowRightIcon className='w-4 ml-2' />
+                                        </motion.button>} isOpen={secondIsOpen} postDone={postDone} onClose={closeModule} reference={'createProject'} projectTitle={finalProject.title} customSubmitButton={undefined} /> */}
+
+                                        <Info button={
+                                            <motion.button
+                                                type="button"
+                                                className="flex justify-around items-center rounded-md border border-transparent bg-blue-100 px-4 py-2 span-sm font-medium span-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                                onClick={onSubmit}
+                                                whileHover={{ scale: 1.1 }}
+                                                transition={{ duration: 0.3 }}
+                                            >
+                                                <span>
+                                                    Do it !
+                                                </span>
+                                                <ArrowRightIcon className='w-4 ml-2' />
+                                            </motion.button>
+                                        } title={<span>Project <b>{projectTitle}</b> Created </span>} isOpen={secondIsOpen} onClose={closeModule} description={undefined} />
+
+                                    </div>
+                                </Dialog.Panel>
+                            </Transition.Child>
+                        </div>
+                    </div >
+                </Dialog >
+            </Transition >
+        </>
+    )
+}
+
+function OptionButton({ label, value, selected, onChange, toolTip }) {
+    return (
+        <Tooltip placement='top' title={toolTip} mouseEnterDelay={1} mouseLeaveDelay={0}>
+            <motion.button
+                initial={{ background: 'whitesmoke', scale: 0.9 }}
+                animate={{ background: selected === value ? 'linear-gradient(to right, #316bb4, #ba7aae, #e0a72f)' : 'linear-gradient(to right, gray, #00000033)', scale: 1 }}
+                whileHover={{ scale: 1.1, }}
+                transition={{ duration: 0.5 }}
+                className={` px-3 py-2 rounded-full text-xs span-black backdrop-blur-sm `}
+                onClick={() => onChange(value)}
+            >
+                {label}
+            </motion.button>
+        </Tooltip>
+    );
+}
+
+const TaskButton = ({ task, handleDeleteTask, completedTasks }) => {
+    return (
+        <div className=' flex justify-between items-center rounded-full px-2 py-1 text-[10px] ' style={{ background: completedTasks.includes(task) ? 'rgba(0, 255, 0, 0.2)' : 'whitesmoke' }} >
+            <span>
+                {task}
+            </span>
+            <button className='ml-2' onClick={() => handleDeleteTask(task)} >
+                <RxCross1 />
+            </button>
+        </div>
+    )
+}
+
+const CustomBar = ({ content, reference, optionSelected, setTitle, setDescription }) => {
+    return (
+        <div className='flex flex-wrap'>
+            <div className='bg-yellow-700 px-3 py-2 rounded-full flex justify-between items-center ' style={{ background: reference != setTitle ? 'whitesmoke' : optionSelected === 'started' ? 'rgba(115,74,227,0.2)' : optionSelected === 'ongoing' ? 'rgba(241,112,179,0.2)' : 'rgba(231,176,7,0.2)' }} >
+                <span >
+                    {content}
+                </span>
+                <button className='ml-2' onClick={() => reference('')} >
+                    <RxCross1 />
+                </button>
+            </div>
+        </div>
+    )
+}

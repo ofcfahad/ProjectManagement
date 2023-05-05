@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Alkatra&family=Josefin+Sans:wght@600&family=Oswald&family=Ubuntu&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* :root {
+    overflow: hidden;
+} */
+
+:root {
+    background-color: #f2f6fe;
+}
+
+input {
+    background-color: transparent !important;
+}
+
+::-moz-selection {
+    background: #AFAFAF;
+}
+
+::-webkit-selection {
+    background: #AFAFAF;
+}
+
+::selection {
+    background: #AFAFAF;
+}
+
+/* Hide the default scrollbar */
+::-webkit-scrollbar {
+    display: none;
+}
+
+input:-webkit-autofill,  
+input:-webkit-autofill:hover,  
+input:-webkit-autofill:focus,  
+input:-webkit-autofill:active  
+ {
+   -webkit-transition: "color 9999s ease-out, background-color 9999s ease-out";
+   -webkit-transition-delay: 9999s;
+   transition: color 9999s ease-out, background-color 9999s ease-out;
+   transition-delay: 9999s;
+}
