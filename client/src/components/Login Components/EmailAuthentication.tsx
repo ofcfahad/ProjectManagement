@@ -130,7 +130,7 @@ const EmailAuthentication = ({ userName, userEmail, userPassword, handleGoBackCl
                 <AnimatePresence>
                     {
                         otpInputisShown &&
-                        <motion.div>
+                        <motion.div initial={{ x: 100, y: 0, opacity: 0 }} animate={{ x: 0, y: 0, opacity: 1 }} exit={{ opacity: 0, x: -999 }} >
                             <div className='w-full flex justify-center items-center mt-4'>
                                 <OtpInput
                                     value={otp}
