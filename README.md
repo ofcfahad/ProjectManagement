@@ -99,6 +99,7 @@ Then to the client or server directory:
   <summary>Client</summary>
                     <br />
   Navigate to client directory:
+                    <br />
 
   ``` bash
 cd client
@@ -122,6 +123,7 @@ npm run dev
   <summary>Server</summary>
                     <br />
   Navigate to server directory:
+                    <br />
 
   ``` bash
 cd server
