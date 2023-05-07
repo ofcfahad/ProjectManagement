@@ -17,7 +17,7 @@ This MERN stack application is a simple CRUD (Create, Read, Update, Delete) appl
 **Technologies Used**
 The following technologies and libraries were used to build this MERN stack application:
 
-<div style="display: flex; flex-direction: row; align-items: center;">
+<div style="display: flex; flex-direction: row; ">
 
   <a href="https://www.mongodb.com/" style="display: flex; margin: 0 20px; ">
     <img src="https://img.icons8.com/?size=512&id=74402&format=png" alt="MongoDB" width="70" >
