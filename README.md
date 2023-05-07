@@ -97,7 +97,7 @@ Then to the client or server directory:
 
 <details>
   <summary>Client</summary>
-
+                    <br />
   Navigate to client directory:
 
   ``` bash
@@ -120,7 +120,7 @@ npm run dev
 
 <details>
   <summary>Server</summary>
-
+                    <br />
   Navigate to server directory:
 
   ``` bash
