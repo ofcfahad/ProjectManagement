@@ -1,5 +1,4 @@
 # Project Management
-<<<<<<< HEAD
 
 This is a full-stack web application built using the MERN stack, which includes
 **MongoDB**, **Express.js**, **React.js**, and **Node.js**.
@@ -25,17 +24,17 @@ The following technologies and libraries were used to build this MERN stack appl
     <strong style="color: white;">MongoDB</strong>
   </a>
   
-    <a href="https://www.expressjs.com/" style="display: flex; flex-direction: column; align-items: center; margin: 0 20px;">
+  <a href="https://www.expressjs.com/" style="display: flex; flex-direction: column; align-items: center; margin: 0 20px;">
     <img src="https://www.mementotech.in/assets/images/icons/express.png" alt="ExpressJs" width="70" >
     <strong style="color: white;">ExpressJs</strong>
   </a>
   
-    <a href="https://www.react.dev/" style="display: flex; flex-direction: column; align-items: center; margin: 0 20px;">
+  <a href="https://www.react.dev/" style="display: flex; flex-direction: column; align-items: center; margin: 0 20px;">
     <img src="https://s3.amazonaws.com/media-p.slid.es/uploads/260703/images/4152529/react-logo.png" alt="ReactJs" width="70" >
     <strong style="color: white;">ReactJs</strong>
   </a>
   
-    <a href="https://www.nodejs.org/" style="display: flex; flex-direction: column; align-items: center; margin: 0 20px;">
+  <a href="https://www.nodejs.org/" style="display: flex; flex-direction: column; align-items: center; margin: 0 20px;">
     <img src="https://avatars.githubusercontent.com/u/9950313?s=280&v=4" alt="NodeJs" width="70" >
     <strong style="color: white;">NodeJs</strong>
   </a>
@@ -152,7 +151,3 @@ This MERN stack application was built by Fahad as a demonstration of modern web 
 
 **License**
 This project is licensed under the *GNU GENERAL PUBLIC LICENSE*
-=======
-<meta http-equiv="refresh" content="0; url=client/src/index.html">
-
->>>>>>> 55fae41cb164ebc9f54205bbbeb9bff51b549cf3
