@@ -1,4 +1,7 @@
-import React, { useEffect, useState, Fragment } from 'react'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, Fragment, useEffect } from 'react'
 //AppComponents
 import OptionsModal from './OptionsModal'
 import Contributors from './Contributors'
@@ -7,7 +10,6 @@ import { motion } from 'framer-motion'
 import { Dialog, Transition } from '@headlessui/react'
 //Icons
 import { IconContext } from 'react-icons'
-import { CiEdit, CiTrash } from 'react-icons/ci'
 import { GiPaperClip } from 'react-icons/gi'
 import { ChatBubbleOvalLeftEllipsisIcon, } from '@heroicons/react/24/outline'
 import Cookies from 'js-cookie'
@@ -15,14 +17,30 @@ import axios from 'axios'
 
 
 
-const ProjectModule = ({ project, height, width, title, titleColor, description, progress, people, attachments, comments, setLoadNewData }) => {
+const ProjectModule = ({ project, setLoadNewData }: { project: any, setLoadNewData: any }) => {
     const [isOpen, setIsOpen] = useState(false)
+    const [peopleData, setPeopleData] = useState<Array<object>>()
 
     const session = Cookies.get('session')
+    const { _id, title, description, accentColor, tasks, completedTasks, progress, Owner, people, attachments, comments } = project
+
+    const getPeopleInfo = async () => {
+        try {
+            const response = await axios.post(`/server/api/getPeopleInfo`, { userIds: people }, {
+                headers: {
+                    Authorization: session
+                }
+            });
+            const users = response.data.users
+            setPeopleData(users)
+        } catch (error) {
+            console.log(`from getPeopleInfo: ${error}`);
+        }
+    }
 
     const handleProjectDeletion = async (projectId: string) => {
         try {
-            const response = await axios.post(`http://localhost:5000/api/deleteProject`, { projectId }, {
+            const response = await axios.post(`/server/api/deleteProject`, { projectId }, {
                 headers: {
                     Authorization: session
                 }
@@ -37,7 +55,7 @@ const ProjectModule = ({ project, height, width, title, titleColor, description,
     }
 
     const deleteProject = () => {
-        handleProjectDeletion(project._id)
+        handleProjectDeletion(_id)
     }
 
     function closeModal() {
@@ -48,10 +66,14 @@ const ProjectModule = ({ project, height, width, title, titleColor, description,
         setIsOpen(true)
     }
 
+    useEffect(() => {
+        getPeopleInfo()
+    }, [people])
+
     return (
         <>
             <div className="flex items-center justify-center" >
-                <Project height={undefined} width={undefined} title={undefined} titleColor={undefined} description={undefined} progress={undefined} people={undefined} attachments={undefined} comments={undefined} project={project} setLoadNewData={setLoadNewData} deleteProject={deleteProject} openModal={openModal} />
+                <Project setLoadNewData={setLoadNewData} deleteProject={deleteProject} openModal={openModal} title={title} description={description} accentColor={accentColor} progress={progress} people={peopleData} comments={comments} attachments={attachments} height={0} width={0} />
             </div>
 
             <Transition appear show={isOpen} as={Fragment}>
@@ -84,24 +106,9 @@ const ProjectModule = ({ project, height, width, title, titleColor, description,
                                         as="h3"
                                         className="text-lg font-medium leading-6 text-gray-900"
                                     >
-                                        Payment successful
+                                        Project
                                     </Dialog.Title>
-                                    <div className="mt-2">
-                                        <p className="text-sm text-gray-500">
-                                            Your payment has been successfully submitted. We’ve sent
-                                            you an email with all of the details of your order.
-                                        </p>
-                                    </div>
 
-                                    <div className="mt-4">
-                                        <button
-                                            type="button"
-                                            className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                            onClick={closeModal}
-                                        >
-                                            Got it, thanks!
-                                        </button>
-                                    </div>
                                 </Dialog.Panel>
                             </Transition.Child>
                         </div>
@@ -113,41 +120,7 @@ const ProjectModule = ({ project, height, width, title, titleColor, description,
 }
 
 
-const Project = ({ height, width, title, titleColor, description, progress, people, attachments, comments, project, setLoadNewData, deleteProject, openModal }) => {
-
-    //const [animatedProgress, setAnimatedProgress] = useState(0)
-
-    const menuOptions = [
-        {
-            id: 1,
-            text: 'Delete',
-            icon: <CiTrash />,
-        },
-        {
-            id: 2,
-            text: 'Edit',
-            icon: <CiEdit />,
-        },
-    ]
-
-
-
-    // useEffect(() => {
-    //     // Animate progress from 0 to the desired value
-    //     const animationInterval = setInterval(() => {
-    //         setAnimatedProgress((prevProgress) => {
-    //             if (prevProgress >= project.progress) {
-    //                 clearInterval(animationInterval);
-    //                 return project.progress;
-    //             }
-    //             return prevProgress + 10;
-    //         });
-    //     }, 100);
-
-    //     // Clean up animation interval when component unmounts
-    //     return () => clearInterval(animationInterval);
-    // }, [project.progress]);
-
+const Project = ({ height, width, title, description, accentColor, progress, people, comments, attachments, setLoadNewData, deleteProject, openModal }: { height: number, width: number, title: string, description: string, accentColor: string, progress: number, people: any, comments: any, attachments: any, setLoadNewData: any, deleteProject: any, openModal: any }) => {
 
     const convertHexToRGBA = (hexCode: string) => {
         let hex = hexCode.replace('#', '');
@@ -163,41 +136,42 @@ const Project = ({ height, width, title, titleColor, description, progress, peop
         return `rgba(${r},${g},${b},${0.2})`;
     };
 
-
-
     return (
         <div className={`bg-white rounded-3xl`} style={{ height: height || 250, width: width || 250 }} >
             <div className='flex justify-between items-center w-full h-[20%] px-2 mt-1 rounded-t-3xl '>
-                <div className={` rounded-full  w-auto px-2 py-1 flex justify-center items-center cursor-pointer`} style={{ color: titleColor, backgroundColor: titleColor && convertHexToRGBA(titleColor) || 'whitesmoke', }} onClick={openModal} > {project.title} </div>
-                <OptionsModal deleteProject={deleteProject} setLoadNewData={setLoadNewData} projectTitle={project.title} />
+                <div className={` rounded-full  w-auto px-2 py-1 flex justify-center items-center cursor-pointer`} style={{ color: accentColor, backgroundColor: accentColor && convertHexToRGBA(accentColor) || 'whitesmoke', }} onClick={openModal} > {title} </div>
+                <OptionsModal deleteProject={deleteProject} setLoadNewData={setLoadNewData} projectTitle={title} />
             </div>
             <div className=' h-[30%] flex flex-col px-2 '>
-                <span className='text-left h-full w-full flex items-center '> {project.description} </span>
+                <span className='text-left h-full w-full flex items-center '> {description} </span>
             </div>
             <div className=' h-[20%] px-2 '>
-                <span className='w-full flex justify-end' > {project.progress}% </span>
+                <span className='w-full flex justify-end' > {progress}% </span>
 
                 <div style={{ width: '100%', height: '10px', backgroundColor: '#f6f5f8', borderRadius: '999px' }}>
                     <motion.div
                         style={{ backgroundColor: '#734ae3', height: '100%', width: 0, borderRadius: '100px' }}
-                        animate={{ width: `${project.progress}%` }}
+                        animate={{ width: `${progress}%` }}
                         transition={{ duration: 1 }}
                     />
                 </div>
             </div>
             <div className=' h-[30%] rounded-b-3xl flex justify-between px-2 '>
                 <div className='inline-flex items-center w-[70%]'>
-                    <Contributors key={project.people.name} contributorsData={project.people} avatarSize={35} avatarShape={'rounded-circle'} alignover={true} onHoverMargin={10} row linkDisabled name={undefined} profilelink={undefined} avatar={undefined} bordered={undefined} borderColor={undefined} borderSize={undefined} toLeft={undefined} toTop={undefined} customTailwindforParentDiv={undefined} customTailwindforAvatar={undefined} />
+                    {
+                        people &&
+                        <Contributors contributorsData={people} avatarSize={35} avatarShape={'rounded-circle'} alignover={true} onHoverMargin={10} row linkDisabled bordered={false} borderColor={''} borderSize={0} toLeft={0} toTop={0} />
+                    }
                 </div>
                 <div className=' inline-flex justify-between w-[30%] text-xs '>
                     <IconContext.Provider value={{ color: 'black', size: '15' }}>
                         <button className='inline-flex justify-center items-center '>
                             <GiPaperClip />
-                            <span> {project.attachments} </span>
+                            <span> {attachments} </span>
                         </button>
                         <button className='inline-flex justify-center items-center'>
                             <ChatBubbleOvalLeftEllipsisIcon className='w-4 text-black' />
-                            <span> {project.comments} </span>
+                            <span> {comments} </span>
                         </button>
                     </IconContext.Provider>
                 </div>

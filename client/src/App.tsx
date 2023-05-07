@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react"
-import { Routes, Route, useLoaderData } from 'react-router-dom'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react"
+import { Routes, Route } from 'react-router-dom'
 //AppComponents
 import { Navbar, UnSupportedScreen, LoggingLoading } from './components'
 import { Home, LoginPage, Messages, Profile, Settings, Tasks } from './Pages'
@@ -12,23 +13,23 @@ function App() {
 
   //interface for User
   interface User {
-    _id: any,
+    _id: string,
     userName: string,
     fullName: string,
     userEmail: string,
     userProfilePicture: string,
-    verified: Boolean
+    verified: boolean
   }
 
   const [userData, setUserData] = useState<User>()
   const [userLoggedIn, setUserLoggedIn] = useState(false)
   const [expand, setExpand] = useState(false) // for SideBar 
   const [loading, setLoading] = useState(false) // well Loading used mostly while fetching Data
-  const [toolTipisVisible, settoolTipisVisible] = useState(false) // later
   const [width, setWidth] = useState(window.innerWidth) // debugging
-  const [guestLoggedIn, setGuestLoggedIn] = useState(true) // for guests
-  const [menuTransitionDuration, setMenuTransitionDuration] = useState(undefined) // the transition duration for SideBar expand and unexpand
+  //const [guestLoggedIn, setGuestLoggedIn] = useState(true) // for guests
 
+  const toolTipisVisible = false
+  const menuTransitionDuration = 0
   // get's width. debugging
   useEffect(() => {
     const handleResize = () => {
@@ -48,7 +49,7 @@ function App() {
   const fetchUser = async () => {
     setLoading(true)
     if (session) {
-      const response = await axios.post('http://localhost:5000/api/getUserData', { token: session })
+      const response = await axios.post(`/server/api/getUserData`, { token: session })
       setUserData(response.data)
     }
     setLoading(false)
@@ -60,7 +61,7 @@ function App() {
     if (session) {
       fetchUser()
     }
-  }, [userLoggedIn])
+  }, [userLoggedIn, session])
 
 
   // well logouts the user
@@ -69,6 +70,7 @@ function App() {
     setUserData(undefined)
     setUserLoggedIn(false)
   }
+
 
   return (
     <>
@@ -86,7 +88,7 @@ function App() {
                 :
                 //MainApp
                 <motion.div className="w-full h-full flex fixed">
-                  <Navbar expand={expand} handleLogout={handleLogout} menuTransitionDuration={undefined} />
+                  <Navbar expand={expand} handleLogout={handleLogout} menuTransitionDuration={menuTransitionDuration} />
                   <motion.div animate={{ width: '100%' }} transition={{ duration: menuTransitionDuration || 0.5, ease: "easeInOut" }} >
                     <Routes>
                       <Route path="/" element={<Home expand={expand} setExpand={setExpand} toolTipisVisible={toolTipisVisible} userData={userData} />} />

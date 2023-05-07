@@ -1,26 +1,28 @@
-import React, { Fragment, useCallback, useEffect, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Fragment, useCallback, useEffect, useState } from 'react'
 //OtherComponents
-import { Dialog, Transition, Tab } from '@headlessui/react'
-import { AnimatePresence, motion, progress } from 'framer-motion'
+import { Dialog, Transition } from '@headlessui/react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Tooltip } from 'antd'
 //Icons
 import { IconContext } from 'react-icons'
 import { VscDebugAll } from 'react-icons/vsc'
 import { RxCross1 } from 'react-icons/rx'
 import { HiPlus } from 'react-icons/hi2'
-import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
+import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import { Info } from '../Popups'
-import { object } from 'prop-types'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-export default function CreateProject(props) {
+export default function CreateProject(props: any) {
 
     const userId = props.userId
 
     interface Project {
         title: string,
         description: string,
+        accentColor: string,
         tasks: Array<string>,
         completedtasks: Array<string>,
         progress: number,
@@ -33,6 +35,7 @@ export default function CreateProject(props) {
     const defaultProject: Project = {
         title: '',
         description: '',
+        accentColor: 'white',
         tasks: [''],
         completedtasks: [''],
         progress: 0,
@@ -43,7 +46,6 @@ export default function CreateProject(props) {
     };
 
     const [isOpen, setIsOpen] = useState(false)
-    //const [progressInputValue, setprogressInputValue] = useState('')
     const [titleInput, settitleInput] = useState('')
     const [projectTitle, setProjectTitle] = useState('')
     const [descriptionInput, setDescriptionInput] = useState('')
@@ -54,9 +56,7 @@ export default function CreateProject(props) {
     const [completedTasks, setCompletedTasks] = useState<Array<string>>([])
     const [finalProject, setFinalProject] = useState<Project>(defaultProject)
     const [optionSelected, setoptionSelected] = useState(props.reference === 'main' ? 'started' : props.reference)
-    const [toolTip, setToolTip] = useState('')
     const [secondIsOpen, setSecondIsOpen] = useState(false)
-    const [postDone, setPostDone] = useState(false)
     const [handleSubmit, setHandleSubmit] = useState(false);
 
 
@@ -79,11 +79,9 @@ export default function CreateProject(props) {
     }
 
     const handleCompletedTask = () => {
-        const completedTask = tasksData.includes(completedTasksInput) ? completedTasksInput : null
-        console.log(completedTask);
-        setCompletedTasks([...completedTasks, completedTask!]),
-            console.log(completedTasks);
-        setCompletedTasksInput('')
+        const completedTask = tasksData.includes(completedTasksInput) ? completedTasksInput : ''
+        setCompletedTasks([...completedTasks, completedTask]),
+            setCompletedTasksInput('')
     }
 
     const reset = () => {
@@ -97,7 +95,6 @@ export default function CreateProject(props) {
         setCompletedTasks([])
         setFinalProject(defaultProject)
         setoptionSelected('started')
-        setToolTip('')
         setHandleSubmit(false)
     }
 
@@ -107,11 +104,10 @@ export default function CreateProject(props) {
     const handleProjectPost = useCallback(async () => {
         if (Object.keys(finalProject).length !== 0) {
             try {
-                await axios.post(`http://localhost:5000/api/createProject`, { finalProject }, { headers: { Authorization: session } });
+                await axios.post(`/server/api/createProject`, { finalProject }, { headers: { Authorization: session } });
             } catch (error) {
                 console.log(`from handleProjectPost: ${error}`);
             }
-            setPostDone(true)
             reset()
         }
     }, [finalProject, reset])
@@ -121,17 +117,19 @@ export default function CreateProject(props) {
         event.preventDefault();
         setHandleSubmit(true)
         setSecondIsOpen(true);
-        setFinalProject({
+        const data = {
             title: projectTitle,
             description: description || `it is ${projectTitle}`,
+            progress: ((completedTasks.length / tasksData.length) * 100),
+            accentColor: ((completedTasks.length / tasksData.length) * 100) === 100 ? '#e5af07' : ((completedTasks.length / tasksData.length) * 100) >= 10 ? '#fd68b3' : '#7249e0',
             tasks: tasksData,
             completedtasks: completedTasks,
-            progress: ((completedTasks.length / tasksData.length) * 100),
             Owner: userId,
-            people: [props.userData],
+            people: [userId],
             attachments: 0,
             comments: 0
-        });
+        }
+        setFinalProject(data);
     };
 
     useEffect(() => {
@@ -142,7 +140,6 @@ export default function CreateProject(props) {
 
 
     const closeModule = () => {
-        setPostDone(false)
         setSecondIsOpen(false)
         setIsOpen(false)
         setProjectTitle('')
@@ -234,7 +231,7 @@ export default function CreateProject(props) {
                                         {
                                             projectTitle &&
                                             <div className='w-auto'>
-                                                <CustomBar content={projectTitle} reference={setProjectTitle} setTitle={setProjectTitle} optionSelected={optionSelected} setDescription={undefined} />
+                                                <CustomBar content={projectTitle} reference={setProjectTitle} setTitle={setProjectTitle} optionSelected={optionSelected} />
                                             </div>
                                         }
 
@@ -257,7 +254,7 @@ export default function CreateProject(props) {
 
                                         {
                                             description &&
-                                            <CustomBar content={description} reference={setDescription} optionSelected={undefined} setTitle={undefined} setDescription={undefined} />
+                                            <CustomBar content={description} reference={setDescription} setTitle={undefined} optionSelected={''} />
                                         }
 
                                         <div className="mt-2 flex justify-between">
@@ -359,20 +356,6 @@ export default function CreateProject(props) {
                                         </motion.button>
 
 
-
-                                        {/* <Done button={<motion.button
-                                            type="button"
-                                            className="flex justify-around items-center rounded-md border border-transparent bg-blue-100 px-4 py-2 span-sm font-medium span-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                            onClick={onSubmit}
-                                            whileHover={{ scale: 1.1 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            <span>
-                                                Do it !
-                                            </span>
-                                            <ArrowRightIcon className='w-4 ml-2' />
-                                        </motion.button>} isOpen={secondIsOpen} postDone={postDone} onClose={closeModule} reference={'createProject'} projectTitle={finalProject.title} customSubmitButton={undefined} /> */}
-
                                         <Info button={
                                             <motion.button
                                                 type="button"
@@ -386,7 +369,7 @@ export default function CreateProject(props) {
                                                 </span>
                                                 <ArrowRightIcon className='w-4 ml-2' />
                                             </motion.button>
-                                        } title={<span>Project <b>{projectTitle}</b> Created </span>} isOpen={secondIsOpen} onClose={closeModule} description={undefined} />
+                                        } title={<span>Project <b>{projectTitle}</b> Created </span>} isOpen={secondIsOpen} onClose={closeModule} description={''} />
 
                                     </div>
                                 </Dialog.Panel>
@@ -399,7 +382,7 @@ export default function CreateProject(props) {
     )
 }
 
-function OptionButton({ label, value, selected, onChange, toolTip }) {
+function OptionButton({ label, value, selected, onChange, toolTip }: { label: string, value: string, selected: string, onChange: any, toolTip: string }) {
     return (
         <Tooltip placement='top' title={toolTip} mouseEnterDelay={1} mouseLeaveDelay={0}>
             <motion.button
@@ -416,7 +399,7 @@ function OptionButton({ label, value, selected, onChange, toolTip }) {
     );
 }
 
-const TaskButton = ({ task, handleDeleteTask, completedTasks }) => {
+const TaskButton = ({ task, handleDeleteTask, completedTasks }: { task: string, handleDeleteTask: any, completedTasks: Array<string> }) => {
     return (
         <div className=' flex justify-between items-center rounded-full px-2 py-1 text-[10px] ' style={{ background: completedTasks.includes(task) ? 'rgba(0, 255, 0, 0.2)' : 'whitesmoke' }} >
             <span>
@@ -429,7 +412,7 @@ const TaskButton = ({ task, handleDeleteTask, completedTasks }) => {
     )
 }
 
-const CustomBar = ({ content, reference, optionSelected, setTitle, setDescription }) => {
+const CustomBar = ({ content, reference, optionSelected, setTitle }: { content: string, reference: any, optionSelected: string, setTitle: any }) => {
     return (
         <div className='flex flex-wrap'>
             <div className='bg-yellow-700 px-3 py-2 rounded-full flex justify-between items-center ' style={{ background: reference != setTitle ? 'whitesmoke' : optionSelected === 'started' ? 'rgba(115,74,227,0.2)' : optionSelected === 'ongoing' ? 'rgba(241,112,179,0.2)' : 'rgba(231,176,7,0.2)' }} >

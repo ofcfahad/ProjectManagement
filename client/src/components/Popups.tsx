@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dialog, Transition } from '@headlessui/react'
 import { motion } from 'framer-motion'
-import React, { Fragment, useState } from 'react'
+import { Fragment } from 'react'
 import { RxCross1 } from 'react-icons/rx'
-import UseAnimations from 'react-useanimations'
-import loading from 'react-useanimations/lib/loading'
 
-export function Info({ button, title, isOpen, onClose, description }) {
+export function Info({ button, title, isOpen, onClose, description }: { button: any, title: any, isOpen: boolean, onClose: any, description: string }) {
 
 
     return (
@@ -71,7 +70,7 @@ export function Info({ button, title, isOpen, onClose, description }) {
     )
 }
 
-export function Confirmation({ button, isOpen, onClose, title, description, customSubmitButton, customSubmitButtonTitle }) {
+export function Confirmation({ button, isOpen, onClose, title, description, customSubmitButton, customSubmitButtonTitle }: { button: any, isOpen: boolean, onClose: any, title: any, description: string, customSubmitButton: any, customSubmitButtonTitle: string }) {
     return (
         <div>
             <div className="flex items-center justify-center">
@@ -139,7 +138,7 @@ export function Confirmation({ button, isOpen, onClose, title, description, cust
     )
 }
 
-export const UserProfileCompletion = ({ completeProfileDialogisOpen, setCompleteProfileDialogisOpen }) => {
+export const UserProfileCompletion = ({ completeProfileDialogisOpen, setCompleteProfileDialogisOpen }: { completeProfileDialogisOpen: boolean, setCompleteProfileDialogisOpen: any }) => {
     return (
         <Transition appear show={completeProfileDialogisOpen} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={() => setCompleteProfileDialogisOpen(false)}>

@@ -4,6 +4,7 @@ const ProjectSchema = new mongoose.Schema({
     //id: Number,
     title: String,
     description: String,
+    accentColor: String,
     tasks: Array,
     completedtasks: Array,
     progress: Number,

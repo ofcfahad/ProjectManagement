@@ -8,13 +8,13 @@ import { getAllProjects, deleteProject, createProject } from './controllers/Proj
 import { createNewUser, notVerified, sendOTP, updateEmail, verifyOTP } from './controllers/Register'
 import { authenticateUser, getUserEmail, sendAOTP, verifyAOTP } from './controllers/Login';
 import { authenticateGithub, authenticateGoogle, callbackGithub, callbackGoogle } from './controllers/SocialAuth'
-import { getUserData } from './controllers/User'
+import { getPeopleInfo, getUserData } from './controllers/User'
 import checkSession from './middlewares/checkSession'
 require('dotenv').config()
 
 
 const app = express()
-const port = process.env.EXPRESS_SERVER_PORT || 5000
+const port = 5000
 connectToMongo()
 
 app.use(bodyParser.json());
@@ -39,6 +39,7 @@ app.listen(port, () => {
 
 //User
 app.use('/api/getUserData', getUserData)
+app.use('/api/getPeopleInfo', checkSession, getPeopleInfo)
 //Register
 app.use('/api/register', createNewUser)
 app.use('/api/sendOTP', sendOTP)

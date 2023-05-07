@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
-function ProgressBar({ progress, backgroundColor, borderRadius, trailColor, inprogressColor, padding, /* waitingColor, completedColor, inprogress, completed, waiting */ }) {
+function ProgressBar({ progress, backgroundColor, borderRadius, trailColor, inprogressColor, padding, /* waitingColor, completedColor, inprogress, completed, waiting */ }: { progress: number, backgroundColor: string, borderRadius: number, trailColor: string, inprogressColor: string, padding: number }) {
   const [animatedProgress, setAnimatedProgress] = useState(0);
-  const [barClicked, setbarClicked] = useState('')
 
   useEffect(() => {
     // Animate progress from 0 to the desired value

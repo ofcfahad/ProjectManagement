@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from 'react'
 //Others
 import { AnimatePresence, motion } from "framer-motion"
 import OtpInput from 'react-otp-input';
 import axios from 'axios'
 import Cookies from 'js-cookie';
+import { protect_email } from '../functions';
 //Icons
 import { IconContext } from "react-icons";
 import { CiEraser } from 'react-icons/ci';
@@ -13,20 +15,7 @@ import UseAnimations from 'react-useanimations';
 import infinity from 'react-useanimations/lib/infinity'
 
 
-
-
-export const protect_email = (user_email: string) => {
-    var avg: number, splitted: Array<string>, part1: string, part2: string;
-    splitted = user_email.split("@");
-    part1 = splitted[0];
-    avg = part1.length / 2;
-    part1 = part1.substring(0, (part1.length - avg));
-    part2 = splitted[1];
-    return part1 + "...@" + part2;
-};
-
-
-const EmailAuthentication = ({ userName, userEmail, userPassword, handleGoBackClick, setUserLoggedIn }) => {
+const EmailAuthentication = ({ userEmail, userPassword, handleGoBackClick, setUserLoggedIn }: {userName: string, userEmail: string, userPassword: string, handleGoBackClick: any, setUserLoggedIn: any } ) => {
 
     const [emailSent, setEmailSent] = useState(false)
     const [otp, setOtp] = useState('');
@@ -43,13 +32,12 @@ const EmailAuthentication = ({ userName, userEmail, userPassword, handleGoBackCl
         setOtp(copiedText);
     };
 
-
     const sendOTP = async () => {
         setEmailIsSentAgain(emailIsSentAgain + 1)
         setEmailSendLoading(true)
         setButtonDisabled('send')
         try {
-            const response = await axios.post('http://localhost:5000/api/sendAuthenticationOTP', { userEmail: userEmail })
+            const response = await axios.post(`/server/api/sendAuthenticationOTP`, { userEmail: userEmail })
             const status = response.status
             if (status != 200) {
                 console.log('error');
@@ -69,7 +57,7 @@ const EmailAuthentication = ({ userName, userEmail, userPassword, handleGoBackCl
         setVerifyingOTP(true)
         setButtonDisabled('otp')
         try {
-            const response = await axios.post('http://localhost:5000/api/verifyAuthenticationOTP', { userEmail: userEmail, userPassword: userPassword, otp: otp })
+            const response = await axios.post(`/server/api/verifyAuthenticationOTP`, { userEmail: userEmail, userPassword: userPassword, otp: otp })
             if (response.status === 200) {
                 setWrongOTP(false)
                 const token = response.data.token
@@ -84,6 +72,7 @@ const EmailAuthentication = ({ userName, userEmail, userPassword, handleGoBackCl
         setVerifyingOTP(false)
     }
 
+
     return (
         <motion.div className='flex flex-col justify-between h-full w-full bg-white/30 backdrop-blur px-4 rounded-3xl font-ubuntu'>
             <ArrowLeftIcon className='w-5 text-black cursor-pointer mt-4' onClick={handleGoBackClick} />
@@ -96,7 +85,7 @@ const EmailAuthentication = ({ userName, userEmail, userPassword, handleGoBackCl
                     {
                         emailSent ?
                             <span className=''>
-                                An Email with OTP is sent to your Email address <b>{protect_email(userEmail!)}</b>
+                                An Email with OTP is sent to your Email address <b>{protect_email(userEmail)}</b>
                                 <div className='h-2'></div>
                                 <span className='text-sm'>
                                     Didn't Recieve or Email Expired? <button disabled={emailIsSentAgain >= 2} className='text-selectedicon' onClick={sendOTP}>Resend</button>
@@ -105,7 +94,7 @@ const EmailAuthentication = ({ userName, userEmail, userPassword, handleGoBackCl
                             :
                             emailSendLoading ?
                                 <span>
-                                    Sending Email with OTP to <b>{protect_email(userEmail!)}</b>
+                                    Sending Email with OTP to <b>{protect_email(userEmail)}</b>
                                 </span>
                                 :
                                 <span>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from 'react'
 //AppComponents
 import {
   Login,
@@ -6,21 +7,20 @@ import {
   EmailVerification,
   EmailAuthentication
 } from '../components'
+import LoggingLoading from '../components/LoggingLoading'
 //OtherComponents
 import { AnimatePresence, motion } from 'framer-motion'
+import Cookies from 'js-cookie'
 //Assets
 import { appHomePage, backgroundImage } from '../assets'
 //Icons
-
 import UseAnimations from 'react-useanimations'
 import arrow from 'react-useanimations/lib/arrowUp'
-import LoggingLoading from '../components/LoggingLoading'
-import Cookies from 'js-cookie'
 
-const LoginPage = ({ setUserLoggedIn }) => {
+const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
 
   const [userName, setUserName] = useState('')
-  const [userPassword, setUserPassword] = useState<string>()
+  const [userPassword, setUserPassword] = useState<string>('')
   const [userEmail, setUserEmail] = useState('')
   const [noEmail, setNoEmail] = useState(false)
   const [loginOrRegister, setLoginOrRegister] = useState(true)
@@ -40,10 +40,10 @@ const LoginPage = ({ setUserLoggedIn }) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  const handleSocialLogin = async (ref: string, setLoading: Function, setReference: Function) => {
+  const handleSocialLogin = async (ref: string, setLoading: any, setReference: any) => {
     await setReference(Capitalize(ref));
     setLoading(true)
-    const authWindow = window.open(`http://localhost:5000/api/auth/${ref}`, '_blank')
+    const authWindow = window.open(`/server/api/auth/${ref}`, '_blank')
     window.addEventListener('message', event => {
       if (event.origin === 'http://localhost:5000' && event.data.type === `${ref}-auth-success`) {
         Cookies.set('session', event.data.token)
@@ -100,7 +100,7 @@ const LoginPage = ({ setUserLoggedIn }) => {
                             :
                             <AnimatePresence>
                               <motion.div initial={{ x: 200 }} animate={{ x: 0 }} exit={{ x: -100 }} className='h-full w-full' >
-                                <Login userName={userName} setUserName={setUserName} handleRegisterClick={() => setLoginOrRegister(false)} settoEmailAuthentication={settoEmailAuthentication} userPassword={userPassword} setUserPassword={setUserPassword} setLoading={setLoading} setReference={setReference} userEmail={userEmail} setUserEmail={setUserEmail} setNoEmail={setNoEmail} handleSocialLogin={handleSocialLogin} />
+                                <Login userName={userName} setUserName={setUserName} handleRegisterClick={() => setLoginOrRegister(false)} settoEmailAuthentication={settoEmailAuthentication} userPassword={userPassword} setUserPassword={setUserPassword} setLoading={setLoading} setReference={setReference} setUserEmail={setUserEmail} setNoEmail={setNoEmail} handleSocialLogin={handleSocialLogin} />
                               </motion.div>
                             </AnimatePresence>
                       )
@@ -130,55 +130,3 @@ const LoginPage = ({ setUserLoggedIn }) => {
 }
 
 export default LoginPage
-
-
-
-
-{/* <Transition appear show={openWelcomeModal} as={Fragment}>
-          <Dialog as="div" className="relative z-10" onClose={() => setOpenWelcomeModal(false)}>
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <div className="fixed inset-0 bg-black bg-opacity-25" />
-            </Transition.Child>
-
-            <div className="fixed inset-0 overflow-y-auto">
-              <div className="flex min-h-full items-center justify-center p-4 text-center">
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-out duration-300"
-                  enterFrom="opacity-0 scale-95"
-                  enterTo="opacity-100 scale-100"
-                  leave="ease-in duration-200"
-                  leaveFrom="opacity-100 scale-100"
-                  leaveTo="opacity-0 scale-95"
-                >
-                  <Dialog.Panel className=" max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                    <Dialog.Title
-                      as="h3"
-                      className="text-lg font-medium leading-6 text-gray-900"
-                    >
-                      Welcome Back {userName}
-                    </Dialog.Title>
-
-                    <div className="mt-4 flex justify-center items-center">
-                      <button
-                        type="button"
-                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                        onClick={() => setOpenWelcomeModal(false)}
-                      >
-                        Got it, thanks!
-                      </button>
-                    </div>
-                  </Dialog.Panel>
-                </Transition.Child>
-              </div>
-            </div>
-          </Dialog>
-        </Transition> */}

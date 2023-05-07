@@ -23,7 +23,33 @@ const getUserData = async (req: Request, res: Response) => {
     }
 }
 
+const getPeopleInfo = async (req: Request, res: Response) => {
+    try {
+        const userIds = req.body.userIds;
+        const users: Array<object | null> = [];
+        await Promise.all(userIds.map(async (userId: object) => {
+          try {
+            const user = await User.findById(userId);
+            if (user) {
+              user.githubId = undefined;
+              user.googleId = undefined;
+              user.fullName = undefined;
+              user.userEmail = undefined;
+              user.userPassword = undefined;
+            }
+            users.push(user);
+          } catch (error) {
+            console.log(error);
+          }
+        }));
+        res.status(200).json({ users })
+    } catch (error) {
+        console.log(`from getPeopleInfo: ${error}`);
+    }
+}
+
 
 export {
     getUserData,
+    getPeopleInfo
 }

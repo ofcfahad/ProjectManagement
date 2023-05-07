@@ -1,10 +1,9 @@
-import React from 'react'
 import { motion } from 'framer-motion'
 import UseAnimations from 'react-useanimations'
 import loading2 from 'react-useanimations/lib/loading2'
 
 
-const Loading = ({ loading, haveBackgroundColor, backgroundColor }) => {
+const Loading = ({ haveBackgroundColor, backgroundColor }: { haveBackgroundColor: boolean, backgroundColor: string }) => {
 
     return (
         <>

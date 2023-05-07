@@ -1,27 +1,29 @@
-import React, { useEffect, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from 'react'
 //Others
 import { motion } from "framer-motion"
 import axios from 'axios'
+import { Tooltip } from 'react-tooltip'
 //Icons
 import { IconContext } from "react-icons";
 import { CiUser } from 'react-icons/ci';
 import { ArrowLongRightIcon, LockClosedIcon, LockOpenIcon } from '@heroicons/react/24/outline';
 import { FcGoogle } from 'react-icons/fc'
 import { IoLogoGoogle } from 'react-icons/io'
-import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
 import UseAnimations from 'react-useanimations';
 import github from 'react-useanimations/lib/github'
 
 
 
-const Register = ({ setLoading, setReference, handleLoginClick, settoEmailVerification, userName, setUserName, userPassword, setUserPassword, handleSocialLogin }) => {
+const Register = ({ setLoading, setReference, handleLoginClick, settoEmailVerification, userName, setUserName, userPassword, setUserPassword, handleSocialLogin }: { setLoading: any, setReference: any, handleLoginClick: any, settoEmailVerification: any, userName: string, setUserName: any, userPassword: string, setUserPassword: any, handleSocialLogin: any }) => {
 
     const [userNameInputController, setUserNameInputController] = useState('')
     const [userPasswordInputController, setUserPasswordInputController] = useState('')
     const [inputIsFocused, setInputIsFocused] = useState('')
     const [buttonClicked, setButtonClicked] = useState(false)
-    const [userAlreadyExists, setUserAlreadyExists] = useState<Boolean>()
+    const [userAlreadyExists, setUserAlreadyExists] = useState<boolean>()
     const [ishovering, setIsHovering] = useState('')
 
 
@@ -35,14 +37,15 @@ const Register = ({ setLoading, setReference, handleLoginClick, settoEmailVerifi
     const handleRegistration = async () => {
         event?.preventDefault()
         try {
-            const response = await axios.post('http://localhost:5000/api/register', {
+            const data = {
                 userName: userName,
                 userPassword: userPassword,
                 fullName: '',
                 userEmail: '',
                 userProfilePicture: '',
                 userGithubLink: ''
-            })
+            }
+            const response = await axios.post(`/server/api/register`, { data })
             const status = response.status
 
             if (status === 201) {
@@ -50,11 +53,11 @@ const Register = ({ setLoading, setReference, handleLoginClick, settoEmailVerifi
             } else {
                 setUserAlreadyExists(false)
             }
-        } catch (error) {
+        } catch (error: any) {
             if (error.response && error.response.status === 409) {
                 setUserAlreadyExists(true)
             } else {
-                console.log('error is :' + error)
+                console.log('from handleRegistration: ' + error)
             }
         }
     }
@@ -70,7 +73,7 @@ const Register = ({ setLoading, setReference, handleLoginClick, settoEmailVerifi
 
 
     useEffect(() => {
-        if ((userName.length >= 4 && userPassword!.length >= 8) && buttonClicked) {
+        if ((userName.length >= 4 && userPassword.length >= 8) && buttonClicked) {
             handleRegistration()
             setUserAlreadyExists(false)
             setButtonClicked(false)
@@ -97,10 +100,10 @@ const Register = ({ setLoading, setReference, handleLoginClick, settoEmailVerifi
                 </motion.div>
                 <Tooltip id='usernameinputbar' content={userAlreadyExists ? 'oops! Username is already taken' : ''} style={{ background: userAlreadyExists ? 'red' : '' }} />
 
-                <motion.div initial={{ borderRadius: 0 }} animate={{ borderRadius: userPasswordInputController === userPassword || userPasswordInputController != '' || inputIsFocused === 'userPasswordInputBar' ? 0 : 10 }} className={`mt-4 flex items-center px-2 border-2 border-transparent ${userPassword?.length! >= 8 ? 'border-b-[#4ade80]' : userPasswordInputController != '' ? 'border-b-blue-600' : inputIsFocused === 'userPasswordInputBar' ? 'bg-transparent border-b-selectedicon' : 'bg-white'}`}>
+                <motion.div initial={{ borderRadius: 0 }} animate={{ borderRadius: userPasswordInputController === userPassword || userPasswordInputController != '' || inputIsFocused === 'userPasswordInputBar' ? 0 : 10 }} className={`mt-4 flex items-center px-2 border-2 border-transparent ${userPassword.length >= 8 ? 'border-b-[#4ade80]' : userPasswordInputController != '' ? 'border-b-blue-600' : inputIsFocused === 'userPasswordInputBar' ? 'bg-transparent border-b-selectedicon' : 'bg-white'}`}>
                     <div>
                         {
-                            userPassword?.length! >= 8 ?
+                            userPassword.length >= 8 ?
                                 <LockClosedIcon className='w-5 text-[#4ade80]' />
                                 :
                                 <LockOpenIcon className='w-5' style={{ color: userPasswordInputController ? '#2563eb' : inputIsFocused === 'userPasswordInputBar' ? '#734ae3' : 'black' }} />

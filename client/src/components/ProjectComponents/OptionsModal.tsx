@@ -1,4 +1,5 @@
-import React, { Fragment, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Fragment, useState } from 'react';
 //AppComponents
 import { Info } from '../Popups'
 //OtherComponents
@@ -9,7 +10,7 @@ import { RxDotsHorizontal, } from 'react-icons/rx';
 import { CiTrash } from 'react-icons/ci';
 
 
-export default function OptionsModal(props) {
+export default function OptionsModal(props: any) {
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
@@ -55,7 +56,7 @@ export default function OptionsModal(props) {
                         </button>}
 
                             isOpen={openDeleteModal}
-                            onClose={closeDeleteModule} title={<span>Project <b> {props.projectTitle} </b> Deleted </span>} description={undefined} />
+                            onClose={closeDeleteModule} title={<span>Project <b> {props.projectTitle} </b> Deleted </span>} description={''} />
                     </div>
 
                 </Menu.Items>

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Divider } from 'antd'
 import { IconContext } from 'react-icons'
 
-const NotificationModule = ({ notificationData, height, icon, actionIcon, iconBackgroundColor, title, description }) => {
+const NotificationModule = ({ notificationData, height, icon, actionIcon, iconBackgroundColor, title, description }: { notificationData: any, height: number, icon: any, actionIcon: any, iconBackgroundColor: string, title: string, description: string }) => {
 
-    const notificationfilteredData = notificationData.map((notification) => ({
+    const notificationfilteredData = notificationData.map((notification: any) => ({
         icon: notification.icon || icon,
         iconBackgroundColor: notification.iconBackgroundColor || iconBackgroundColor,
         title: notification.title || title,
@@ -16,7 +16,7 @@ const NotificationModule = ({ notificationData, height, icon, actionIcon, iconBa
     return (
         <>
             {
-                notificationfilteredData.map((notification, index) => (
+                notificationfilteredData.map((notification: any, index: number) => (
 
                     <div key={notification.title}>
                         <div className={` w-full rounded-3xl flex `} style={{ height: height || 80 }} >

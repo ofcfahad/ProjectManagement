@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 //AppComponents
 import { Confirmation } from './Popups';
@@ -11,7 +12,7 @@ import { IconContext } from "react-icons";
 import { CiHome, CiLogout, CiMail, CiSettings } from 'react-icons/ci'
 import { HiOutlineRectangleStack, HiOutlineUser } from 'react-icons/hi2';
 
-const Navbar = ({ expand, menuTransitionDuration, handleLogout }) => {
+const Navbar = ({ expand, menuTransitionDuration, handleLogout }: { expand: boolean, menuTransitionDuration: number, handleLogout: any }) => {
 
     const url = window.location.pathname
     const [selectedIcon, setSelectedIcon] = useState(url)
@@ -95,7 +96,7 @@ const Navbar = ({ expand, menuTransitionDuration, handleLogout }) => {
                         </motion.div>
                     }
                     isOpen={openLogoutConfirmation} onClose={() => setOpenLogoutConfirmation(false)}
-                    customSubmitButton={handleLogout} customSubmitButtonTitle={'yeah Log it Out!'} title={'you Sure?'} description={undefined}
+                    customSubmitButton={handleLogout} customSubmitButtonTitle={'yeah Log it Out!'} title={'you Sure?'} description={''}
                 />
             </motion.div>
 

@@ -1,38 +1,35 @@
-import React, { Fragment, useEffect, useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useState } from 'react'
 import '../index.css'
-//Assets
-import { usersIcon } from '../assets'
 //Icons
 import { IconContext } from 'react-icons'
-import { CiCalendar, CiMail, CiMenuBurger, CiPen, CiSearch } from 'react-icons/ci'
-import { HiOutlineAdjustmentsHorizontal, HiOutlineUser, HiOutlineUsers, HiPencil, HiPlus } from 'react-icons/hi2'
+import { CiCalendar, CiMail, CiSearch } from 'react-icons/ci'
+import { HiOutlineUser } from 'react-icons/hi2'
 import { RxClock, RxCross1, RxDividerVertical } from 'react-icons/rx'
 import { SlPencil, SlRefresh } from 'react-icons/sl'
 import { FiChevronDown } from 'react-icons/fi'
-import { ChevronDownIcon, ChevronUpIcon, ClockIcon } from '@heroicons/react/20/solid'
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
 import { BellAlertIcon, BellIcon, BellSlashIcon } from '@heroicons/react/24/outline'
 import settings2 from 'react-useanimations/lib/settings2'
 import menu4 from 'react-useanimations/lib/menu4'
 //AppComponents
-import { ProgressBar, NotificationModule, ProjectModule, CreateProject, Loading } from '../components'
+import { ProgressBar, NotificationModule, CreateProject, Loading } from '../components'
+import ProjectsWindow from '../components/ProjectComponents/ProjectsWindow'
+import { UserProfileCompletion } from '../components/Popups'
 //OtherComponents
-import { motion, AnimatePresence } from 'framer-motion'
-import { Dialog, Listbox, Transition } from '@headlessui/react'
+import { motion } from 'framer-motion'
+import { Listbox } from '@headlessui/react'
 import { DatePicker } from 'antd'
 import Cookies from 'js-cookie'
-//import { DatePicker, Divider, Tooltip } from 'antd';
-import { Scrollbar } from 'react-scrollbars-custom'
-import { easeBackInOut, easeCircleIn, easeExpInOut } from 'd3-ease'
+import { easeBackInOut } from 'd3-ease'
 import UseAnimations from 'react-useanimations'
 import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
 import axios from 'axios'
-import Draggable from 'react-draggable'
-import ProjectsWindow from '../components/ProjectComponents/ProjectsWindow'
-import { UserProfileCompletion } from '../components/Popups'
 
 
-const Home = ({ expand, setExpand, toolTipisVisible, userData }) => {
+const Home = ({ expand, setExpand, toolTipisVisible, userData }: { expand: boolean, setExpand: any, toolTipisVisible: boolean, userData: any }) => {
 
     interface Project {
         _id: number,
@@ -62,10 +59,9 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }) => {
     const session = Cookies.get('session')
 
     const fetchProjectsData = async () => {
-        setFetchingData(true)
         try {
             setFetchingData(true)
-            const response = await axios.post(`http://localhost:5000/api/projectsData`, { userId }, { headers: { Authorization: session } })
+            const response = await axios.post(`/server/api/projectsData`, { userId }, { headers: { Authorization: session } })
 
             if (!response) {
                 throw new Error('Network response was not ok');
@@ -100,7 +96,7 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }) => {
     }, [loadNewData]);
 
 
-    const handleDateChange = (date) => {
+    const handleDateChange = (date: any) => {
         setSelectedDate(date);
     };
 
@@ -122,7 +118,9 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }) => {
         }
     };
 
-    const handleSearchIconClick = () => { isFocused && searchContent ? console.log(searchContent) : isFocused ? document.getElementById('search_query')!.focus() : null }
+    const SearchBar = document.getElementById('search_query')
+
+    const handleSearchIconClick = () => { isFocused && searchContent ? console.log(searchContent) : isFocused ? SearchBar?.focus() : null }
     const handleCrossClick = () => { setsearchContent(''), setisExpanded(false) }
 
     const startedProjects = projectsData.filter(project => project.progress < 10)
@@ -338,7 +336,7 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }) => {
                                             Projects Settings
                                         </Tooltip>
                                     }
-                                    <CreateProject setLoadNewData={setLoadNewData} setFetchingData={setFetchingData} reference={'main'} userData={userData} userId={userId} />
+                                    <CreateProject setLoadNewData={setLoadNewData} setFetchingData={setFetchingData} reference={'main'} userId={userId} />
                                 </div>
                             </div>
                             {/* BOTTOMSECTION */}
@@ -346,17 +344,17 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }) => {
                                 {/* STARTED */}
                                 <div className='w-1/3 flex justify-between items-center ml-1'>
                                     <span className='cursor-default'>Started</span>
-                                    <CreateProject setLoadNewData={setLoadNewData} setFetchingData={setFetchingData} reference={'started'} userData={userData} userId={userId} />
+                                    <CreateProject setLoadNewData={setLoadNewData} setFetchingData={setFetchingData} reference={'started'} userId={userId} />
                                 </div>
                                 {/* ONGOING */}
                                 <div className='w-1/3 flex justify-between items-center ml-3' >
                                     <span className='cursor-default'>On Going</span>
-                                    <CreateProject setLoadNewData={setLoadNewData} setFetchingData={setFetchingData} reference={'ongoing'} userData={userData} userId={userId} />
+                                    <CreateProject setLoadNewData={setLoadNewData} setFetchingData={setFetchingData} reference={'ongoing'} userId={userId} />
                                 </div>
                                 {/* COMPLETED */}
                                 <div className='w-1/3 flex justify-between items-center ml-3'>
                                     <span className='cursor-default'>Completed</span>
-                                    <CreateProject setLoadNewData={setLoadNewData} setFetchingData={setFetchingData} reference={'completed'} userData={userData} userId={userId} />
+                                    <CreateProject setLoadNewData={setLoadNewData} setFetchingData={setFetchingData} reference={'completed'} userId={userId} />
                                 </div>
                             </div>
 
@@ -369,7 +367,7 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }) => {
                                     <ProjectsWindow projectsData={projectsData} setLoadNewData={setLoadNewData} />
                                     :
                                     <div className='w-full h-full flex justify-center items-center'>
-                                        <Loading loading haveBackgroundColor={false} backgroundColor={''} />
+                                        <Loading haveBackgroundColor={false} backgroundColor={''} />
                                     </div>
                             }
                         </div>
@@ -419,7 +417,7 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }) => {
                                     <div className='flex flex-wrap w-full h-[85%]'>
                                         {
                                             projectsInfo.map((project) => (
-                                                <motion.div key={project.id} initial={{ opacity: 0, scale: 1.5 }} animate={{ opacity: 1, scale: 1, }} whileHover={{ scale: 1.1, boxShadow: project.shadowColor }} transition={{ ease: easeCircleIn }} className={`w-[45%] h-[45%] ml-2 mt-1 flex flex-col justify-around px-2 rounded-lg`} style={{ background: project.backgroundColor }} >
+                                                <motion.div key={project.id} initial={{ opacity: 0, scale: 1.5 }} animate={{ opacity: 1, scale: 1, }} whileHover={{ scale: 1.1, boxShadow: project.shadowColor }} transition={{ ease: easeBackInOut }} className={`w-[45%] h-[45%] ml-2 mt-1 flex flex-col justify-around px-2 rounded-lg`} style={{ background: project.backgroundColor }} >
                                                     <span className='text-gray-500'> {project.id} </span>
                                                     <div className='flex justify-between items-center'>
                                                         <div className={`h-[25px] w-[6px] rounded-3xl shadow-inner`} style={{ background: project.whatColor }} ></div>
@@ -444,7 +442,7 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }) => {
                             </button>
                             <div className={`w-full ${notificationBar ? `h-[661px]` : 'h-[200px]'} relative rounded-b-3xl bg-transparent flex flex-col select-span`}>
                                 <div className={`w-full  ${notificationBar ? 'h-[87%]  ' : 'h-[94%] '} max-h-[1000px] absolute transition-all ease-linear rounded-b-3xl ${notificationBar ? 'overflow-y-scroll' : 'overflow-hidden'} `}>
-                                    <NotificationModule notificationData={notificationData} height={undefined} icon={undefined} actionIcon={undefined} iconBackgroundColor={undefined} title={undefined} description={undefined} />
+                                    <NotificationModule notificationData={notificationData} height={0} icon={undefined} actionIcon={undefined} iconBackgroundColor={''} title={''} description={''} />
                                 </div>
                             </div>
                         </motion.div>

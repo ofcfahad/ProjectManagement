@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { backgroundImage } from '../assets'
-import UseAnimations from 'react-useanimations'
 import Loading from './Loading'
-import Cookies from 'js-cookie'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 
-const LoggingLoading = ({ reference, setLoading }) => {
+const LoggingLoading = ({ reference, setLoading }: { reference: string, setLoading: any }) => {
 
 
     return (
@@ -28,7 +26,7 @@ const LoggingLoading = ({ reference, setLoading }) => {
                                 </span>
                     }
                     <div className='mt-5'>
-                        <Loading loading={undefined} haveBackgroundColor={undefined} backgroundColor={undefined} />
+                        <Loading haveBackgroundColor={false} backgroundColor={''} />
                     </div>
                 </div>
             </div>

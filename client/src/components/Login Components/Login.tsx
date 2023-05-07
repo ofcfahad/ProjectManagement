@@ -1,45 +1,38 @@
-import React, { useEffect, useState, Fragment, useRef } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from 'react'
 //Others
-import { AnimatePresence, motion } from "framer-motion"
-import OtpInput from 'react-otp-input';
+import { motion } from "framer-motion"
 import axios from 'axios'
-import Cookies from 'js-cookie';
 //Icons
 import { IconContext } from "react-icons";
-import { CiEraser, CiLock, CiUsb, CiUser } from 'react-icons/ci';
-import { MdOutlineAlternateEmail } from 'react-icons/md'
-import { ArrowDownLeftIcon, ArrowDownOnSquareIcon, ArrowLeftIcon, ArrowLongRightIcon, ClipboardIcon, LockClosedIcon, LockOpenIcon } from '@heroicons/react/24/outline';
+import { CiUser } from 'react-icons/ci';
+import { ArrowLongRightIcon, LockClosedIcon, LockOpenIcon } from '@heroicons/react/24/outline';
 import { FcGoogle } from 'react-icons/fc'
 import { IoLogoGoogle } from 'react-icons/io'
-import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
 import UseAnimations from 'react-useanimations';
-import infinity from 'react-useanimations/lib/infinity'
 import github from 'react-useanimations/lib/github'
-import { Transition } from '@headlessui/react';
 
 
-const Login = ({ userName, setUserName, userPassword, setUserPassword, userEmail, setUserEmail, setNoEmail, handleRegisterClick, settoEmailAuthentication, setLoading, setReference, handleSocialLogin }) => {
+const Login = ({ userName, setUserName, userPassword, setUserPassword, setUserEmail, setNoEmail, handleRegisterClick, settoEmailAuthentication, setLoading, setReference, handleSocialLogin }: { userName: string, setUserName: any, userPassword: string, setUserPassword: any, setUserEmail: any, setNoEmail: any, handleRegisterClick: any, settoEmailAuthentication: any, setLoading: any, setReference: any, handleSocialLogin: any }) => {
 
     const [userNameInputController, setUserNameInputController] = useState('')
     const [userPasswordInputController, setUserPasswordInputController] = useState('')
-    const [doIt, setDoIt] = useState(false)
     const [inputIsFocused, setInputIsFocused] = useState('')
-    const [openWelcomeModal, setOpenWelcomeModal] = useState(false)
     const [response, setResponse] = useState<string>()
     const [ishovering, setIsHovering] = useState('')
-    const [yes, setYes] = useState(false)
+
 
     const authenticateUser = async () => {
         try {
-            const apiResponse = await axios.post(`http://localhost:5000/api/authenticateUser`, { userName: userNameInputController, userPassword: userPasswordInputController });
+            const apiResponse = await axios.post(`/server/api/authenticateUser`, { userName: userNameInputController, userPassword: userPasswordInputController });
             setResponse(apiResponse.data.message)
         } catch (error) {
             console.log(error);
         }
     };
 
-    const pissOff = async () => {
+    const checkEmail = async () => {
         const userEmail = await getUserEmail()
         if (userEmail) {
             setTimeout(() => {
@@ -52,10 +45,11 @@ const Login = ({ userName, setUserName, userPassword, setUserPassword, userEmail
 
     useEffect(() => {
         if (response === 'success') {
-            pissOff()
+            checkEmail()
         } else {
             settoEmailAuthentication(false)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [response])
 
     const submitFunction = (event: { preventDefault: () => void; }) => {
@@ -75,7 +69,7 @@ const Login = ({ userName, setUserName, userPassword, setUserPassword, userEmail
 
     const getUserEmail = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/api/getUserEmail', { userName: userName, userPassword: userPassword });
+            const response = await axios.post(`/server/api/getUserEmail`, { userName: userName, userPassword: userPassword });
             const data = response.data
             if (data) {
                 setUserEmail(data)
@@ -134,9 +128,7 @@ const Login = ({ userName, setUserName, userPassword, setUserPassword, userEmail
                 </form>
 
                 <div className='flex flex-col items-center w-full mt-4'>
-                    {/* <strong>
-                Or Authenticate With
-            </strong> */}
+
                     <button className='!bg-white btn hover:shadow-lg rounded-lg w-1/2 mt-2 p-0 flex justify-center items-center' onMouseOver={() => setIsHovering('github')} onMouseOut={() => setIsHovering('')} onClick={handleGithubLogin}>
                         <div className='flex justify-center items-center py-0.5'>
                             <UseAnimations animation={github} loop={true} />

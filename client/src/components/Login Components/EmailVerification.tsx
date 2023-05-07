@@ -1,22 +1,24 @@
-import React, { useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from 'react'
+//AppComponents
+import { protect_email } from '../functions';
+import { Confirmation } from '../Popups';
 //Others
 import { AnimatePresence, motion } from "framer-motion"
 import OtpInput from 'react-otp-input';
 import axios from 'axios'
 import Cookies from 'js-cookie';
+import { Tooltip } from 'react-tooltip'
 //Icons
 import { IconContext } from "react-icons";
 import { CiEraser } from 'react-icons/ci';
 import { MdOutlineAlternateEmail } from 'react-icons/md'
 import { ArrowLeftIcon, ClipboardIcon } from '@heroicons/react/24/outline';
-import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
 import UseAnimations from 'react-useanimations';
 import infinity from 'react-useanimations/lib/infinity'
-import { protect_email } from './EmailAuthentication';
-import { Confirmation } from '../Popups';
 
-const EmailVerification = ({ userName, setUserName, userPassword, setUserPassword, settoEmailVerification, setNoEmail, setUserLoggedIn }) => {
+const EmailVerification = ({ userName, setUserName, userPassword, setUserPassword, settoEmailVerification, setNoEmail, setUserLoggedIn }: { userName: string, setUserName: any, userPassword: string, setUserPassword: any, settoEmailVerification: any, setNoEmail: any, setUserLoggedIn: any }) => {
 
     const [userEmailInputController, setUserEmailInputController] = useState('')
     const [userEmail, setUserEmail] = useState('')
@@ -58,27 +60,30 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
         setEmailSendLoading(true)
         setButtonDisabled('send')
         setEmailAlreadyExists(false)
-        try {
-            const response = await axios.post(`http://localhost:5000/api/sendOTP`, { userEmail: userEmailInputController })
-            const status = response.status
-            if (status === 200) {
-                setUserEmail(userEmailInputController)
-                setEmailSent(true)
-                setOTPInputisShown(true)
-                setEmailAlreadyExists(false)
-                setEmailIsSentAgain(emailIsSentAgain + 1)
-            } else {
-                console.log(response.data.message);
+        if (isEmailValid) {
+            try {
+                const response = await axios.post(`/server/api/sendOTP`, { userEmail: userEmailInputController })
+                const status = response.status
+                if (status === 200) {
+                    setUserEmail(userEmailInputController)
+                    setEmailSent(true)
+                    setOTPInputisShown(true)
+                    setEmailAlreadyExists(false)
+                    setEmailIsSentAgain(emailIsSentAgain + 1)
+                } else {
+                    console.log(response.data.message);
 
-            }
-        } catch (error) {
-            setButtonDisabled('')
-            if (error.response && error.response.status === 409) {
-                setEmailAlreadyExists(true)
-            } else {
-                console.log(`from sendVerificationEmail: ${error}`);
+                }
+            } catch (error: any) {
+                setButtonDisabled('')
+                if (error.response && error.response.status === 409) {
+                    setEmailAlreadyExists(true)
+                } else {
+                    console.log(`from sendVerificationEmail: ${error}`);
+                }
             }
         }
+
         setButtonDisabled('')
         setEmailSendLoading(false)
     }
@@ -86,23 +91,28 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
     const verifyOTP = async (event: { preventDefault: () => void; }) => {
         event.preventDefault()
         setButtonDisabled('otp')
+        setVerifyingOTP(true)
         try {
-            const response = await axios.post(`http://localhost:5000/api/verifyOTP`, { userEmail: userEmailInputController, otp: otp })
+            const response = await axios.post(`/server/api/verifyOTP`, { userEmail: userEmailInputController, otp: otp })
             const data = response.status
             if (data === 200) {
                 setOtpVerified(true)
+                setWrongOTP(false)
                 postEmailtoDatabase()
+            } else {
+                setWrongOTP(true)
             }
         } catch (error) {
             console.log(`from verifyOTP: ${error}`);
             setOtpVerified(false)
         }
+        setVerifyingOTP(false)
     }
 
     const postEmailtoDatabase = async () => {
         event?.preventDefault()
         try {
-            const response = await axios.put(`http://localhost:5000/api/updateEmail`, { userName: userName, userPassword: userPassword, userEmail: userEmailInputController })
+            const response = await axios.put(`/server/api/updateEmail`, { userName: userName, userPassword: userPassword, userEmail: userEmailInputController })
             const token = response.data.token
             Cookies.set('session', token, { expires: 7 })
             setUserLoggedIn(true)
@@ -114,7 +124,7 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
     const handleNottoVerify = async () => {
         event?.preventDefault()
         try {
-            const response = await axios.put(`http://localhost:5000/api/notVerified`, { userName: userName, userPassword: userPassword })
+            const response = await axios.put(`/server/api/notVerified`, { userName: userName, userPassword: userPassword })
             const token = response.data.token
             Cookies.set('session', token, { expires: 7 })
             setUserLoggedIn(true)
@@ -141,7 +151,7 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
                     {
                         emailSent ?
                             <span className=''>
-                                An Email with OTP is sent to your Email address <b>{protect_email(userEmail!)}</b>
+                                An Email with OTP is sent to your Email address <b>{protect_email(userEmail)}</b>
                                 <div className='h-2'></div>
                                 <span className='text-sm'>
                                     Didn't Recieve or Email Expired? <button disabled={emailIsSentAgain >= 2} className='text-selectedicon' onClick={sendVerificationEmail}>Resend</button>
@@ -150,7 +160,7 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
                             :
                             emailSendLoading ?
                                 <span>
-                                    Sending Email with OTP to <b>{protect_email(userEmailInputController!)}</b>
+                                    Sending Email with OTP to <b>{protect_email(userEmailInputController)}</b>
                                 </span>
                                 :
                                 <span>
@@ -197,7 +207,7 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
                                     placeholder='000000'
                                     renderInput={(props) => <input {...props} />}
                                     containerStyle={'flex items-center bg-whitee rounded-xl'}
-                                    inputStyle={{ width: 40, height: 40, borderRadius: 10, border: wrongOTP ? 'solid red 2px' : 'solid white 2px', marginLeft: 5, outlineWidth: 1, outlineColor: otp.length > 0 ? '#2563eb' : '#734ae3', backgroundColor: 'white' }}
+                                    inputStyle={{ width: 40, height: 40, borderRadius: 10, border: wrongOTP ? 'solid red 2px' : otpVerified ? 'solid green 2px' : 'solid white 2px', marginLeft: 5, outlineWidth: 1, outlineColor: otp.length > 0 ? '#2563eb' : '#734ae3', backgroundColor: 'white' }}
                                 />
                             </div>
                             <div className='w-full flex justify-center items-center mt-3'>
