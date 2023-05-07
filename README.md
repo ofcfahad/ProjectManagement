@@ -1,4 +1,5 @@
 # Project Management
+<<<<<<< HEAD
 
 This is a full-stack web application built using the MERN stack, which includes
 **MongoDB**, **Express.js**, **React.js**, and **Node.js**.
@@ -151,3 +152,7 @@ This MERN stack application was built by Fahad as a demonstration of modern web 
 
 **License**
 This project is licensed under the *GNU GENERAL PUBLIC LICENSE*
+=======
+<meta http-equiv="refresh" content="0; url=client/src/index.html">
+
+>>>>>>> 55fae41cb164ebc9f54205bbbeb9bff51b549cf3
