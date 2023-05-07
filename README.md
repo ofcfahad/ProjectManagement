@@ -97,6 +97,7 @@ Then to the client or server directory:
 
 <details>
   <summary>Client</summary>
+
   Navigate to client directory:
 
   ``` bash
@@ -119,6 +120,7 @@ npm run dev
 
 <details>
   <summary>Server</summary>
+
   Navigate to server directory:
 
   ``` bash
@@ -130,6 +132,8 @@ cd server
 ``` bash
 npm install
 ```
+
+Change contents of .env file
 
 Start the Server:
 
