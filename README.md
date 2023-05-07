@@ -19,24 +19,20 @@ The following technologies and libraries were used to build this MERN stack appl
 
 <div style="display: flex; flex-direction: row; align-items: center;">
 
-  <a href="https://www.mongodb.com/" style="display: flex; flex-direction: column; align-items: center; margin: 0 20px; ">
+  <a href="https://www.mongodb.com/" style="display: flex; margin: 0 20px; ">
     <img src="https://img.icons8.com/?size=512&id=74402&format=png" alt="MongoDB" width="70" >
-    <strong style="color: white;">MongoDB</strong>
   </a>
   
-  <a href="https://www.expressjs.com/" style="display: flex; flex-direction: column; align-items: center; margin: 0 20px;">
+  <a href="https://www.expressjs.com/" style="display: flex; margin: 0 20px;">
     <img src="https://www.mementotech.in/assets/images/icons/express.png" alt="ExpressJs" width="70" >
-    <strong style="color: white;">ExpressJs</strong>
   </a>
   
-  <a href="https://www.react.dev/" style="display: flex; flex-direction: column; align-items: center; margin: 0 20px;">
+  <a href="https://www.react.dev/" style="display: flex; margin: 0 20px;">
     <img src="https://s3.amazonaws.com/media-p.slid.es/uploads/260703/images/4152529/react-logo.png" alt="ReactJs" width="70" >
-    <strong style="color: white;">ReactJs</strong>
   </a>
   
-  <a href="https://www.nodejs.org/" style="display: flex; flex-direction: column; align-items: center; margin: 0 20px;">
+  <a href="https://www.nodejs.org/" style="display: flex; margin: 0 20px;">
     <img src="https://avatars.githubusercontent.com/u/9950313?s=280&v=4" alt="NodeJs" width="70" >
-    <strong style="color: white;">NodeJs</strong>
   </a>
 
 </div>
