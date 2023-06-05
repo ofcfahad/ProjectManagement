@@ -89,7 +89,47 @@ Navigate to the project directory:
 cd projectmanagement
 ```
 
-Then to the client or server directory:
+<details>
+  <summary>Server</summary>
+
+  Navigate to server directory:
+
+  ``` bash
+cd server
+  ```
+
+  Create a .env file with the following template:
+
+```
+MONGO_URI = <mongodburi>
+EMAIL = <fornodemailerauth>
+EMAIL_PASS = <fornodemailerauth>
+SECRET_KEY = <secretkeytosignandverifyjwttokens>
+
+# credentials for social auth
+GITHUB_CLIENT_ID=<githuboauthclientid>
+GITHUB_CLIENT_SECRET=<githuboauthclientsecret>
+CALLBACK_URL='http://yourserverurl/api/auth/callback'
+GOOGLE_CLIENT_ID=<.........>
+GOOGLE_CLIENT_SECRET=<...........>
+
+```
+
+  Replace the <> values
+
+  Install dependencies:
+
+``` bash
+npm install
+```
+
+Start the Server:
+
+``` bash
+nodemon server.ts
+```
+
+</details>
 
 <details>
   <summary>Client</summary>
@@ -99,6 +139,14 @@ Then to the client or server directory:
   ``` bash
 cd client
   ```
+
+  Create a .env file and add:
+
+  ```
+  REACT_APP_SERVER_URL=<>
+  ```
+
+  Replace <> with your server url
 
   Install dependencies:
 
@@ -110,31 +158,6 @@ Start the App:
 
 ``` bash
 npm run dev
-```
-
-</details>
-
-<details>
-  <summary>Server</summary>
-
-  Navigate to server directory:
-
-  ``` bash
-cd server
-  ```
-
-  Install dependencies:
-
-``` bash
-npm install
-```
-
-Change contents of .env file
-
-Start the Server:
-
-``` bash
-nodemon server.ts
 ```
 
 </details>

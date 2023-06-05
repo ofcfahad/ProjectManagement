@@ -14,7 +14,7 @@ import UseAnimations from 'react-useanimations';
 import github from 'react-useanimations/lib/github'
 
 
-const Login = ({ userName, setUserName, userPassword, setUserPassword, setUserEmail, setNoEmail, handleRegisterClick, settoEmailAuthentication, setLoading, setReference, handleSocialLogin }: { userName: string, setUserName: any, userPassword: string, setUserPassword: any, setUserEmail: any, setNoEmail: any, handleRegisterClick: any, settoEmailAuthentication: any, setLoading: any, setReference: any, handleSocialLogin: any }) => {
+const Login = ({ userName, setUserName, userPassword, setUserPassword, setUserEmail, setNoEmail, handleRegisterClick, settoEmailAuthentication, setLoading, setReference, handleSocialLogin, handleForgotPasswordClick }: { userName: string, setUserName: any, userPassword: string, setUserPassword: any, setUserEmail: any, setNoEmail: any, handleRegisterClick: any, settoEmailAuthentication: any, setLoading: any, setReference: any, handleSocialLogin: any, handleForgotPasswordClick: any }) => {
 
     const [userNameInputController, setUserNameInputController] = useState('')
     const [userPasswordInputController, setUserPasswordInputController] = useState('')
@@ -49,7 +49,7 @@ const Login = ({ userName, setUserName, userPassword, setUserPassword, setUserEm
         } else {
             settoEmailAuthentication(false)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [response])
 
     const submitFunction = (event: { preventDefault: () => void; }) => {
@@ -127,6 +127,16 @@ const Login = ({ userName, setUserName, userPassword, setUserPassword, setUserEm
                     </div>
                 </form>
 
+                {response === 'username or password incorrect' &&
+                    <div className='w-full flex justify-center items-center mt-2 font-mono'>
+                        <span>
+                            Forgot Password?
+                        </span>
+                        <button className='ml-2 text-selectedicon ' onClick={handleForgotPasswordClick}>
+                            Reset
+                        </button>
+                    </div>
+                }
                 <div className='flex flex-col items-center w-full mt-4'>
 
                     <button className='!bg-white btn hover:shadow-lg rounded-lg w-1/2 mt-2 p-0 flex justify-center items-center' onMouseOver={() => setIsHovering('github')} onMouseOut={() => setIsHovering('')} onClick={handleGithubLogin}>
@@ -151,7 +161,7 @@ const Login = ({ userName, setUserName, userPassword, setUserPassword, setUserEm
                     </button>
                 </div>
 
-                <div className='w-full flex justify-center items-center mt-5'>
+                <div className='w-full flex justify-center items-center mt-5 font-mono'>
                     <span>
                         Not a Member?
                     </span>
@@ -159,6 +169,7 @@ const Login = ({ userName, setUserName, userPassword, setUserPassword, setUserEm
                         Register
                     </button>
                 </div>
+
             </div>
         </motion.div>
     )

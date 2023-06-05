@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 //AppComponents
 import {
   Login,
@@ -8,6 +8,7 @@ import {
   EmailAuthentication
 } from '../components'
 import LoggingLoading from '../components/LoggingLoading'
+import { capitalize } from '../components/functions'
 //OtherComponents
 import { AnimatePresence, motion } from 'framer-motion'
 import Cookies from 'js-cookie'
@@ -16,6 +17,9 @@ import { appHomePage, backgroundImage } from '../assets'
 //Icons
 import UseAnimations from 'react-useanimations'
 import arrow from 'react-useanimations/lib/arrowUp'
+import queryString from 'query-string'
+import ForgotPassword from '../components/Login Components/ForgotPassword'
+import ResetPassword from '../components/Login Components/ResetPassword'
 
 const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
 
@@ -28,6 +32,9 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
   const [toEmailAuthentication, settoEmailAuthentication] = useState(false)
   const [loading, setLoading] = useState(false)
   const [reference, setReference] = useState('')
+  const [forgotPassword, setForgotPassword] = useState(false)
+  const [resetPassword, setresetPassword] = useState(false)
+  const [token, setToken] = useState<string>()
 
   const handleArrowIconClick = () => {
     const userNameInputBar = document.getElementById('userNameInputField')
@@ -36,13 +43,12 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
     } else null
   }
 
-  function Capitalize(str: string) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
+
 
   const handleSocialLogin = async (ref: string, setLoading: any, setReference: any) => {
-    await setReference(Capitalize(ref));
+    await setReference(capitalize(ref));
     setLoading(true)
+    
     const authWindow = window.open(`/server/api/auth/${ref}`, '_blank')
     window.addEventListener('message', event => {
       if (event.origin === 'http://localhost:5000' && event.data.type === `${ref}-auth-success`) {
@@ -53,6 +59,22 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
       }
     })
   }
+
+  const handleForgotPasswordClick = () => {
+    setForgotPassword(true)
+  }
+
+
+  useEffect(() => {
+    const token = queryString.parse(location.search).token
+    setToken(token?.toString())
+
+    if (token) {
+      setresetPassword(true)
+    } else {
+      setresetPassword(false)
+    }
+  }, [])
 
   return (
     <div className={`w-full flex flex-row `} style={{ height: window.innerHeight, backgroundImage: `url(${backgroundImage})` }} >
@@ -71,7 +93,7 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
                 </span>
                 <UseAnimations animation={arrow} className='rotate-90 cursor-pointer' onClick={handleArrowIconClick} />
               </div>
-              <img src={appHomePage} alt="" className=' w=[100%] rounded-3xl' />
+              <img src={appHomePage} alt="App Home Page" className=' w=[100%] rounded-3xl' />
             </div>
 
             <motion.div
@@ -85,39 +107,48 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
               <div className='w-full h-[95%] flex justify-center items-center'>
                 <motion.div className='w-[300px] h-[500px] bg-transparent rounded-2xl' >
                   {
-                    loginOrRegister ?
-
-                      (
-                        toEmailAuthentication && userEmail ?
-                          <motion.div initial={{ x: 100 }} animate={{ x: 0 }} exit={{ x: -100 }} className='h-full w-full' >
-                            <EmailAuthentication userName={userName} userPassword={userPassword} handleGoBackClick={() => settoEmailAuthentication(false)} userEmail={userEmail} setUserLoggedIn={setUserLoggedIn} />
-                          </motion.div>
-                          :
-                          noEmail ?
-                            <motion.div initial={{ x: 200 }} animate={{ x: 0 }} className='h-full w-full' >
-                              <EmailVerification userName={userName} settoEmailVerification={settoEmailVerification} userPassword={userPassword} setUserName={setUserName} setUserPassword={setUserPassword} setNoEmail={setNoEmail} setUserLoggedIn={setUserLoggedIn} />
-                            </motion.div>
-                            :
-                            <AnimatePresence>
-                              <motion.div initial={{ x: 200 }} animate={{ x: 0 }} exit={{ x: -100 }} className='h-full w-full' >
-                                <Login userName={userName} setUserName={setUserName} handleRegisterClick={() => setLoginOrRegister(false)} settoEmailAuthentication={settoEmailAuthentication} userPassword={userPassword} setUserPassword={setUserPassword} setLoading={setLoading} setReference={setReference} setUserEmail={setUserEmail} setNoEmail={setNoEmail} handleSocialLogin={handleSocialLogin} />
-                              </motion.div>
-                            </AnimatePresence>
-                      )
-                      :
-                      !loginOrRegister ?
-                        (
-                          toEmailVerification ?
-                            <motion.div initial={{ x: 200 }} animate={{ x: 0 }} className='h-full w-full' >
-                              <EmailVerification userName={userName} settoEmailVerification={settoEmailVerification} userPassword={userPassword} setUserName={setUserName} setUserPassword={setUserPassword} setNoEmail={setNoEmail} setUserLoggedIn={setUserLoggedIn} />
-                            </motion.div>
-                            :
-                            <motion.div initial={{ x: 200 }} animate={{ x: 0 }} className='h-full w-full' >
-                              <Register setLoading={setLoading} handleLoginClick={() => setLoginOrRegister(true)} settoEmailVerification={settoEmailVerification} userName={userName} setUserName={setUserName} userPassword={userPassword} setUserPassword={setUserPassword} setReference={setReference} handleSocialLogin={handleSocialLogin} />
-                            </motion.div>
-                        )
+                    resetPassword ?
+                      <motion.div initial={{ x: 100 }} animate={{ x: 0 }} exit={{ x: -100 }} className='h-full w-full' >
+                        <ResetPassword token={token} setResetPassword={setresetPassword} />
+                      </motion.div>
+                      : forgotPassword ?
+                        <motion.div initial={{ x: 100 }} animate={{ x: 0 }} exit={{ x: -100 }} className='h-full w-full' >
+                          <ForgotPassword setForgotPassword={setForgotPassword} />
+                        </motion.div>
                         :
-                        null
+                        loginOrRegister ?
+
+                          (
+                            toEmailAuthentication && userEmail ?
+                              <motion.div initial={{ x: 100 }} animate={{ x: 0 }} exit={{ x: -100 }} className='h-full w-full' >
+                                <EmailAuthentication userName={userName} userPassword={userPassword} handleGoBackClick={() => settoEmailAuthentication(false)} userEmail={userEmail} setUserLoggedIn={setUserLoggedIn} />
+                              </motion.div>
+                              :
+                              noEmail ?
+                                <motion.div initial={{ x: 200 }} animate={{ x: 0 }} className='h-full w-full' >
+                                  <EmailVerification userName={userName} settoEmailVerification={settoEmailVerification} userPassword={userPassword} setUserName={setUserName} setUserPassword={setUserPassword} setNoEmail={setNoEmail} setUserLoggedIn={setUserLoggedIn} />
+                                </motion.div>
+                                :
+                                <AnimatePresence>
+                                  <motion.div initial={{ x: 200 }} animate={{ x: 0 }} exit={{ x: -100 }} className='h-full w-full' >
+                                    <Login userName={userName} setUserName={setUserName} handleRegisterClick={() => setLoginOrRegister(false)} settoEmailAuthentication={settoEmailAuthentication} userPassword={userPassword} setUserPassword={setUserPassword} setLoading={setLoading} setReference={setReference} setUserEmail={setUserEmail} setNoEmail={setNoEmail} handleSocialLogin={handleSocialLogin} handleForgotPasswordClick={handleForgotPasswordClick} />
+                                  </motion.div>
+                                </AnimatePresence>
+                          )
+                          :
+                          !loginOrRegister ?
+                            (
+                              toEmailVerification ?
+                                <motion.div initial={{ x: 200 }} animate={{ x: 0 }} className='h-full w-full' >
+                                  <EmailVerification userName={userName} settoEmailVerification={settoEmailVerification} userPassword={userPassword} setUserName={setUserName} setUserPassword={setUserPassword} setNoEmail={setNoEmail} setUserLoggedIn={setUserLoggedIn} />
+                                </motion.div>
+                                :
+                                <motion.div initial={{ x: 200 }} animate={{ x: 0 }} className='h-full w-full' >
+                                  <Register setLoading={setLoading} handleLoginClick={() => setLoginOrRegister(true)} settoEmailVerification={settoEmailVerification} userName={userName} setUserName={setUserName} userPassword={userPassword} setUserPassword={setUserPassword} setReference={setReference} handleSocialLogin={handleSocialLogin} />
+                                </motion.div>
+                            )
+                            :
+                            null
                   }
                 </motion.div>
               </div>

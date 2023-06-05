@@ -1,14 +1,12 @@
 import express from 'express'
 import bodyParser from 'body-parser';
 import cors from 'cors'
-import passport from 'passport';
 import connectToMongo from './database/db'
-import session from 'express-session'
-import { getAllProjects, deleteProject, createProject } from './controllers/Project'
+import { getAllProjects, deleteProject, createProject, getSearchedProjects } from './controllers/Project'
 import { createNewUser, notVerified, sendOTP, updateEmail, verifyOTP } from './controllers/Register'
 import { authenticateUser, getUserEmail, sendAOTP, verifyAOTP } from './controllers/Login';
 import { authenticateGithub, authenticateGoogle, callbackGithub, callbackGoogle } from './controllers/SocialAuth'
-import { getPeopleInfo, getUserData } from './controllers/User'
+import { forgotPassword, getPeopleInfo, getUserData, resetPassword } from './controllers/User'
 import checkSession from './middlewares/checkSession'
 require('dotenv').config()
 
@@ -23,23 +21,20 @@ app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true
 }));
-app.use(session({
-  secret: process.env.SECRET_KEY!,
-  resave: false,
-  saveUninitialized: false
-}))
-app.use(passport.initialize())
-app.use(passport.session())
 
 app.listen(port, () => {
   console.log(`running on port ${port}`)
 })
 
-
+app.get('/', (req, res) => {
+  res.send('hey')
+})
 
 //User
 app.use('/api/getUserData', getUserData)
 app.use('/api/getPeopleInfo', checkSession, getPeopleInfo)
+app.use('/api/forgotPassword', forgotPassword)
+app.use('/api/resetPassword', resetPassword)
 //Register
 app.use('/api/register', createNewUser)
 app.use('/api/sendOTP', sendOTP)
@@ -53,12 +48,13 @@ app.use('/api/sendAuthenticationOTP', sendAOTP)
 app.use('/api/verifyAuthenticationOTP', verifyAOTP)
 //Github
 app.get('/api/auth/github', authenticateGithub)
-app.get('/api/auth/github/callback', callbackGithub)
+app.get('/api/auth/callback/github', callbackGithub)
 //Google
 app.get('/api/auth/google', authenticateGoogle)
-app.get('/api/auth/google/callback', callbackGoogle)
+app.get('/api/auth/callback/google', callbackGoogle)
 
 //Project
 app.use('/api/projectsData', checkSession, getAllProjects);
+app.use('/api/searchedProjectsData', checkSession, getSearchedProjects);
 app.post('/api/createProject', checkSession, createProject);
 app.use('/api/deleteProject', checkSession, deleteProject);

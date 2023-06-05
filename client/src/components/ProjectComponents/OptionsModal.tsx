@@ -27,7 +27,7 @@ export default function OptionsModal(props: any) {
     return (
         <Menu as="div" className="relative inline-block text-left">
             <Menu.Button className="inline-flex w-full justify-center focus:outline-none">
-                <IconContext.Provider value={{ color: 'black', size: '20' }}>
+                <IconContext.Provider value={{ color: 'gray', size: '20' }}>
                     <RxDotsHorizontal />
                 </IconContext.Provider>
             </Menu.Button>

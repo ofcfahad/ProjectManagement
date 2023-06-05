@@ -5,6 +5,7 @@ import { useState, Fragment, useEffect } from 'react'
 //AppComponents
 import OptionsModal from './OptionsModal'
 import Contributors from './Contributors'
+import TaskModule from './TaskModule'
 //OtherComponents
 import { motion } from 'framer-motion'
 import { Dialog, Transition } from '@headlessui/react'
@@ -14,15 +15,23 @@ import { GiPaperClip } from 'react-icons/gi'
 import { ChatBubbleOvalLeftEllipsisIcon, } from '@heroicons/react/24/outline'
 import Cookies from 'js-cookie'
 import axios from 'axios'
+import { RxCross1 } from 'react-icons/rx'
+import { CiEdit } from 'react-icons/ci'
+import { convertHexToRGBA } from '../functions'
 
 
 
-const ProjectModule = ({ project, setLoadNewData }: { project: any, setLoadNewData: any }) => {
+const ProjectModule = ({ height, width, project, setLoadNewData, isHovered }: { height: number, width: number, project: any, setLoadNewData: any, isHovered: any }) => {
     const [isOpen, setIsOpen] = useState(false)
     const [peopleData, setPeopleData] = useState<Array<object>>()
+    const [editMode, setEditMode] = useState(false)
 
     const session = Cookies.get('session')
-    const { _id, title, description, accentColor, tasks, completedTasks, progress, Owner, people, attachments, comments } = project
+    const { _id, title, description, accentColor, tasks, completedtasks, progress, Owner, people, attachments, comments } = project
+    const [titleInputController, setTitleInputController] = useState(title)
+    const [descriptionInputController, setDescriptionInputController] = useState(description)
+
+    const InputStyle = `border-2 rounded-lg p-1 w-auto`
 
     const getPeopleInfo = async () => {
         try {
@@ -59,6 +68,9 @@ const ProjectModule = ({ project, setLoadNewData }: { project: any, setLoadNewDa
     }
 
     function closeModal() {
+        setEditMode(false)
+        setTitleInputController(title)
+        setDescriptionInputController(description)
         setIsOpen(false)
     }
 
@@ -73,7 +85,7 @@ const ProjectModule = ({ project, setLoadNewData }: { project: any, setLoadNewDa
     return (
         <>
             <div className="flex items-center justify-center" >
-                <Project setLoadNewData={setLoadNewData} deleteProject={deleteProject} openModal={openModal} title={title} description={description} accentColor={accentColor} progress={progress} people={peopleData} comments={comments} attachments={attachments} height={0} width={0} />
+                <Project setLoadNewData={setLoadNewData} deleteProject={deleteProject} openModal={openModal} title={title} description={description} accentColor={accentColor} progress={progress} people={peopleData} comments={comments} attachments={attachments} height={height} width={width} isHovered={isHovered} />
             </div>
 
             <Transition appear show={isOpen} as={Fragment}>
@@ -87,7 +99,7 @@ const ProjectModule = ({ project, setLoadNewData }: { project: any, setLoadNewDa
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <div className="fixed inset-0 bg-black bg-opacity-25" />
+                        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" />
                     </Transition.Child>
 
                     <div className="fixed inset-0 overflow-y-auto">
@@ -95,20 +107,54 @@ const ProjectModule = ({ project, setLoadNewData }: { project: any, setLoadNewDa
                             <Transition.Child
                                 as={Fragment}
                                 enter="ease-out duration-300"
-                                enterFrom="opacity-0 scale-95"
-                                enterTo="opacity-100 scale-100"
+                                enterFrom="opacity-0 scale-95 translate-y-full"
+                                enterTo="opacity-100 scale-100 translate-y-0"
                                 leave="ease-in duration-200"
-                                leaveFrom="opacity-100 scale-100"
-                                leaveTo="opacity-0 scale-95"
+                                leaveFrom="opacity-100 scale-100 translate-y-0"
+                                leaveTo="opacity-0 scale-95 translate-y-full"
                             >
-                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                <Dialog.Panel className="w-full max-w-[40vw] min-h-[80vh] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                                     <Dialog.Title
                                         as="h3"
-                                        className="text-lg font-medium leading-6 text-gray-900"
+                                        className="text-lg font-medium leading-6 text-gray-900 flex flex-row justify-between items-center w-full"
+                                        style={{ color: accentColor }}
                                     >
-                                        Project
+                                        {editMode ?
+                                            <span>
+                                                <input className={InputStyle} type="text" value={titleInputController} onChange={(event) => setTitleInputController(event.target.value)} />
+                                            </span>
+                                            :
+                                            <span>
+                                                {title}
+                                            </span>
+                                        }
+
+                                        <div className='w-[10%] flex justify-between items-center'>
+                                            <button onClick={() => setEditMode(!editMode)}>
+                                                <IconContext.Provider value={{ size: '20' }}>
+                                                    <CiEdit />
+                                                </IconContext.Provider>
+                                            </button>
+                                            <button onClick={closeModal}>
+                                                <RxCross1 />
+                                            </button>
+                                        </div>
                                     </Dialog.Title>
 
+                                    <Dialog.Description className='text-black'>
+                                        {editMode ?
+                                            <span>
+                                                <input className={InputStyle} type='text' value={descriptionInputController} onChange={(event) => setDescriptionInputController(event.target.value)} />
+                                            </span>
+                                            :
+                                            <span>
+                                                {description}
+                                            </span>
+                                        }
+                                    </Dialog.Description>
+
+                                    <h6>Tasks</h6>
+                                    <TaskModule tasks={tasks} completedTasks={completedtasks} accentColor={accentColor} />
                                 </Dialog.Panel>
                             </Transition.Child>
                         </div>
@@ -120,35 +166,21 @@ const ProjectModule = ({ project, setLoadNewData }: { project: any, setLoadNewDa
 }
 
 
-const Project = ({ height, width, title, description, accentColor, progress, people, comments, attachments, setLoadNewData, deleteProject, openModal }: { height: number, width: number, title: string, description: string, accentColor: string, progress: number, people: any, comments: any, attachments: any, setLoadNewData: any, deleteProject: any, openModal: any }) => {
-
-    const convertHexToRGBA = (hexCode: string) => {
-        let hex = hexCode.replace('#', '');
-
-        if (hex.length === 3) {
-            hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
-        }
-
-        const r = parseInt(hex.substring(0, 2), 16);
-        const g = parseInt(hex.substring(2, 4), 16);
-        const b = parseInt(hex.substring(4, 6), 16);
-
-        return `rgba(${r},${g},${b},${0.2})`;
-    };
+const Project = ({ height, width, title, description, accentColor, progress, people, comments, attachments, setLoadNewData, deleteProject, openModal, isHovered }: { height: number, width: number, title: string, description: string, accentColor: string, progress: number, people: any, comments: any, attachments: any, setLoadNewData: any, deleteProject: any, openModal: any, isHovered: string }) => {
 
     return (
-        <div className={`bg-white rounded-3xl`} style={{ height: height || 250, width: width || 250 }} >
-            <div className='flex justify-between items-center w-full h-[20%] px-2 mt-1 rounded-t-3xl '>
-                <div className={` rounded-full  w-auto px-2 py-1 flex justify-center items-center cursor-pointer`} style={{ color: accentColor, backgroundColor: accentColor && convertHexToRGBA(accentColor) || 'whitesmoke', }} onClick={openModal} > {title} </div>
+        <motion.div className={`bg-white rounded-3xl p-3 shadow-md hover:shadow-lg`} animate={{ scale: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? 1.06 : isHovered ? 0.8 : 1, opacity: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? 1.06 : isHovered ? 0.8 : 1 }} style={{ height: height || 250, width: width || 250, backdropFilter: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? '' : isHovered ? 'blur(100px)' : '', }}>
+            <div className='flex justify-between items-center w-full h-[20%]'>
+                <div className={`rounded-full w-auto px-3 py-2 flex justify-center items-center cursor-pointer text-sm`} style={{ color: accentColor, backgroundColor: accentColor && convertHexToRGBA(accentColor, 0.2) || 'whitesmoke', }} onClick={openModal} > {title} </div>
                 <OptionsModal deleteProject={deleteProject} setLoadNewData={setLoadNewData} projectTitle={title} />
             </div>
-            <div className=' h-[30%] flex flex-col px-2 '>
+            <div className=' h-[30%] flex flex-col'>
                 <span className='text-left h-full w-full flex items-center '> {description} </span>
             </div>
-            <div className=' h-[20%] px-2 '>
+            <div className='h-[20%]'>
                 <span className='w-full flex justify-end' > {progress}% </span>
 
-                <div style={{ width: '100%', height: '10px', backgroundColor: '#f6f5f8', borderRadius: '999px' }}>
+                <div style={{ width: '100%', height: '8px', backgroundColor: '#f6f5f8', borderRadius: '999px' }}>
                     <motion.div
                         style={{ backgroundColor: '#734ae3', height: '100%', width: 0, borderRadius: '100px' }}
                         animate={{ width: `${progress}%` }}
@@ -156,14 +188,14 @@ const Project = ({ height, width, title, description, accentColor, progress, peo
                     />
                 </div>
             </div>
-            <div className=' h-[30%] rounded-b-3xl flex justify-between px-2 '>
-                <div className='inline-flex items-center w-[70%]'>
+            <div className=' h-[30%] mt-2 rounded-b-3xl flex justify-between items-start'>
+                <div className='inline-flex items-start w-[70%] h-full'>
                     {
                         people &&
                         <Contributors contributorsData={people} avatarSize={35} avatarShape={'rounded-circle'} alignover={true} onHoverMargin={10} row linkDisabled bordered={false} borderColor={''} borderSize={0} toLeft={0} toTop={0} />
                     }
                 </div>
-                <div className=' inline-flex justify-between w-[30%] text-xs '>
+                <div className=' inline-flex justify-between items-start py-2 w-[30%] h-full text-xs'>
                     <IconContext.Provider value={{ color: 'black', size: '15' }}>
                         <button className='inline-flex justify-center items-center '>
                             <GiPaperClip />
@@ -177,7 +209,7 @@ const Project = ({ height, width, title, description, accentColor, progress, peo
                 </div>
             </div>
 
-        </div>
+        </motion.div>
     )
 }
 

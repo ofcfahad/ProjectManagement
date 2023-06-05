@@ -19,6 +19,9 @@ module.exports = {
         'oswald': ['Oswald', 'sans-serif'],
         'josefin': ['Josefin Sans', 'sans-serif'],
       },
+      backgroundImage: {
+        'main': "url('/src/assets/backgroundImage.png')",
+      },
     },
     screens: {
       xs: "480px",

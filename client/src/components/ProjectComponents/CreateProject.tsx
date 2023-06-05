@@ -120,7 +120,7 @@ export default function CreateProject(props: any) {
         const data = {
             title: projectTitle,
             description: description || `it is ${projectTitle}`,
-            progress: ((completedTasks.length / tasksData.length) * 100),
+            progress: ~~((completedTasks.length / tasksData.length) * 100),
             accentColor: ((completedTasks.length / tasksData.length) * 100) === 100 ? '#e5af07' : ((completedTasks.length / tasksData.length) * 100) >= 10 ? '#fd68b3' : '#7249e0',
             tasks: tasksData,
             completedtasks: completedTasks,

@@ -5,7 +5,7 @@ import { Strategy as GitHubStrategy } from 'passport-github2';
 import { Strategy as GoogleStrategy, Profile } from 'passport-google-oauth20';
 import User from "../database/Schemas/User";
 
-const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env
+const { CALLBACK_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env
 
 //Login With Github
 passport.use(
@@ -13,7 +13,7 @@ passport.use(
         {
             clientID: GITHUB_CLIENT_ID!,
             clientSecret: GITHUB_CLIENT_SECRET!,
-            callbackURL: 'http://localhost:5000/api/auth/github/callback',
+            callbackURL: `${CALLBACK_URL}/github`,
             scope: ['user:email']
         },
         async (accessToken: any, refreshToken: any, profile: any, done: any) => {
@@ -61,7 +61,7 @@ function callbackGithub(req: Request, res: Response) {
     passport.authenticate('github', { failureRedirect: '/' })(req, res, async () => {
         try {
             const user = req.user as typeof User;
-            const userId = await somethong(user);
+            const userId = await something(user);
             const token = jwt.sign({ userId }, process.env.SECRET_KEY!);
             // Return a client-side script that closes the window and sets the token in the main window's local storage
             res.send(`
@@ -77,12 +77,12 @@ function callbackGithub(req: Request, res: Response) {
 }
 
 
-const somethong = async (user: typeof User) => {
+const something = async (user: typeof User) => {
     try {
         const findUser = await User.findOne(user)
         return findUser?._id!
     } catch (error) {
-        console.log(error);
+        console.log(`from something: ${error}`);
     }
 }
 
@@ -91,7 +91,7 @@ const somethong = async (user: typeof User) => {
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID!,
     clientSecret: GOOGLE_CLIENT_SECRET!,
-    callbackURL: 'http://localhost:5000/api/auth/google/callback',
+    callbackURL: `${CALLBACK_URL}/google`,
     scope: ['user:email']
 },
     async (accessToken: string, refreshToken: string, profile: Profile, done: any) => {
@@ -125,7 +125,7 @@ function callbackGoogle(req: Request, res: Response) {
         try {
             const user = req.user as typeof User;
 
-            const userId = await somethong(user);
+            const userId = await something(user);
             const token = jwt.sign({ userId }, process.env.SECRET_KEY!);
             // Return a client-side script that closes the window and sets the token in the main window's local storage
             res.send(`

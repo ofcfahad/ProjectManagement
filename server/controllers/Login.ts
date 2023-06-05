@@ -3,23 +3,28 @@ import User from "../database/Schemas/User"
 import bcrypt from 'bcryptjs'
 import nodemailer from 'nodemailer'
 import randomstring from 'randomstring'
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 
 
 const authenticateUser = async (req: Request, res: Response) => {
     try {
         const { userName, userPassword } = req.body
 
-        const user = await User.findOne({ userName: userName })
+        const user = await User.findOne({
+            $or: [
+                { userName: userName },
+                { userEmail: userName }
+            ]
+        })
+        console.log(user);
+
         if (user && await bcrypt.compare(userPassword, user.userPassword!)) {
             res.status(200).json({ message: 'success' })
         } else {
             res.json({ message: 'username or password incorrect' })
         }
     } catch (error) {
-        console.log(error);
-        console.log('it is fucked');
-
+        console.log(`from authenticateUser: ${error}`);
     }
 }
 
@@ -27,7 +32,12 @@ const getUserEmail = async (req: Request, res: Response) => {
     try {
         const { userName, userPassword } = req.body
 
-        const user = await User.findOne({ userName: userName })
+        const user = await User.findOne({
+            $or: [
+                { userName: userName },
+                { userEmail: userName }
+            ]
+        })
         if (user && await bcrypt.compare(userPassword, user.userPassword!)) {
             res.status(200).send(user.userEmail)
         } else res.status(404).send('some error')

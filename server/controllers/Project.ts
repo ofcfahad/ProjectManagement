@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import Project from '../database/Schemas/Project'
+import sanitizeHtml from 'sanitize-html'
+import validator from 'validator'
 
 //Get the Projects Data from Database
 async function getAllProjects(req: Request, res: Response) {
@@ -7,6 +9,33 @@ async function getAllProjects(req: Request, res: Response) {
         const userId = req.body.userId
         const projects = await Project.find({ Owner: userId })
         res.json(projects);
+    }
+    catch (err) {
+        console.error(err)
+        res.status(500).json({ message: 'Server Error' })
+    }
+}
+
+//Get searched Projects Data from Database
+async function getSearchedProjects(req: Request, res: Response) {
+    try {
+        const { userId, searchQuery } = req.body
+        console.log(userId, searchQuery);
+
+        const sanitizedSearchQuery = sanitizeHtml(searchQuery).trim();
+
+        if (!validator.isLength(sanitizedSearchQuery, { min: 1, max: 20 })) {
+            return res.status(400).json({ error: 'Invalid search query length.' });
+        }
+        const query = {
+            title: {
+                $regex: sanitizedSearchQuery,
+                $options: 'i'
+            },
+            Owner: userId
+        };
+        const projects = await Project.find(query)
+        res.status(200).json(projects);
     }
     catch (err) {
         console.error(err)
@@ -45,6 +74,7 @@ async function deleteProject(req: Request, res: Response) {
 
 export {
     getAllProjects,
+    getSearchedProjects,
     createProject,
     deleteProject
 }

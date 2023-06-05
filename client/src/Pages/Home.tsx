@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import '../index.css'
 //Icons
 import { IconContext } from 'react-icons'
@@ -27,6 +27,7 @@ import UseAnimations from 'react-useanimations'
 import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
 import axios from 'axios'
+import { debounce } from 'lodash'
 
 
 const Home = ({ expand, setExpand, toolTipisVisible, userData }: { expand: boolean, setExpand: any, toolTipisVisible: boolean, userData: any }) => {
@@ -38,8 +39,8 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }: { expand: boole
         tasks: Array<string>,
         completedtasks: Array<string>,
         progress: number,
-        people: Array<object>,
-        Owner: object,
+        people: Array<string>,
+        Owner: string,
         attachments: number,
         comments: number
     }
@@ -49,11 +50,14 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }: { expand: boole
     const [isExpanded, setisExpanded] = useState(false)
     const [isFocused, setisFocused] = useState(false)
     const [searchContent, setsearchContent] = useState('')
+    const [searchedProjectsData, setSearchedProjectsData] = useState<Project[]>([])
+    const [noSearchedProjects, setNoSearchedProjects] = useState(false)
     const [notificationBar, setnotificationBar] = useState(false)
     const [selectedDate, setSelectedDate] = useState(null);
     const [loadNewData, setLoadNewData] = useState(false);
     const [fetchingData, setFetchingData] = useState(false)
     const [completeProfileDialogisOpen, setCompleteProfileDialogisOpen] = useState(false)
+    const [isHovered, setIsHovered] = useState('')
 
     const userId = userData._id
     const session = Cookies.get('session')
@@ -77,6 +81,43 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }: { expand: boole
         }
     };
 
+    const fetchSearchedProjectsData = async () => {
+        try {
+            setFetchingData(true)
+            const response = await axios.post(`/server/api/searchedProjectsData`, { userId, searchQuery: searchContent }, { headers: { Authorization: session } })
+
+            if (!response) {
+                throw new Error('Network response was not ok');
+            }
+
+            if (response.data.length === 0) {
+                setNoSearchedProjects(true)
+            }
+            else {
+                const data = await response.data
+                setSearchedProjectsData(data);
+                setNoSearchedProjects(false)
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadNewData(false)
+            setFetchingData(false)
+        }
+    }
+
+    const debouncedFetchFunction = debounce(fetchSearchedProjectsData, 1000)
+
+    useEffect(() => {
+        if (searchContent) {
+            debouncedFetchFunction()
+        }
+
+        return () => {
+            debouncedFetchFunction.cancel()
+        };
+    }, [searchContent])
+
     useEffect(() => {
         if (!userData.fullName) {
             setTimeout(() => {
@@ -95,17 +136,11 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }: { expand: boole
         }
     }, [loadNewData]);
 
-
     const handleDateChange = (date: any) => {
         setSelectedDate(date);
     };
 
     const width = window.innerWidth
-
-    const handleChange = (event: { target: { value: React.SetStateAction<string> } }) => {
-        setsearchContent(event.target.value);
-    };
-
 
     const onFocus = () => {
         setisFocused(true);
@@ -120,8 +155,8 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }: { expand: boole
 
     const SearchBar = document.getElementById('search_query')
 
-    const handleSearchIconClick = () => { isFocused && searchContent ? console.log(searchContent) : isFocused ? SearchBar?.focus() : null }
-    const handleCrossClick = () => { setsearchContent(''), setisExpanded(false) }
+    const handleSearchIconClick = () => { isFocused && searchContent ? fetchSearchedProjectsData() : isFocused ? SearchBar?.focus() : null }
+    const handleCrossClick = () => { setsearchContent(''), setisExpanded(false), setSearchedProjectsData([]), setNoSearchedProjects(false) }
 
     const startedProjects = projectsData.filter(project => project.progress < 10)
     const ongoingProjects = projectsData.filter(project => project.progress >= 10 && project.progress < 100)
@@ -208,7 +243,7 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }: { expand: boole
                                         </Tooltip>
                                     }
                                     {/* INPUT */}
-                                    <input type="span" placeholder='Search' id='search_query' value={searchContent} className={`px-1 py-1 focus:outline-none bg-transparent h-full w-full flex items-center`} onChange={handleChange} />
+                                    <input type="span" placeholder='Search' id='search_query' value={searchContent} className={`px-1 py-1 focus:outline-none bg-transparent h-full w-full flex items-center`} onChange={(event: any) => setsearchContent(event.target.value)} />
                                     <div className='rounded-r-full h-full px-2'>
                                         {
                                             searchContent &&
@@ -360,11 +395,14 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }: { expand: boole
 
                         </div>
 
-                        {/* TASKS */}
+                        {/* PROJECTS */}
                         <div className='w-[96%] flex justify-center items-center ml-[2%] max-h-[1000%] h-[83%] bg-[#f6f5f8] rounded-3xl '>
                             {
                                 !fetchingData ?
-                                    <ProjectsWindow projectsData={projectsData} setLoadNewData={setLoadNewData} />
+                                    noSearchedProjects && searchContent ?
+                                        `No Projects with title ${searchContent} found`
+                                        :
+                                        <ProjectsWindow projectsData={searchedProjectsData.length > 0 ? searchedProjectsData : projectsData} setLoadNewData={setLoadNewData} isHovered={isHovered} />
                                     :
                                     <div className='w-full h-full flex justify-center items-center'>
                                         <Loading haveBackgroundColor={false} backgroundColor={''} />
@@ -417,7 +455,7 @@ const Home = ({ expand, setExpand, toolTipisVisible, userData }: { expand: boole
                                     <div className='flex flex-wrap w-full h-[85%]'>
                                         {
                                             projectsInfo.map((project) => (
-                                                <motion.div key={project.id} initial={{ opacity: 0, scale: 1.5 }} animate={{ opacity: 1, scale: 1, }} whileHover={{ scale: 1.1, boxShadow: project.shadowColor }} transition={{ ease: easeBackInOut }} className={`w-[45%] h-[45%] ml-2 mt-1 flex flex-col justify-around px-2 rounded-lg`} style={{ background: project.backgroundColor }} >
+                                                <motion.div key={project.id} initial={{ opacity: 0, scale: 1.5 }} animate={{ opacity: 1, scale: 1, }} whileHover={{ scale: 1.1, boxShadow: project.shadowColor }} transition={{ ease: easeBackInOut }} className={`w-[45%] h-[45%] ml-2 mt-1 flex flex-col justify-around px-2 rounded-lg`} style={{ background: project.backgroundColor }} onMouseOver={() => setIsHovered(project.id)} onMouseOut={() => setIsHovered('')} >
                                                     <span className='text-gray-500'> {project.id} </span>
                                                     <div className='flex justify-between items-center'>
                                                         <div className={`h-[25px] w-[6px] rounded-3xl shadow-inner`} style={{ background: project.whatColor }} ></div>

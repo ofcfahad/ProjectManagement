@@ -49,8 +49,18 @@ function App() {
   const fetchUser = async () => {
     setLoading(true)
     if (session) {
-      const response = await axios.post(`/server/api/getUserData`, { token: session })
-      setUserData(response.data)
+      try {
+        const response = await axios.post(`/server/api/getUserData`, { token: session })
+        if (response.data != 'invalid token') {
+          setUserData(response.data)
+        } else {
+          Cookies.set('session', '')
+          setLoading(false)
+          console.error('Invalid Session Cookie')
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
     setLoading(false)
   }
@@ -65,8 +75,8 @@ function App() {
 
 
   // well logouts the user
-  const handleLogout = () => {
-    Cookies.set('session', '')
+  const handleLogout = async () => {
+    Cookies.remove('session')
     setUserData(undefined)
     setUserLoggedIn(false)
   }
@@ -75,7 +85,7 @@ function App() {
   return (
     <>
 
-      <div className={` h-[100vh] bg-[#f2f6fe] `}  >
+      <div className={` bg-[#f2f6fe] `}>
 
         {
           loading ?
@@ -87,9 +97,9 @@ function App() {
                 <UnSupportedScreen />
                 :
                 //MainApp
-                <motion.div className="w-full h-full flex fixed">
+                <motion.div className="w-full h-full flex">
                   <Navbar expand={expand} handleLogout={handleLogout} menuTransitionDuration={menuTransitionDuration} />
-                  <motion.div animate={{ width: '100%' }} transition={{ duration: menuTransitionDuration || 0.5, ease: "easeInOut" }} >
+                  <motion.div animate={{ width: '100%', marginLeft: expand ? 300 : 100 }} transition={{ duration: menuTransitionDuration || 0.5, ease: "easeInOut" }} >
                     <Routes>
                       <Route path="/" element={<Home expand={expand} setExpand={setExpand} toolTipisVisible={toolTipisVisible} userData={userData} />} />
                       <Route path="/profile" element={<Profile />} />
