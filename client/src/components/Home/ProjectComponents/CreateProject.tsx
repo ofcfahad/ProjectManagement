@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Fragment, useCallback, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useState, useContext } from 'react'
 //OtherComponents
 import { Dialog, Transition } from '@headlessui/react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -11,26 +11,19 @@ import { VscDebugAll } from 'react-icons/vsc'
 import { RxCross1 } from 'react-icons/rx'
 import { HiPlus } from 'react-icons/hi2'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
-import { Info } from '../Popups'
+import { Info } from '../../'
 import axios from 'axios'
 import Cookies from 'js-cookie'
+import { ThemeContext } from '../../Contexts/ThemeContext'
+import { themeColors } from '../../functions'
+import { Project } from '../../interfaces'
 
 export default function CreateProject(props: any) {
 
-    const userId = props.userId
-
-    interface Project {
-        title: string,
-        description: string,
-        accentColor: string,
-        tasks: Array<string>,
-        completedtasks: Array<string>,
-        progress: number,
-        Owner: string,
-        people: Array<object>,
-        attachments: number,
-        comments: number
-    }
+    const { userId } = props
+    const { theme } = useContext(ThemeContext)
+    const bgColor = themeColors(theme, 'background')
+    const color = themeColors(theme, 'main')
 
     const defaultProject: Project = {
         title: '',
@@ -39,10 +32,11 @@ export default function CreateProject(props: any) {
         tasks: [''],
         completedtasks: [''],
         progress: 0,
-        Owner: userId,
-        people: [{}],
+        owner: userId,
+        people: [''],
+        Dates: {},
         attachments: 0,
-        comments: 0
+        comments: 0,
     };
 
     const [isOpen, setIsOpen] = useState(false)
@@ -74,8 +68,9 @@ export default function CreateProject(props: any) {
 
     const handleDeleteTask = (value: string) => {
         const filteredTasksData = tasksData.filter((data) => data != value);
+        const filteredTasksDatax2 = completedTasks.filter((data) => data != value);
         setTasksData(filteredTasksData)
-        setCompletedTasks(filteredTasksData)
+        setCompletedTasks(filteredTasksDatax2)
     }
 
     const handleCompletedTask = () => {
@@ -85,8 +80,8 @@ export default function CreateProject(props: any) {
     }
 
     const reset = () => {
-        props.setLoadNewData(true)
         settitleInput('')
+        setProjectTitle('')
         setDescriptionInput('')
         setDescription('')
         setTasksInput('')
@@ -98,7 +93,6 @@ export default function CreateProject(props: any) {
         setHandleSubmit(false)
     }
 
-
     const session = Cookies.get('session')
 
     const handleProjectPost = useCallback(async () => {
@@ -108,7 +102,6 @@ export default function CreateProject(props: any) {
             } catch (error) {
                 console.log(`from handleProjectPost: ${error}`);
             }
-            reset()
         }
     }, [finalProject, reset])
 
@@ -124,7 +117,10 @@ export default function CreateProject(props: any) {
             accentColor: ((completedTasks.length / tasksData.length) * 100) === 100 ? '#e5af07' : ((completedTasks.length / tasksData.length) * 100) >= 10 ? '#fd68b3' : '#7249e0',
             tasks: tasksData,
             completedtasks: completedTasks,
-            Owner: userId,
+            owner: userId,
+            Dates: {
+                created: Date.now()
+            },
             people: [userId],
             attachments: 0,
             comments: 0
@@ -142,7 +138,8 @@ export default function CreateProject(props: any) {
     const closeModule = () => {
         setSecondIsOpen(false)
         setIsOpen(false)
-        setProjectTitle('')
+        props.setLoadNewData(true)
+        reset()
     }
 
     const createDummyProject = () => {
@@ -152,6 +149,10 @@ export default function CreateProject(props: any) {
             setCompletedTasks(optionSelected === 'completed' ? ['task1', 'task2', 'task3'] : optionSelected === 'ongoing' ? ['task1', 'task2'] : [])
     }
 
+    const handleDialogClose = () => {
+        reset()
+        setIsOpen(false)
+    }
 
     return (
         <>
@@ -169,7 +170,7 @@ export default function CreateProject(props: any) {
                             Create Project
                         </motion.button>
                         :
-                        <motion.button initial={{ scale: 0 }} animate={{ scale: 1 }} whileHover={{ scale: 1.1 }} transition={{ duration: 0 }} className={`bg-[#f5f5f5] backdrop-blur-sm rounded-full h-[25px] w-[25px] flex justify-center items-center  ${props.reference === 'started' ? 'hover:bg-selectedicon hover:shadow-selectedicon' : props.reference === 'ongoing' ? 'hover:bg-pink-400 hover:shadow-pink-400' : props.reference === 'completed' ? 'hover:bg-yellow-400 hover:shadow-yellow-400 ' : null} hover:shadow-sm backdrop-blur-sm transition-all ease-linear`} onClick={() => setIsOpen(true)} > <IconContext.Provider value={{ color: 'black', size: '15' }} > <HiPlus /> </IconContext.Provider> </motion.button>
+                        <motion.button initial={{ scale: 0 }} animate={{ scale: 1 }} whileHover={{ scale: 1.1 }} transition={{ duration: 0 }} className={` ${theme === 'dark' ? 'bg-[#4c5e81]' : 'bg-[#f5f5f5]'} backdrop-blur-sm rounded-full h-[25px] w-[25px] flex justify-center items-center  ${props.reference === 'started' ? 'hover:bg-selectedicon hover:shadow-selectedicon' : props.reference === 'ongoing' ? 'hover:bg-pink-400 hover:shadow-pink-400' : props.reference === 'completed' ? 'hover:bg-yellow-400 hover:shadow-yellow-400 ' : null} hover:shadow-sm backdrop-blur-sm transition-all ease-linear`} onClick={() => setIsOpen(true)} > <IconContext.Provider value={{ color: color, size: '15' }} > <HiPlus /> </IconContext.Provider> </motion.button>
                 }
             </div>
 
@@ -198,7 +199,7 @@ export default function CreateProject(props: any) {
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 span-left align-middle shadow-xl transition-all">
+                                <Dialog.Panel className={`w-full max-w-md transform overflow-hidden rounded-2xl ${bgColor} text-${color} p-6 span-left align-middle shadow-xl transition-all`}>
                                     <div className='flex justify-between items-center'>
                                         <Dialog.Title
                                             as='h2'
@@ -252,10 +253,12 @@ export default function CreateProject(props: any) {
                                             </Tooltip>
                                         </div>
 
-                                        {
-                                            description &&
-                                            <CustomBar content={description} reference={setDescription} setTitle={undefined} optionSelected={''} />
-                                        }
+                                        <div className='mt-3 mb-3'>
+                                            {
+                                                description &&
+                                                <CustomBar content={description} reference={setDescription} setTitle={undefined} optionSelected={optionSelected} />
+                                            }
+                                        </div>
 
                                         <div className="mt-2 flex justify-between">
                                             <Dialog.Title as='h6' className="span-lg font-medium leading-6 span-gray-900" >Tasks</Dialog.Title>
@@ -279,7 +282,7 @@ export default function CreateProject(props: any) {
                                                 {
                                                     tasksData.map((task) => (
                                                         <div key={task} className={` mr-4 py-2 `}>
-                                                            <TaskButton task={task} handleDeleteTask={handleDeleteTask} completedTasks={completedTasks} />
+                                                            <TaskButton task={task} handleDeleteTask={handleDeleteTask} completedTasks={completedTasks} theme={theme} />
                                                         </div>
                                                     ))
                                                 }
@@ -338,12 +341,12 @@ export default function CreateProject(props: any) {
 
                                     </div>
 
-                                    <div className="mt-4 flex justify-between items-center ">
+                                    <div className="mt-4 flex justify-between items-center " style={{ color: 'black' }} >
 
                                         <motion.button
                                             type="button"
                                             className="inline-flex justify-center items-center rounded-md border border-transparent bg-red-100 px-4 py-2 span-sm font-medium span-blue-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                            onClick={() => setIsOpen(false)}
+                                            onClick={handleDialogClose}
                                             whileHover={{ scale: 1.1 }}
                                             transition={{ duration: 0.3 }}
                                         >
@@ -399,9 +402,9 @@ function OptionButton({ label, value, selected, onChange, toolTip }: { label: st
     );
 }
 
-const TaskButton = ({ task, handleDeleteTask, completedTasks }: { task: string, handleDeleteTask: any, completedTasks: Array<string> }) => {
+const TaskButton = ({ task, handleDeleteTask, completedTasks, theme }: { task: string, handleDeleteTask: any, completedTasks: Array<string>, theme: string }) => {
     return (
-        <div className=' flex justify-between items-center rounded-full px-2 py-1 text-[10px] ' style={{ background: completedTasks.includes(task) ? 'rgba(0, 255, 0, 0.2)' : 'whitesmoke' }} >
+        <div className=' flex justify-between items-center rounded-full px-2 py-1 text-[10px] ' style={{ background: completedTasks.includes(task) ? 'rgba(0, 255, 0, 0.2)' : theme === 'dark' ? 'black' : 'whitesmoke' }} >
             <span>
                 {task}
             </span>
@@ -415,8 +418,8 @@ const TaskButton = ({ task, handleDeleteTask, completedTasks }: { task: string, 
 const CustomBar = ({ content, reference, optionSelected, setTitle }: { content: string, reference: any, optionSelected: string, setTitle: any }) => {
     return (
         <div className='flex flex-wrap'>
-            <div className='bg-yellow-700 px-3 py-2 rounded-full flex justify-between items-center ' style={{ background: reference != setTitle ? 'whitesmoke' : optionSelected === 'started' ? 'rgba(115,74,227,0.2)' : optionSelected === 'ongoing' ? 'rgba(241,112,179,0.2)' : 'rgba(231,176,7,0.2)' }} >
-                <span >
+            <div className='px-3 py-2 rounded-full flex justify-between items-center' style={{ background: reference != setTitle ? 'whitesmoke' : optionSelected === 'started' ? 'rgba(115,74,227,0.2)' : optionSelected === 'ongoing' ? 'rgba(241,112,179,0.2)' : 'rgba(231,176,7,0.2)', color: reference != setTitle ? 'black' : optionSelected === 'started' ? 'rgba(115,74,227,1)' : optionSelected === 'ongoing' ? 'rgba(241,112,179,1)' : 'rgba(231,176,7,1)' }} >
+                <span>
                     {content}
                 </span>
                 <button className='ml-2' onClick={() => reference('')} >

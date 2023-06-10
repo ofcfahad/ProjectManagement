@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useContext } from "react";
 import { Divider } from 'antd'
 import { IconContext } from 'react-icons'
+import { ThemeContext } from '../../Contexts/ThemeContext'
 
 const NotificationModule = ({ notificationData, height, icon, actionIcon, iconBackgroundColor, title, description }: { notificationData: any, height: number, icon: any, actionIcon: any, iconBackgroundColor: string, title: string, description: string }) => {
+
+    const { theme } = useContext(ThemeContext)
 
     const notificationfilteredData = notificationData.map((notification: any) => ({
         icon: notification.icon || icon,
@@ -43,7 +47,7 @@ const NotificationModule = ({ notificationData, height, icon, actionIcon, iconBa
                                 </div>
                                 <div>
                                     <button>
-                                        <IconContext.Provider value={{ color: 'black', size: '18' }}>
+                                        <IconContext.Provider value={{ color: theme === 'dark' ? 'white' : 'black', size: '18' }}>
                                             {notification.actionIcon}
                                         </IconContext.Provider>
                                     </button>

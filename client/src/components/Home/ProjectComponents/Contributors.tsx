@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Popover } from 'antd'
-import { profilePicture } from '../../assets'
+import { profilePicture } from '../../../assets'
 
 
 export default function Contributors({ contributorsData, linkDisabled, avatarSize, avatarShape, bordered, borderColor, borderSize, alignover, toLeft, toTop, onHoverMargin, row }: { contributorsData: any, linkDisabled: boolean, avatarSize: number, avatarShape: string, bordered: boolean, borderColor: string, borderSize: number, alignover: boolean, toLeft: number, toTop: number, onHoverMargin: number, row: boolean }) {

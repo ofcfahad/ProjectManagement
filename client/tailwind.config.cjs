@@ -9,6 +9,7 @@ module.exports = {
       colors: {
         sidebarcolor: "#1e0059",
         selectedicon: "#734ae3",
+        dark: "#2C3539",
         logoyellow: "#e0a72f",
         logoblue: "#316bb4",
         logopink: "#ba7aae"

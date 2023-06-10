@@ -48,7 +48,7 @@ const Navbar = ({ expand, menuTransitionDuration, handleLogout }: { expand: bool
 
 
     return (
-        <motion.div initial={{ width: 0 }} animate={{ width: expand ? 300 : 100 }} transition={{ duration: menuTransitionDuration || 0.5 }} className={`bg-sidebarcolor h-full w-full fixed font-josefin`} >
+        <motion.div initial={{ width: 0 }} animate={{ width: expand ? 200 : 100 }} transition={{ duration: menuTransitionDuration || 0.5 }} className={`bg-sidebarcolor h-full w-full fixed font-josefin`} >
 
             <div className='w-full h-[10%] flex justify-center items-center'>
                 <motion.div initial={{ width: 0 }} animate={{ width: expand ? 60 : 50 }} >

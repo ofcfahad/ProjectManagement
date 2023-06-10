@@ -1,9 +1,15 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { ThemeContext } from '../../Contexts/ThemeContext';
+import { themeColors } from '../../functions';
 
 function ProgressBar({ progress, backgroundColor, borderRadius, trailColor, inprogressColor, padding, /* waitingColor, completedColor, inprogress, completed, waiting */ }: { progress: number, backgroundColor: string, borderRadius: number, trailColor: string, inprogressColor: string, padding: number }) {
   const [animatedProgress, setAnimatedProgress] = useState(0);
+
+  const { theme } = useContext(ThemeContext)
+  const color = themeColors(theme, 'main')
 
   useEffect(() => {
     // Animate progress from 0 to the desired value
@@ -48,7 +54,7 @@ function ProgressBar({ progress, backgroundColor, borderRadius, trailColor, inpr
               transformOrigin: 'center center',
             },
             text: {
-              fill: 'black',
+              fill: color,
               fontSize: '16px',
               fontFamily: 'alkatra',
             },

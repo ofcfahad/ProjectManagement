@@ -5,8 +5,10 @@ import {
   Login,
   Register,
   EmailVerification,
-  EmailAuthentication
-} from '../components'
+  EmailAuthentication,
+  ForgotPassword,
+  ResetPassword
+} from '../components/Auth'
 import LoggingLoading from '../components/LoggingLoading'
 import { capitalize } from '../components/functions'
 //OtherComponents
@@ -18,8 +20,6 @@ import { appHomePage, backgroundImage } from '../assets'
 import UseAnimations from 'react-useanimations'
 import arrow from 'react-useanimations/lib/arrowUp'
 import queryString from 'query-string'
-import ForgotPassword from '../components/Login Components/ForgotPassword'
-import ResetPassword from '../components/Login Components/ResetPassword'
 
 const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
 
@@ -43,12 +43,10 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
     } else null
   }
 
-
-
   const handleSocialLogin = async (ref: string, setLoading: any, setReference: any) => {
     await setReference(capitalize(ref));
     setLoading(true)
-    
+
     const authWindow = window.open(`/server/api/auth/${ref}`, '_blank')
     window.addEventListener('message', event => {
       if (event.origin === 'http://localhost:5000' && event.data.type === `${ref}-auth-success`) {

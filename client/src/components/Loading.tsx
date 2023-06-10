@@ -1,9 +1,13 @@
+import { useContext } from 'react'
 import { motion } from 'framer-motion'
 import UseAnimations from 'react-useanimations'
 import loading2 from 'react-useanimations/lib/loading2'
+import { ThemeContext } from './Contexts/ThemeContext'
 
 
 const Loading = ({ haveBackgroundColor, backgroundColor }: { haveBackgroundColor: boolean, backgroundColor: string }) => {
+
+    const { theme } = useContext(ThemeContext)
 
     return (
         <>
@@ -12,7 +16,7 @@ const Loading = ({ haveBackgroundColor, backgroundColor }: { haveBackgroundColor
             }
             }>
                 <motion.div className='flex justify-center items-center h-full w-full' >
-                    <UseAnimations animation={loading2} size={40} />
+                    <UseAnimations animation={loading2} size={40} fillColor={theme === 'dark' ? 'white' : 'black'} />
                 </motion.div>
 
             </motion.div >

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react'
 import { Tab } from '@headlessui/react'
-import { convertHexToRGBA } from '../functions'
+import { convertHexToRGBA } from '../../functions'
 import UseAnimations from 'react-useanimations'
 import radioButton from 'react-useanimations/lib/radioButton'
 

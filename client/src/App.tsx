@@ -4,22 +4,14 @@ import { Routes, Route } from 'react-router-dom'
 //AppComponents
 import { Navbar, UnSupportedScreen, LoggingLoading } from './components'
 import { Home, LoginPage, Messages, Profile, Settings, Tasks } from './Pages'
+import { ThemeContextProvider, UserDataContextProvider, NavbarContextProvider, UserSettingsContextProvider } from './components/Contexts'
 //OtherComponents
 import { motion } from "framer-motion"
 import axios from "axios"
 import Cookies from 'js-cookie'
+import { User } from "./components/interfaces"
 
 function App() {
-
-  //interface for User
-  interface User {
-    _id: string,
-    userName: string,
-    fullName: string,
-    userEmail: string,
-    userProfilePicture: string,
-    verified: boolean
-  }
 
   const [userData, setUserData] = useState<User>()
   const [userLoggedIn, setUserLoggedIn] = useState(false)
@@ -27,8 +19,11 @@ function App() {
   const [loading, setLoading] = useState(false) // well Loading used mostly while fetching Data
   const [width, setWidth] = useState(window.innerWidth) // debugging
   //const [guestLoggedIn, setGuestLoggedIn] = useState(true) // for guests
+  const [userSettings, setUserSettings] = useState({
+    theme: 'light',
+    toolTipisVisible: false
+  })
 
-  const toolTipisVisible = false
   const menuTransitionDuration = 0
   // get's width. debugging
   useEffect(() => {
@@ -81,11 +76,21 @@ function App() {
     setUserLoggedIn(false)
   }
 
+  const handleThemeChange = () => {
+    if (userSettings.theme === 'dark') {
+      return setUserSettings({ ...userSettings, theme: 'light' })
+    }
+    setUserSettings({ ...userSettings, theme: 'dark' })
+  }
+
+  const handleNavbarExpansion = () => {
+    setExpand(prevExpand => !prevExpand)
+  }
 
   return (
     <>
 
-      <div className={` bg-[#f2f6fe] `}>
+      <div className={` h-[100vh] ${userSettings.theme === 'dark' ? 'bg-[#4c5e81]' : 'bg-[#f2f6fe]'} `}>
 
         {
           loading ?
@@ -99,14 +104,22 @@ function App() {
                 //MainApp
                 <motion.div className="w-full h-full flex">
                   <Navbar expand={expand} handleLogout={handleLogout} menuTransitionDuration={menuTransitionDuration} />
-                  <motion.div animate={{ width: '100%', marginLeft: expand ? 300 : 100 }} transition={{ duration: menuTransitionDuration || 0.5, ease: "easeInOut" }} >
-                    <Routes>
-                      <Route path="/" element={<Home expand={expand} setExpand={setExpand} toolTipisVisible={toolTipisVisible} userData={userData} />} />
-                      <Route path="/profile" element={<Profile />} />
-                      <Route path="/messages" element={<Messages />} />
-                      <Route path="/tasks" element={<Tasks />} />
-                      <Route path="/settings" element={<Settings />} />
-                    </Routes>
+                  <motion.div animate={{ width: '100%', marginLeft: expand ? 200 : 100 }} transition={{ duration: menuTransitionDuration || 0.5, ease: "easeInOut" }} >
+                    <ThemeContextProvider theme={userSettings.theme} toggleTheme={handleThemeChange}>
+                      <UserDataContextProvider userData={userData}>
+                        <UserSettingsContextProvider theme={userSettings.theme} toolTipisVisible={userSettings.toolTipisVisible}>
+                          <NavbarContextProvider expand={expand} toggleExpand={handleNavbarExpansion}>
+                            <Routes>
+                              <Route path="/" element={<Home />} />
+                              <Route path="/profile" element={<Profile />} />
+                              <Route path="/messages" element={<Messages />} />
+                              <Route path="/tasks" element={<Tasks />} />
+                              <Route path="/settings" element={<Settings />} />
+                            </Routes>
+                          </NavbarContextProvider>
+                        </UserSettingsContextProvider>
+                      </UserDataContextProvider>
+                    </ThemeContextProvider>
                   </motion.div>
                 </motion.div>
         }

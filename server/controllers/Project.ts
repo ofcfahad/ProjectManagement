@@ -7,7 +7,7 @@ import validator from 'validator'
 async function getAllProjects(req: Request, res: Response) {
     try {
         const userId = req.body.userId
-        const projects = await Project.find({ Owner: userId })
+        const projects = await Project.find({ owner: userId })
         res.json(projects);
     }
     catch (err) {
@@ -20,7 +20,6 @@ async function getAllProjects(req: Request, res: Response) {
 async function getSearchedProjects(req: Request, res: Response) {
     try {
         const { userId, searchQuery } = req.body
-        console.log(userId, searchQuery);
 
         const sanitizedSearchQuery = sanitizeHtml(searchQuery).trim();
 
@@ -32,7 +31,7 @@ async function getSearchedProjects(req: Request, res: Response) {
                 $regex: sanitizedSearchQuery,
                 $options: 'i'
             },
-            Owner: userId
+            owner: userId
         };
         const projects = await Project.find(query)
         res.status(200).json(projects);
@@ -46,6 +45,7 @@ async function getSearchedProjects(req: Request, res: Response) {
 //Create new Project
 function createProject(req: Request, res: Response) {
     const projectsData = req.body.finalProject
+    
     const newProject = new Project(projectsData)
     newProject.save()
         .then(() => res.status(200).send('Project Created successfully'))
@@ -78,22 +78,3 @@ export {
     createProject,
     deleteProject
 }
-
-
-//Later
-// app.get('/api/getPassword/:user', async (req, res) => {
-//     const userName = req.params.user;
-
-//     try {
-//         const user = await User.findOne({ userName: userName });
-//         if (!user) {
-//             res.status(404).json({ error: `User ${userName} not found` })
-//             return;
-//         }
-//         const password = user.userPassword
-//         res.json({ password })
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: 'Internal server error' });
-//     }
-// })

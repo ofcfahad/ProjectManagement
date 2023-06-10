@@ -1,18 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useContext } from 'react';
 //AppComponents
-import { Info } from '../Popups'
+import { Info } from '../../Popups'
 //OtherComponents
 import { Menu, Transition } from '@headlessui/react'
 //Icons
 import { IconContext } from "react-icons";
 import { RxDotsHorizontal, } from 'react-icons/rx';
 import { CiTrash } from 'react-icons/ci';
+import { ThemeContext } from '../../Contexts/ThemeContext';
 
 
 export default function OptionsModal(props: any) {
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
+
+    const { theme } = useContext(ThemeContext)
 
     const deleteProject = () => {
         setOpenDeleteModal(true)
@@ -56,7 +59,7 @@ export default function OptionsModal(props: any) {
                         </button>}
 
                             isOpen={openDeleteModal}
-                            onClose={closeDeleteModule} title={<span>Project <b> {props.projectTitle} </b> Deleted </span>} description={''} />
+                            onClose={closeDeleteModule} title={<div className={` ${theme === 'dark' ? 'text-white' : 'text-black'} `} >Project <b> {props.projectTitle} </b> Deleted </div>} description={''} />
                     </div>
 
                 </Menu.Items>

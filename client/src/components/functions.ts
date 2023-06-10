@@ -26,8 +26,22 @@ function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function themeColors(theme: string, ref: string) {
+  if (theme === 'dark') {
+    if (ref === 'background') {
+      return 'bg-dark'
+    }
+    return 'white'
+  }
+  if (ref === 'background') {
+    return 'bg-white'
+  }
+  return 'black'
+}
+
 export {
   protect_email,
   convertHexToRGBA,
-  capitalize
+  capitalize,
+  themeColors
 }

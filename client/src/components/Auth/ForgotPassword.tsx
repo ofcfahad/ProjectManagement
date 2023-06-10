@@ -5,10 +5,10 @@ import { motion } from "framer-motion"
 import axios from 'axios'
 //Icons
 import { IconContext } from "react-icons";
-import { ArrowLongRightIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowLongRightIcon } from '@heroicons/react/24/outline';
 import 'react-tooltip/dist/react-tooltip.css'
 import { MdOutlineAlternateEmail } from 'react-icons/md';
-import { Info } from '..';
+import { Info } from '../';
 
 
 const ForgotPassword = (props: any) => {
@@ -36,8 +36,9 @@ const ForgotPassword = (props: any) => {
 
 
     return (
-        <motion.div className='flex flex-col justify-between items-center bg-white/30 backdrop-blur h-[280px] px-4 rounded-3xl font-josefin '>
-            <div className='mt-10'>
+        <motion.div className='flex flex-col bg-white/30 backdrop-blur h-[280px] px-4 rounded-3xl font-josefin '>
+            <ArrowLeftIcon className='w-5 text-black cursor-pointer mt-2' onClick={handleCloseDialogClick} />
+            <div className='mt-4'>
                 <div className='flex justify-center items-center'>
                     <span className='text-[20px]'>
                         Forgot Password

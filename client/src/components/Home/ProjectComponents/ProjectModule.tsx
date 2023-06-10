@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, Fragment, useEffect } from 'react'
+import { useState, Fragment, useEffect, useContext } from 'react'
+
 //AppComponents
 import OptionsModal from './OptionsModal'
 import Contributors from './Contributors'
@@ -17,11 +18,13 @@ import Cookies from 'js-cookie'
 import axios from 'axios'
 import { RxCross1 } from 'react-icons/rx'
 import { CiEdit } from 'react-icons/ci'
-import { convertHexToRGBA } from '../functions'
+import { convertHexToRGBA, themeColors } from '../../functions'
+import UseAnimations from 'react-useanimations'
+import radioButton from 'react-useanimations/lib/radioButton'
+import { ThemeContext } from '../../Contexts/ThemeContext'
 
 
-
-const ProjectModule = ({ height, width, project, setLoadNewData, isHovered }: { height: number, width: number, project: any, setLoadNewData: any, isHovered: any }) => {
+const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, selectionMode }: { height: number, width: number, project: any, setLoadNewData: any, isHovered: any, selectionMode: boolean }) => {
     const [isOpen, setIsOpen] = useState(false)
     const [peopleData, setPeopleData] = useState<Array<object>>()
     const [editMode, setEditMode] = useState(false)
@@ -30,6 +33,10 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered }: { 
     const { _id, title, description, accentColor, tasks, completedtasks, progress, Owner, people, attachments, comments } = project
     const [titleInputController, setTitleInputController] = useState(title)
     const [descriptionInputController, setDescriptionInputController] = useState(description)
+
+    const { theme } = useContext(ThemeContext)
+    const bgColor = themeColors(theme, 'background')
+    const color = themeColors(theme, 'main')
 
     const InputStyle = `border-2 rounded-lg p-1 w-auto`
 
@@ -85,7 +92,7 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered }: { 
     return (
         <>
             <div className="flex items-center justify-center" >
-                <Project setLoadNewData={setLoadNewData} deleteProject={deleteProject} openModal={openModal} title={title} description={description} accentColor={accentColor} progress={progress} people={peopleData} comments={comments} attachments={attachments} height={height} width={width} isHovered={isHovered} />
+                <Project setLoadNewData={setLoadNewData} deleteProject={deleteProject} openModal={openModal} title={title} description={description} accentColor={accentColor} progress={progress} people={peopleData} comments={comments} attachments={attachments} height={height} width={width} isHovered={isHovered} selectionMode={selectionMode} color={color} bgColor={bgColor} />
             </div>
 
             <Transition appear show={isOpen} as={Fragment}>
@@ -113,10 +120,10 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered }: { 
                                 leaveFrom="opacity-100 scale-100 translate-y-0"
                                 leaveTo="opacity-0 scale-95 translate-y-full"
                             >
-                                <Dialog.Panel className="w-full max-w-[40vw] min-h-[80vh] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                <Dialog.Panel className={`w-full max-w-[40vw] min-h-[80vh] transform overflow-hidden rounded-2xl ${bgColor} p-6 text-left align-middle shadow-xl transition-all`}>
                                     <Dialog.Title
                                         as="h3"
-                                        className="text-lg font-medium leading-6 text-gray-900 flex flex-row justify-between items-center w-full"
+                                        className="text-lg font-medium leading-6 flex flex-row justify-between items-center w-full"
                                         style={{ color: accentColor }}
                                     >
                                         {editMode ?
@@ -141,7 +148,7 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered }: { 
                                         </div>
                                     </Dialog.Title>
 
-                                    <Dialog.Description className='text-black'>
+                                    <Dialog.Description className={`text-${color}`}>
                                         {editMode ?
                                             <span>
                                                 <input className={InputStyle} type='text' value={descriptionInputController} onChange={(event) => setDescriptionInputController(event.target.value)} />
@@ -166,13 +173,17 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered }: { 
 }
 
 
-const Project = ({ height, width, title, description, accentColor, progress, people, comments, attachments, setLoadNewData, deleteProject, openModal, isHovered }: { height: number, width: number, title: string, description: string, accentColor: string, progress: number, people: any, comments: any, attachments: any, setLoadNewData: any, deleteProject: any, openModal: any, isHovered: string }) => {
+const Project = ({ height, width, title, description, accentColor, progress, people, comments, attachments, setLoadNewData, deleteProject, openModal, isHovered, color, bgColor, selectionMode }: { height: number, width: number, title: string, description: string, accentColor: string, progress: number, people: any, comments: any, attachments: any, setLoadNewData: any, deleteProject: any, openModal: any, isHovered: string, color: string, bgColor: string, selectionMode: boolean }) => {
 
     return (
-        <motion.div className={`bg-white rounded-3xl p-3 shadow-md hover:shadow-lg`} animate={{ scale: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? 1.06 : isHovered ? 0.8 : 1, opacity: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? 1.06 : isHovered ? 0.8 : 1 }} style={{ height: height || 250, width: width || 250, backdropFilter: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? '' : isHovered ? 'blur(100px)' : '', }}>
+        <motion.div className={`${bgColor} rounded-3xl p-3 shadow-md hover:shadow-lg`} animate={{ scale: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? 1.06 : isHovered ? 0.8 : 1, opacity: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? 1.06 : isHovered ? 0.8 : 1 }} style={{ height: height || 250, width: width || 250, backdropFilter: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? '' : isHovered ? 'blur(100px)' : '', }}>
             <div className='flex justify-between items-center w-full h-[20%]'>
                 <div className={`rounded-full w-auto px-3 py-2 flex justify-center items-center cursor-pointer text-sm`} style={{ color: accentColor, backgroundColor: accentColor && convertHexToRGBA(accentColor, 0.2) || 'whitesmoke', }} onClick={openModal} > {title} </div>
-                <OptionsModal deleteProject={deleteProject} setLoadNewData={setLoadNewData} projectTitle={title} />
+                {selectionMode ?
+                    <UseAnimations animation={radioButton} strokeColor={color} />
+                    :
+                    <OptionsModal deleteProject={deleteProject} setLoadNewData={setLoadNewData} projectTitle={title} />
+                }
             </div>
             <div className=' h-[30%] flex flex-col'>
                 <span className='text-left h-full w-full flex items-center '> {description} </span>
@@ -196,13 +207,13 @@ const Project = ({ height, width, title, description, accentColor, progress, peo
                     }
                 </div>
                 <div className=' inline-flex justify-between items-start py-2 w-[30%] h-full text-xs'>
-                    <IconContext.Provider value={{ color: 'black', size: '15' }}>
+                    <IconContext.Provider value={{ color: color, size: '15' }}>
                         <button className='inline-flex justify-center items-center '>
                             <GiPaperClip />
                             <span> {attachments} </span>
                         </button>
                         <button className='inline-flex justify-center items-center'>
-                            <ChatBubbleOvalLeftEllipsisIcon className='w-4 text-black' />
+                            <ChatBubbleOvalLeftEllipsisIcon className={`w-4 `} style={{ color: color }} />
                             <span> {comments} </span>
                         </button>
                     </IconContext.Provider>

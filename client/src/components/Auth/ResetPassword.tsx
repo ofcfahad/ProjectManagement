@@ -7,7 +7,7 @@ import axios from 'axios'
 import { IconContext } from "react-icons";
 import { ArrowLongRightIcon } from '@heroicons/react/24/outline';
 import 'react-tooltip/dist/react-tooltip.css'
-import { Info } from '..';
+import { Info } from '../';
 import { CiLock, CiUnlock } from 'react-icons/ci';
 
 

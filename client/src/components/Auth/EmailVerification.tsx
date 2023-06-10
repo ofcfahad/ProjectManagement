@@ -33,7 +33,7 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
     const [emailIsSentAgain, setEmailIsSentAgain] = useState(0)
     const [emailSendLoading, setEmailSendLoading] = useState(false)
     const [ishovering, setIsHovering] = useState('')
-    const [otpInputisShown, setOTPInputisShown] = useState(true)
+    const [otpInputisShown, setOTPInputisShown] = useState(false)
     const [showNotToVerifyAlert, setShowNotToVerifyAlert] = useState(false)
 
 
@@ -63,8 +63,7 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
         if (isEmailValid) {
             try {
                 const response = await axios.post(`/server/api/sendOTP`, { userEmail: userEmailInputController })
-                const status = response.status
-                if (status === 200) {
+                if (response.status === 200) {
                     setUserEmail(userEmailInputController)
                     setEmailSent(true)
                     setOTPInputisShown(true)
@@ -169,29 +168,27 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
                     }
                     <form className='flex flex-col h-[80%]' onSubmit={sendVerificationEmail} >
 
-                        <div>
-                            <motion.div className={`mt-4 flex items-center px-2 border-2 border-transparent rounded-none ${emailAlreadyExists && userEmailInputController ? 'border-b-red-500' : userEmailInputController != '' ? 'border-b-blue-600' : inputIsFocused === 'email' ? 'bg-transparent border-b-selectedicon' : 'bg-white rounded-[8px]'}`} animate={{ borderRadius: userEmailInputController != '' || inputIsFocused === 'email' ? 0 : 10 }} data-tooltip-id='emailinput' >
-                                <div>
-                                    <MdOutlineAlternateEmail className='w-6' style={{ color: emailAlreadyExists && userEmailInputController ? 'red' : userEmailInputController ? '#2563eb' : inputIsFocused === 'email' ? '#734ae3' : 'black' }} />
-                                </div>
-                                <div className='ml-5'>
-                                    <input type={'email'} className={`px-2 py-2 focus:outline-none ${emailAlreadyExists ? 'text-red-500' : 'text-black'} `} style={{ background: 'transparent' }} placeholder='email' autoComplete='off' value={userEmailInputController} onChange={(event) => setUserEmailInputController(event?.target?.value ?? '')} onFocus={() => setInputIsFocused('email')} onBlur={() => setInputIsFocused('')} />
-                                </div>
-                            </motion.div>
-                            <Tooltip id='emailinput' content={emailAlreadyExists && userEmailInputController ? 'Email Already Exists' : ''} style={{ background: emailAlreadyExists ? 'red' : '' }} />
-
-                            <div className='flex justify-center items-center mt-4'>
-                                <motion.button type='submit' animate={{ width: ishovering === 'sendEmail' && !emailSent && !wrongOTP ? 170 : 160 }} disabled={buttonDisabled === 'send' || emailIsSentAgain >= 2} className={`btn btn-primary !flex !justify-center !items-center !bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-emerald-300 hover:to-green-600 backdrop-blur !border-none !text-white !text-sm `} style={{ transition: 'background-color 1s ease' }} onMouseOver={() => setIsHovering('sendEmail')} onMouseOut={() => setIsHovering('')} >
-                                    {emailSendLoading ?
-                                        <UseAnimations animation={infinity} className='' />
-                                        :
-                                        emailSent || wrongOTP ?
-                                            'Resend'
-                                            :
-                                            'Send Verification Pin'
-                                    }
-                                </motion.button>
+                        <motion.div className={`mt-4 flex items-center px-2 border-2 border-transparent rounded-none ${emailAlreadyExists && userEmailInputController ? 'border-b-red-500' : userEmailInputController != '' ? 'border-b-blue-600' : inputIsFocused === 'email' ? 'bg-transparent border-b-selectedicon' : 'bg-white rounded-[8px]'}`} animate={{ borderRadius: userEmailInputController != '' || inputIsFocused === 'email' ? 0 : 10 }} data-tooltip-id='emailinput' >
+                            <div>
+                                <MdOutlineAlternateEmail className='w-6' style={{ color: emailAlreadyExists && userEmailInputController ? 'red' : userEmailInputController ? '#2563eb' : inputIsFocused === 'email' ? '#734ae3' : 'black' }} />
                             </div>
+                            <div className='ml-5'>
+                                <input type={'email'} className={`px-2 py-2 focus:outline-none ${emailAlreadyExists ? 'text-red-500' : 'text-black'} `} style={{ background: 'transparent' }} placeholder='email' autoComplete='off' value={userEmailInputController} onChange={(event) => setUserEmailInputController(event?.target?.value ?? '')} onFocus={() => setInputIsFocused('email')} onBlur={() => setInputIsFocused('')} />
+                            </div>
+                        </motion.div>
+                        <Tooltip id='emailinput' content={emailAlreadyExists && userEmailInputController ? 'Email Already Exists' : ''} style={{ background: emailAlreadyExists ? 'red' : '' }} />
+
+                        <div className='flex justify-center items-center mt-4'>
+                            <motion.button type='submit' animate={{ width: ishovering === 'sendEmail' && !emailSent && !wrongOTP ? 170 : 160 }} disabled={buttonDisabled === 'send' || emailIsSentAgain >= 2} className={`btn btn-primary !flex !justify-center !items-center !bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-emerald-300 hover:to-green-600 backdrop-blur !border-none !text-white !text-sm `} style={{ transition: 'background-color 1s ease' }} onMouseOver={() => setIsHovering('sendEmail')} onMouseOut={() => setIsHovering('')} >
+                                {emailSendLoading ?
+                                    <UseAnimations animation={infinity} className='' />
+                                    :
+                                    emailSent || wrongOTP ?
+                                        'Resend'
+                                        :
+                                        'Send Verification Pin'
+                                }
+                            </motion.button>
                         </div>
                     </form>
                 </motion.div>

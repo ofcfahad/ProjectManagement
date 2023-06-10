@@ -15,7 +15,7 @@ import UseAnimations from 'react-useanimations';
 import infinity from 'react-useanimations/lib/infinity'
 
 
-const EmailAuthentication = ({ userEmail, userPassword, handleGoBackClick, setUserLoggedIn }: {userName: string, userEmail: string, userPassword: string, handleGoBackClick: any, setUserLoggedIn: any } ) => {
+const EmailAuthentication = ({ userEmail, userPassword, handleGoBackClick, setUserLoggedIn }: { userName: string, userEmail: string, userPassword: string, handleGoBackClick: any, setUserLoggedIn: any }) => {
 
     const [emailSent, setEmailSent] = useState(false)
     const [otp, setOtp] = useState('');
@@ -98,7 +98,12 @@ const EmailAuthentication = ({ userEmail, userPassword, handleGoBackClick, setUs
                                 </span>
                                 :
                                 <span>
-                                    We would send verification otp to your email <b>{userEmail && protect_email(userEmail)}</b>
+                                    {
+                                        userEmail &&
+                                        <span>
+                                            We would send verification otp to your email <b>{protect_email(userEmail)}</b>
+                                        </span>
+                                    }
                                 </span>
                     }
 
