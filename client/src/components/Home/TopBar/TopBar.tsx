@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { Listbox } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
-import { DatePicker } from 'antd'
 import { IconContext } from 'react-icons'
 import { CiSun, CiDark, CiCalendar } from 'react-icons/ci'
 import { RxDividerVertical } from 'react-icons/rx'
@@ -18,18 +17,12 @@ import SearchBar from './SearchBar'
 
 const TopBar = (props: any) => {
 
-    const [selectedDate, setSelectedDate] = useState(null);
-
     const { searchContent, setsearchContent, setFetchingData, setLoadNewData, setNoSearchedProjects, setSearchedProjectsData, notificationBar, setnotificationBar, notificationData } = props
     const { theme, toggleTheme } = useContext(ThemeContext)
     const { expand, toggleExpand } = useContext(NavbarContext)
     const { toolTipisVisible } = useContext(UserSettingsContext)
     const userData = useContext(UserDataContext)
     const color = themeColors(theme, 'main')
-
-    const handleDateChange = (date: any) => {
-        setSelectedDate(date);
-    };
 
     return (
         <div className='h-[10%] flex flex-col justify-center items-center'>
@@ -51,7 +44,7 @@ const TopBar = (props: any) => {
                         <SearchBar searchContent={searchContent} setsearchContent={setsearchContent} setFetchingData={setFetchingData} setLoadNewData={setLoadNewData} setNoSearchedProjects={setNoSearchedProjects} setSearchedProjectsData={setSearchedProjectsData} />
                     </div>
                     {/* RIGHT */}
-                    <div className={`h-full flex w-[20%] bg-green-500`}>
+                    <div className={`h-full flex xxl:w-[18%] xl:w-[20%] w-[30%]`}>
                         {/* OTHERS */}
                         <div className='flex justify-between items-center w-[40%]'>
                             <IconContext.Provider value={{ size: '25', color: color }}>
@@ -81,22 +74,10 @@ const TopBar = (props: any) => {
                                     </Tooltip>
                                 }
                                 {/* CALENDER */}
-                                <div data-tooltip-id='calenderIconToolTip' >
-                                    <DatePicker
-                                        onChange={handleDateChange}
-                                        value={selectedDate}
-                                        className=''
-                                        style={{ backgroundColor: 'red', width: 40, cursor: 'pointer' }}
-                                        allowClear={false}
-                                        inputReadOnly={true}
-                                        placeholder={''}
-                                        bordered={false}
-                                        suffixIcon={
-                                            <IconContext.Provider value={{ color: color, size: '23' }}>
-                                                <CiCalendar />
-                                            </IconContext.Provider>
-                                        }
-                                    />
+                                <div data-tooltip-id='calenderIconToolTip' className='cursor-pointer' >
+                                    <IconContext.Provider value={{ color: color, size: '23' }}>
+                                        <CiCalendar />
+                                    </IconContext.Provider>
                                 </div>
                                 {
                                     toolTipisVisible &&
@@ -107,13 +88,13 @@ const TopBar = (props: any) => {
                             </IconContext.Provider>
                         </div>
                         {/* SEPERATOR */}
-                        <div className='py-2'>
+                        <div className='w-[10%] flex justify-center items-center'>
                             <IconContext.Provider value={{ color: 'gray', size: '30' }}>
                                 <RxDividerVertical />
                             </IconContext.Provider>
                         </div>
                         {/* PROFILE */}
-                        <div className="w-[50%] flex justify-center items-center select-none" data-tooltip-id='profileToolTip' >
+                        <div className="w-[50%] flex justify-end items-center select-none" data-tooltip-id='profileToolTip' >
                             <Listbox value={userData?.userName}>
                                 <div>
                                     <Listbox.Button className="flex justify-around relative w-full items-center cursor-default rounded-lg bg-transparent hover:shadow-md focus:outline-none">

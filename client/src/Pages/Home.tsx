@@ -108,7 +108,7 @@ const Home = () => {
                     {/* RIGHTBARS */}
                     <motion.div initial={{ opacity: 0, }} animate={{ opacity: width >= 1060 ? 1 : 0, height: 750 }} transition={{ duration: 1 }} className={`hidden md:flex flex-col xxl:w-[15%] xxml:w-[20%] damnit:w-[20%] md:w-[25%] w-[20%] mr-[25px] rounded-3xl select-none`}>
                         {/* STATSIG */}
-                        <StatsBar notificationBar={notificationBar} bgColor={bgColor} projectsDataLength={projectsData.length} ongoingProjects={ongoingProjects} projectsInfo={projectsInfo} setIsHovered={setIsHovered} />
+                        <StatsBar notificationBar={notificationBar} bgColor={bgColor} projectsDataLength={projectsData.length} ongoingProjects={ongoingProjects} projectsInfo={projectsInfo} isHovered={isHovered} setIsHovered={setIsHovered} />
                         {/* NOTIFICATIONBAR */}
                         <NotificationBar notificationBar={notificationBar} setnotificationBar={setnotificationBar} notificationData={notificationData} color={color} bgColor={bgColor} />
                     </motion.div>

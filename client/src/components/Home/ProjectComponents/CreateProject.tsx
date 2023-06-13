@@ -121,7 +121,7 @@ export default function CreateProject(props: any) {
             Dates: {
                 created: Date.now()
             },
-            people: [userId],
+            people: [],
             attachments: 0,
             comments: 0
         }
@@ -162,7 +162,8 @@ export default function CreateProject(props: any) {
                         <motion.button
                             type="button"
                             onClick={() => setIsOpen(true)}
-                            className="rounded-full bg-selectedicon px-3 py-2 span-white focus:outline-none "
+                            className={`rounded-full ${ props.selectionMode ? 'bg-selectedicon/75' : 'bg-selectedicon'} px-3 py-2 span-white focus:outline-none`}
+                            disabled={props.selectionMode}
                             initial={{ scale: 0.5 }}
                             animate={{ scale: 1 }}
                             whileTap={{ scale: 0.95 }}
@@ -372,7 +373,7 @@ export default function CreateProject(props: any) {
                                                 </span>
                                                 <ArrowRightIcon className='w-4 ml-2' />
                                             </motion.button>
-                                        } title={<span>Project <b>{projectTitle}</b> Created </span>} isOpen={secondIsOpen} onClose={closeModule} description={''} />
+                                        } title={<div style={{ color: color }} >Project <b>{projectTitle}</b> Created </div>} isOpen={secondIsOpen} onClose={closeModule} description={''} />
 
                                     </div>
                                 </Dialog.Panel>

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Dialog, Transition } from '@headlessui/react'
+import { Dialog, Disclosure, Transition } from '@headlessui/react'
 import { motion } from 'framer-motion'
 import { Fragment, useContext } from 'react'
 import { RxCross1 } from 'react-icons/rx'
 import { ThemeContext } from './Contexts/ThemeContext'
+import { ChevronUpIcon } from '@heroicons/react/24/outline'
 
 export function Info({ button, title, isOpen, onClose, description }: { button: any, title: any, isOpen: boolean, onClose: any, description: string }) {
 
@@ -40,7 +41,7 @@ export function Info({ button, title, isOpen, onClose, description }: { button: 
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Dialog.Panel className={`max-w-md transform overflow-hidden rounded-2xl ${ theme === 'dark' ? 'bg-dark text-white' : 'bg-white text-black'} p-6 text-left align-middle shadow-xl transition-all`}>
+                                <Dialog.Panel className={`max-w-md transform overflow-hidden rounded-2xl ${theme === 'dark' ? 'bg-dark text-white' : 'bg-white text-black'} p-6 text-left align-middle shadow-xl transition-all`}>
                                     <Dialog.Title
                                         as="h3"
                                         className="text-lg font-medium leading-6 text-gray-900"
@@ -61,6 +62,86 @@ export function Info({ button, title, isOpen, onClose, description }: { button: 
                                             Got it !
                                         </button>
                                     </div>
+                                </Dialog.Panel>
+
+                            </Transition.Child>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition >
+        </div>
+    )
+}
+
+export function DeletedInfo({ isOpen, onClose, deletedProjects }: { isOpen: boolean, onClose: any, deletedProjects: Array<string> }) {
+
+    const { theme } = useContext(ThemeContext)
+
+    return (
+        <div>
+
+            <Transition appear show={isOpen} as={Fragment}>
+                <Dialog as="div" className="relative z-10" onClose={onClose}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-black bg-opacity-25" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-4 text-center">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0 scale-95"
+                                enterTo="opacity-100 scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
+                            >
+                                <Dialog.Panel className={`h-[300px] w-[500px] transform overflow-hidden rounded-2xl ${theme === 'dark' ? 'bg-dark text-white' : 'bg-white text-black'} p-6 text-left align-middle shadow-xl transition-all`}>
+                                    <Dialog.Title
+                                        as="h3"
+                                        className="flex justify-between text-lg font-medium leading-6 text-gray-900"
+                                    >
+                                        Projects Deleted
+                                        <button className='focus:outline-none' onClick={onClose} >
+                                            <RxCross1 />
+                                        </button>
+                                    </Dialog.Title>
+
+                                    <Dialog.Description>
+                                        <Disclosure>
+                                            {({ open }) => (
+                                                <>
+                                                    <Disclosure.Button className="flex w-full justify-between rounded-lg bg-green-100 px-4 py-2 text-left text-sm font-medium text-green-900 hover:bg-green-200 focus:outline-none ">
+                                                        <span>View Details</span>
+                                                        <ChevronUpIcon
+                                                            className={`${open ? '' : 'rotate-180 transform'
+                                                                } h-5 w-5 text-green-500`}
+                                                        />
+                                                    </Disclosure.Button>
+                                                    <Disclosure.Panel className="px-4 pt-4 pb-2 text-sm text-gray-500">
+                                                        The Following Projects Were Deleted:
+                                                        <ul>
+                                                            {
+                                                                deletedProjects.map((project: any) => (
+                                                                    <li key={project}> <b>{project}</b> </li>
+                                                                ))
+                                                            }
+                                                        </ul>
+                                                    </Disclosure.Panel>
+                                                </>
+                                            )}
+                                        </Disclosure>
+                                    </Dialog.Description>
+
                                 </Dialog.Panel>
 
                             </Transition.Child>
@@ -107,7 +188,7 @@ export function Confirmation({ button, isOpen, onClose, title, description, cust
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Dialog.Panel className={`w-auto max-w-md transform overflow-hidden rounded-2xl ${ theme === 'dark' ? 'bg-dark text-white' : 'bg-white text-black'} p-6 text-left align-middle shadow-xl transition-all`}>
+                                <Dialog.Panel className={`w-auto max-w-md transform overflow-hidden rounded-2xl ${theme === 'dark' ? 'bg-dark text-white' : 'bg-white text-black'} p-6 text-left align-middle shadow-xl transition-all`}>
                                     <Dialog.Title
                                         as="h3"
                                         className="text-lg font-medium flex justify-between items-center leading-6 text-gray-900"
@@ -173,7 +254,7 @@ export const UserProfileCompletion = ({ completeProfileDialogisOpen, setComplete
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className={`w-full max-w-md transform overflow-hidden rounded-2xl ${ theme === 'dark' ? 'bg-dark text-white' : 'bg-white text-black'} p-6 span-left align-middle shadow-xl transition-all`}>
+                            <Dialog.Panel className={`w-full max-w-md transform overflow-hidden rounded-2xl ${theme === 'dark' ? 'bg-dark text-white' : 'bg-white text-black'} p-6 span-left align-middle shadow-xl transition-all`}>
                                 <div className='flex justify-between items-center'>
                                     <Dialog.Title
                                         as='h2'

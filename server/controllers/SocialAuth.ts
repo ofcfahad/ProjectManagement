@@ -62,7 +62,7 @@ function callbackGithub(req: Request, res: Response) {
         try {
             const user = req.user as typeof User;
             const userId = await something(user);
-            const token = jwt.sign({ userId }, process.env.SECRET_KEY!);
+            const token = jwt.sign({ userId }, process.env.SECRET_KEY!, { expiresIn: '7d' });
             // Return a client-side script that closes the window and sets the token in the main window's local storage
             res.send(`
           <script>
@@ -126,7 +126,7 @@ function callbackGoogle(req: Request, res: Response) {
             const user = req.user as typeof User;
 
             const userId = await something(user);
-            const token = jwt.sign({ userId }, process.env.SECRET_KEY!);
+            const token = jwt.sign({ userId }, process.env.SECRET_KEY!, { expiresIn: '7d' });
             // Return a client-side script that closes the window and sets the token in the main window's local storage
             res.send(`
               <script>

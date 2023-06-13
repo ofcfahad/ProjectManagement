@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Tooltip } from 'react-tooltip'
-import { easeBackInOut } from 'd3-ease'
 import { motion } from 'framer-motion'
 import { IconContext } from 'react-icons'
 import { HiOutlineUser } from 'react-icons/hi2'
@@ -10,10 +9,16 @@ import { UserSettingsContext } from '../../Contexts'
 
 const StatsBar = (props: any) => {
 
-    const { notificationBar, bgColor, projectsDataLength, ongoingProjects, projectsInfo, setIsHovered } = props
+    const { notificationBar, bgColor, projectsDataLength, ongoingProjects, projectsInfo, isHovered, setIsHovered } = props
 
     const { toolTipisVisible } = useContext(UserSettingsContext)
 
+    const handleStatsBarClick = (id: string) => () => {
+        if (isHovered === id) {
+           return setIsHovered('')
+        }
+        setIsHovered(id)
+    }
 
     return (
         <motion.div initial={{ height: 0, width: 0 }} animate={{ height: notificationBar ? 100 : 550, width: '100%' }} transition={{ duration: 0.5 }} className={`flex justify-center items-center rounded-3xl ${bgColor} px-2`}>
@@ -56,7 +61,7 @@ const StatsBar = (props: any) => {
                     <div className='flex flex-wrap w-full h-[85%]'>
                         {
                             projectsInfo.map((project: any) => (
-                                <motion.div key={project.id} initial={{ opacity: 0, scale: 1.5 }} animate={{ opacity: 1, scale: 1, }} whileHover={{ scale: 1.1, boxShadow: project.shadowColor }} transition={{ ease: easeBackInOut }} className={`w-[45%] h-[45%] ml-2 mt-1 flex flex-col justify-around px-2 rounded-lg`} style={{ background: project.backgroundColor }} onMouseOver={() => setIsHovered(project.id)} onMouseOut={() => setIsHovered('')} >
+                                <motion.div key={project.id} initial={{ opacity: 0, scale: 1.5 }} animate={{ opacity: 1, scale: isHovered === project.id ? 1.1 : 1  }} className={`w-[45%] h-[45%] ml-2 mt-1 flex flex-col justify-around px-2 rounded-lg`} style={{ background: project.backgroundColor, boxShadow: isHovered === project.id ? project.shadowColor : '', cursor: 'pointer' }} onClick={handleStatsBarClick(project.id)} >
                                     <span className='text-gray-500'> {project.id} </span>
                                     <div className='flex justify-between items-center'>
                                         <div className={`h-[25px] w-[6px] rounded-3xl shadow-inner`} style={{ background: project.whatColor }} ></div>

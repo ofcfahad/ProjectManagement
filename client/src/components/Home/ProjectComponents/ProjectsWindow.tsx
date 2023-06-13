@@ -4,13 +4,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useContext, useEffect, useState } from 'react';
 import ProjectModule from './ProjectModule';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import UseAnimations from 'react-useanimations';
-import toggle from 'react-useanimations/lib/toggle';
 import { Tooltip } from 'react-tooltip';
 import { IconContext } from 'react-icons';
 import { SlRefresh } from 'react-icons/sl';
 import settings2 from 'react-useanimations/lib/settings2';
+import trash2 from 'react-useanimations/lib/trash2';
 import CreateProject from './CreateProject';
 import { debounce } from 'lodash';
 import Cookies from 'js-cookie';
@@ -19,10 +19,17 @@ import { themeColors } from '../../functions';
 import Loading from '../../Loading';
 import { fetchProjectsData, fetchSearchedProjectsData } from '../functions'
 import { UserDataContext, UserSettingsContext } from '../../Contexts';
+import axios from 'axios';
+import { Confirmation, DeletedInfo } from '../../Popups';
 
 export default function ProjectsWindow(props: any) {
 
-    const [editMode, setEditMode] = useState(false)
+    const [selectionMode, setSelectionMode] = useState(false)
+    const [trashHovering, setTrashHovering] = useState(false)
+    const [projectsSelected, setProjectsSelected] = useState<Array<string>>([])
+    const [deletedProjects, setDeletedProjects] = useState<Array<string>>([])
+    const [dialogisOpen, setDialogisOpen] = useState(false)
+    const [deleteConfirmationisOpen, setDeleteConfirmationisOpen] = useState(false)
 
     const { searchContent, fetchingData, setFetchingData, loadNewData, setLoadNewData, isHovered, setCompleteProfileDialogisOpen, projectsData, setProjectsData, noSearchedProjects, setNoSearchedProjects, searchedProjectsData, setSearchedProjectsData } = props
     const { theme } = useContext(ThemeContext)
@@ -34,11 +41,33 @@ export default function ProjectsWindow(props: any) {
     const session = Cookies.get('session')!
     const projectsDatax = searchedProjectsData.length > 0 ? searchedProjectsData : projectsData
 
+    const handleProjectsDeletion = async () => {
+        setDeleteConfirmationisOpen(false)
+        setFetchingData(true)
+        try {
+            const response = await axios.post('/server/api/deleteManyProjects', { ids: projectsSelected }, { headers: { Authorization: session } })
+            if (response.status === 200) {
+                setDeletedProjects(response.data.Projects)
+                setFetchingData(false)
+                setLoadNewData(true)
+                setProjectsSelected([])
+                return setDialogisOpen(true)
+            }
+        } catch (error) {
+            console.log(`from handleProjectsDeletion: ${error}`);
+        }
+    }
+
+    const handleDialogClose = () => {
+        setSelectionMode(false)
+        setDialogisOpen(false)
+    }
+
     const debouncedFetchFunction = debounce(fetchSearchedProjectsData, 1000)
 
     useEffect(() => {
         if (searchContent) {
-            debouncedFetchFunction(setFetchingData, setLoadNewData, setNoSearchedProjects,  setSearchedProjectsData, userId, session, searchContent)
+            debouncedFetchFunction(setFetchingData, setLoadNewData, setNoSearchedProjects, setSearchedProjectsData, userId, session, searchContent)
         }
 
         return () => {
@@ -73,34 +102,45 @@ export default function ProjectsWindow(props: any) {
                     <h1 className='font-josefin text-center mt-2 pointer-events-none select-none'> Projects </h1>
                     <div className='flex justify-between items-center'>
 
-                        <UseAnimations animation={toggle} reverse={editMode} data-tooltip-id='projectsSelectToolTip' size={25} strokeColor={color} className={` cursor-pointer mr-4`} onClick={() => setEditMode(!editMode)} />
-                        {
-                            toolTipisVisible &&
-                            <Tooltip id='projectsSelectToolTip' delayShow={100} delayHide={0} place='left'>
-                                Select Projects
-                            </Tooltip>
-                        }
-
-                        <motion.button initial={{ rotate: -100 }} animate={{ rotate: loadNewData ? 100 : 0 }} transition={{ duration: 1 }} className='mr-4' data-tooltip-id='projectsRefreshToolTip' onClick={() => setLoadNewData(true)} >
-                            <IconContext.Provider value={{ color: color, size: '18' }} >
+                        <motion.button initial={{ rotate: -100 }} animate={{ rotate: loadNewData ? 100 : 0, x: selectionMode ? -20 : 0 }} transition={{ duration: 1, x: { duration: 0.5 } }} disabled={selectionMode} className='mr-4' data-tooltip-id='projectsRefreshToolTip' style={{ cursor: selectionMode ? 'not-allowed' : 'pointer' }} onClick={() => setLoadNewData(true)} >
+                            <IconContext.Provider value={{ color: selectionMode ? 'gray' : color, size: '18' }} >
                                 <SlRefresh />
                             </IconContext.Provider>
                         </motion.button>
                         {
                             toolTipisVisible &&
-                            <Tooltip id='projectsRefreshToolTip' delayShow={100} delayHide={0} place='left'>
+                            <Tooltip id='projectsRefreshToolTip' delayShow={100} delayHide={0} place='top'>
                                 Sync Projects
                             </Tooltip>
                         }
 
-                        <UseAnimations animation={settings2} data-tooltip-id='projectSettingsToolTip' className='rotate-90' strokeColor={color} />
+<Confirmation button={
+    <div className='mr-2'>
+    <AnimatePresence>
+        {
+            selectionMode &&
+            <motion.button initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} exit={{ opacity: 0, x: 20 }} data-tooltip-id='deleteprojecttooltip' disabled={projectsSelected.length < 1} onMouseOver={() => setTrashHovering(true)} onMouseOut={() => setTrashHovering(false)} onClick={() => setDeleteConfirmationisOpen(true)} >
+                <UseAnimations animation={trash2} strokeColor={projectsSelected.length >= 1 && trashHovering ? 'red' : projectsSelected.length < 1 ? 'gray' : color} />
+            </motion.button>
+        }
+    </AnimatePresence>
+    {
+        toolTipisVisible &&
+        <Tooltip id='deleteprojecttooltip' delayShow={100} delayHide={0} place='top'>
+            Delete
+        </Tooltip>
+    }
+</div>
+} isOpen={deleteConfirmationisOpen} onClose={() => setDeleteConfirmationisOpen(false)} title={'You sure want to delete the selected Projects?'} description={'These Projects will be added to trash and be deleted within 7 days'} customSubmitButton={handleProjectsDeletion} customSubmitButtonTitle={'yes'} />
+
+                        <UseAnimations animation={settings2} reverse={selectionMode} data-tooltip-id='projectSettingsToolTip' className='rotate-90 cursor-pointer' strokeColor={color} onClick={() => setSelectionMode(!selectionMode)} />
                         {
                             toolTipisVisible &&
                             <Tooltip id='projectSettingsToolTip' delayShow={100} delayHide={0} place='top'>
                                 Projects Settings
                             </Tooltip>
                         }
-                        <CreateProject setLoadNewData={setLoadNewData} setFetchingData={setFetchingData} reference={'main'} userId={userId} />
+                        <CreateProject setLoadNewData={setLoadNewData} setFetchingData={setFetchingData} reference={'main'} userId={userId} selectionMode={selectionMode} />
                     </div>
                 </div>
                 {/* BOTTOMSECTION */}
@@ -146,7 +186,9 @@ export default function ProjectsWindow(props: any) {
                                                     project={project}
                                                     setLoadNewData={setLoadNewData}
                                                     isHovered={isHovered}
-                                                    selectionMode={editMode}
+                                                    selectionMode={selectionMode}
+                                                    projectsSelected={projectsSelected}
+                                                    setProjectsSelected={setProjectsSelected}
                                                 />
                                             </div>
                                         </motion.div>
@@ -159,7 +201,10 @@ export default function ProjectsWindow(props: any) {
                         </div>
                 }
             </div>
-
+            {
+                deletedProjects &&
+                <DeletedInfo isOpen={dialogisOpen} onClose={handleDialogClose} deletedProjects={deletedProjects} />
+            }
         </div>
     );
 }

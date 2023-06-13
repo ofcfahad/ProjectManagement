@@ -45,7 +45,7 @@ async function getSearchedProjects(req: Request, res: Response) {
 //Create new Project
 function createProject(req: Request, res: Response) {
     const projectsData = req.body.finalProject
-    
+
     const newProject = new Project(projectsData)
     newProject.save()
         .then(() => res.status(200).send('Project Created successfully'))
@@ -72,9 +72,28 @@ async function deleteProject(req: Request, res: Response) {
     }
 }
 
+const deleteManyProjects = async (req: Request, res: Response) => {
+    try {
+        const ids = req.body.ids;
+        const Projects: Array<string> = [];
+        await Promise.all(ids.map(async (id: string) => {
+            try {
+                const project = await Project.findByIdAndDelete(id)
+                Projects.push(project?.title!);
+            } catch (error) {
+                console.log(`from deleteManyProjects's Promise: ${error}`);
+            }
+        }));
+        res.status(200).json({ Projects })
+    } catch (error) {
+        console.log(`from deleteManyProjects: ${error}`);
+    }
+}
+
 export {
     getAllProjects,
     getSearchedProjects,
     createProject,
-    deleteProject
+    deleteProject,
+    deleteManyProjects
 }

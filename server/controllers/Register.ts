@@ -8,8 +8,8 @@ import randomstring from 'randomstring'
 
 const createNewUser = async (req: Request, res: Response) => {
     try {
-        const { userName, fullName, userPassword, userEmail, userProfilePicture, userGithubLink } = req.body
-
+        const { userName, fullName, userPassword, userEmail, userProfilePicture, userGithubLink } = req.body.data
+        
         const existingUser = await User.findOne({ userName: userName })
         if (existingUser) {
             return res.status(409).json({ message: 'oops! Username is already taken' })
@@ -18,9 +18,9 @@ const createNewUser = async (req: Request, res: Response) => {
         const hashedPassword = await bcrypt.hash(userPassword, 10)
         const newUser = new User({ userName: userName, fullName: fullName, userPassword: hashedPassword, userEmail: userEmail, userProfilePicture: userProfilePicture, userGithubLink: userGithubLink })
         await newUser.save()
-        return res.status(201).json({ message: 'Well Well you got it!' + newUser })
+        return res.status(201).json({ message: 'Well Well you got it!'})
     } catch (error) {
-        console.error(error);
+        console.error(`from createNewUser: ${error}`);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }

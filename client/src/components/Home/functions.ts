@@ -45,6 +45,7 @@ const fetchSearchedProjectsData = async (setFetchingData: any, setLoadNewData: a
     }
 }
 
+
 export {
     fetchProjectsData,
     fetchSearchedProjectsData

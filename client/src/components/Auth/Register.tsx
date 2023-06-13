@@ -36,6 +36,8 @@ const Register = ({ setLoading, setReference, handleLoginClick, settoEmailVerifi
 
     const handleRegistration = async () => {
         event?.preventDefault()
+        console.log(userName);
+        
         try {
             const data = {
                 userName: userName,
@@ -45,6 +47,7 @@ const Register = ({ setLoading, setReference, handleLoginClick, settoEmailVerifi
                 userProfilePicture: '',
                 userGithubLink: ''
             }
+            
             const response = await axios.post(`/server/api/register`, { data })
             const status = response.status
 
@@ -74,9 +77,9 @@ const Register = ({ setLoading, setReference, handleLoginClick, settoEmailVerifi
 
     useEffect(() => {
         if ((userName.length >= 4 && userPassword.length >= 8) && buttonClicked) {
-            handleRegistration()
             setUserAlreadyExists(false)
             setButtonClicked(false)
+            handleRegistration()
         }
     }, [buttonClicked])
 

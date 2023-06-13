@@ -2,7 +2,7 @@ import express from 'express'
 import bodyParser from 'body-parser';
 import cors from 'cors'
 import connectToMongo from './database/db'
-import { getAllProjects, deleteProject, createProject, getSearchedProjects } from './controllers/Project'
+import { getAllProjects, deleteProject, createProject, getSearchedProjects, deleteManyProjects } from './controllers/Project'
 import { createNewUser, notVerified, sendOTP, updateEmail, verifyOTP } from './controllers/Register'
 import { authenticateUser, getUserEmail, sendAOTP, verifyAOTP } from './controllers/Login';
 import { authenticateGithub, authenticateGoogle, callbackGithub, callbackGoogle } from './controllers/SocialAuth'
@@ -58,3 +58,4 @@ app.use('/api/projectsData', checkSession, getAllProjects);
 app.use('/api/searchedProjectsData', checkSession, getSearchedProjects);
 app.post('/api/createProject', checkSession, createProject);
 app.use('/api/deleteProject', checkSession, deleteProject);
+app.use('/api/deleteManyProjects', checkSession, deleteManyProjects);
