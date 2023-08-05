@@ -14,6 +14,7 @@ import { NavbarContext, ThemeContext, UserDataContext, UserSettingsContext } fro
 import { themeColors } from '../../functions'
 import { Tooltip } from 'react-tooltip'
 import SearchBar from './SearchBar'
+import { profilePicture } from '../../../assets'
 
 const TopBar = (props: any) => {
 
@@ -99,7 +100,7 @@ const TopBar = (props: any) => {
                                 <div>
                                     <Listbox.Button className="flex justify-around relative w-full items-center cursor-default rounded-lg bg-transparent hover:shadow-md focus:outline-none">
                                         <div>
-                                            <img src={userData?.userProfilePicture || 'src//assets/pfp.png'} className=" h-10 w-10 rounded-full" />
+                                            <img src={userData?.userProfilePicture || profilePicture} className=" h-10 w-10 rounded-full" />
                                         </div>
                                         <div className="ml-2 text-xs flex" style={{ color: color }}> {userData.fullName || userData.userName} </div>
                                         <div className=''>

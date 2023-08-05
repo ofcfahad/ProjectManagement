@@ -14,11 +14,11 @@ const LoggingLoading = ({ reference, setLoading }: { reference: string, setLoadi
                 <div className='py-10 flex flex-col justify-center items-center'>
                     {
                         reference === 'main' ?
-                            <span className='font-josefin text-2xl'>
+                            <span className='text-xl'>
                                 Loading
                             </span>
                             :
-                            <span className='font-josefin text-2xl'>
+                            <span className='text-xl '>
                                 Please Authenticate With Your <strong>{reference}</strong> account.
                                 <br />
                                 Authentication Page opened in Another Tab.

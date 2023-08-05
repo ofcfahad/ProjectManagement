@@ -110,6 +110,15 @@ export default function CreateProject(props: any) {
         event.preventDefault();
         setHandleSubmit(true)
         setSecondIsOpen(true);
+        const currentDate = new Date(Date.now());
+        const formattedDate = currentDate.toLocaleString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: '2-digit',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
         const data = {
             title: projectTitle,
             description: description || `it is ${projectTitle}`,
@@ -119,7 +128,7 @@ export default function CreateProject(props: any) {
             completedtasks: completedTasks,
             owner: userId,
             Dates: {
-                created: Date.now()
+                created: formattedDate
             },
             people: [],
             attachments: 0,
@@ -162,7 +171,7 @@ export default function CreateProject(props: any) {
                         <motion.button
                             type="button"
                             onClick={() => setIsOpen(true)}
-                            className={`rounded-full ${ props.selectionMode ? 'bg-selectedicon/75' : 'bg-selectedicon'} px-3 py-2 span-white focus:outline-none`}
+                            className={`rounded-full ${props.selectionMode ? 'bg-selectedicon/75' : 'bg-selectedicon'} px-3 py-2 span-white focus:outline-none`}
                             disabled={props.selectionMode}
                             initial={{ scale: 0.5 }}
                             animate={{ scale: 1 }}

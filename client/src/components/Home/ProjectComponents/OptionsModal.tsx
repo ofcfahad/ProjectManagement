@@ -7,8 +7,9 @@ import { Menu, Transition } from '@headlessui/react'
 //Icons
 import { IconContext } from "react-icons";
 import { RxDotsHorizontal, } from 'react-icons/rx';
-import { CiTrash } from 'react-icons/ci';
+import { CiCircleChevLeft, CiEdit, CiTrash } from 'react-icons/ci';
 import { ThemeContext } from '../../Contexts/ThemeContext';
+import { UserDataContext } from '../../Contexts';
 
 
 export default function OptionsModal(props: any) {
@@ -16,15 +17,21 @@ export default function OptionsModal(props: any) {
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
     const { theme } = useContext(ThemeContext)
+    const userData = useContext(UserDataContext)
 
     const deleteProject = () => {
-        setOpenDeleteModal(true)
         props.deleteProject()
+        setOpenDeleteModal(true)
     }
 
     const closeDeleteModule = () => {
         setOpenDeleteModal(false)
         props.setLoadNewData(true)
+    }
+
+    const handleEditClick = () => {
+        props.openModal()
+        props.setEditMode(true)
     }
 
     return (
@@ -47,19 +54,50 @@ export default function OptionsModal(props: any) {
                 <Menu.Items className={`absolute right-2 z-10 w-28 origin-top-right divide-y divide-gray-100 rounded-xl bg-white/20 backdrop-blur shadow-sm ring-1 px-1 py-1 ring-black ring-opacity-5 focus:outline-none`} >
                     <div className={`flex flex-col w-full h-full text-md `}>
 
-                        <Info button={<button className='w-full h-full flex justify-between items-center py-1 my-1 rounded-md text-black' onClick={deleteProject}>
-                            <span className='font-ubuntu'>
-                                Delete
-                            </span>
-                            <div>
-                                <IconContext.Provider value={{ color: 'black', size: '16' }}>
-                                    <CiTrash />
-                                </IconContext.Provider>
-                            </div>
-                        </button>}
+                        {
+                            props.owner === userData._id ?
+                                <div>
+                                    <Info button={<button className='w-full h-full flex justify-between items-center py-1 my-1 rounded-md text-black' onClick={deleteProject}>
+                                        <span className='font-ubuntu text-sm'>
+                                            Trash
+                                        </span>
+                                        <div>
+                                            <IconContext.Provider value={{ color: 'black', size: '16' }}>
+                                                <CiTrash />
+                                            </IconContext.Provider>
+                                        </div>
+                                    </button>}
 
-                            isOpen={openDeleteModal}
-                            onClose={closeDeleteModule} title={<div className={` ${theme === 'dark' ? 'text-white' : 'text-black'} `} >Project <b> {props.projectTitle} </b> Deleted </div>} description={''} />
+                                        isOpen={openDeleteModal}
+                                        onClose={closeDeleteModule} title={<div className={` ${theme === 'dark' ? 'text-white' : 'text-black'} `} >{<div>Project <b> {props.projectTitle} </b> Deleted </div>} </div>} description={''} />
+
+                                    <button className='w-full h-full flex justify-between items-center py-1 my-1 rounded-md text-black' onClick={handleEditClick}>
+                                        <span className='font-ubuntu text-sm'>
+                                            Edit
+                                        </span>
+                                        <div>
+                                            <IconContext.Provider value={{ color: 'black', size: '16' }}>
+                                                <CiEdit />
+                                            </IconContext.Provider>
+                                        </div>
+                                    </button>
+                                </div>
+                                :
+                                <Info button={<button className='w-full h-full flex justify-between items-center py-1 my-1 rounded-md text-black' onClick={deleteProject}>
+                                    <span className='font-ubuntu text-sm'>
+                                        Leave
+                                    </span>
+                                    <div>
+                                        <IconContext.Provider value={{ color: 'black', size: '20' }}>
+                                            <CiCircleChevLeft />
+                                        </IconContext.Provider>
+                                    </div>
+                                </button>}
+
+                                    isOpen={openDeleteModal}
+                                    onClose={closeDeleteModule} title={<div className={` ${theme === 'dark' ? 'text-white' : 'text-black'} `} >{<div>Left Project <b> {props.projectTitle} </b> </div>} </div>} description={''} />
+                        }
+
                     </div>
 
                 </Menu.Items>

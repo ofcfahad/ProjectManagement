@@ -39,9 +39,17 @@ function themeColors(theme: string, ref: string) {
   return 'black'
 }
 
+function addOwnerToPeople(people: Array<string>, owner: string) {
+  if (people.includes(owner)) {
+    return 0
+  }
+  people.unshift(owner)
+}
+
 export {
   protect_email,
   convertHexToRGBA,
   capitalize,
-  themeColors
+  themeColors,
+  addOwnerToPeople
 }

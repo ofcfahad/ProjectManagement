@@ -9,6 +9,7 @@ import Cookies from 'js-cookie'
 import { ThemeContext, UserDataContext, UserSettingsContext } from '../../Contexts'
 import { fetchSearchedProjectsData } from '../functions'
 import { themeColors } from '../../functions'
+import { IconContext } from 'react-icons'
 
 const SearchBar = ({ searchContent, setsearchContent, setFetchingData, setLoadNewData, setNoSearchedProjects, setSearchedProjectsData }: { searchContent: string, setsearchContent: any, setFetchingData: any, setLoadNewData: any, setNoSearchedProjects: any, setSearchedProjectsData: any }) => {
 
@@ -54,11 +55,14 @@ const SearchBar = ({ searchContent, setsearchContent, setFetchingData, setLoadNe
                 <div className='rounded-r-full h-full px-2'>
                     {
                         searchContent &&
-                        <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className='h-full w-full' style={{ color: 'white' }} onClick={handleCrossClick}>
-                            <RxCross1 />
+                        <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className='h-full w-full' style={{ color: color }} onClick={handleCrossClick}>
+                            <IconContext.Provider value={{ size: '18' }}>
+                                <RxCross1 />
+                            </IconContext.Provider>
                         </motion.button>
                     }
                 </div>
+
             </div>
         </motion.div>
     )

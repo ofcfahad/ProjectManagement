@@ -6,11 +6,12 @@ import { useState, Fragment, useEffect, useContext } from 'react'
 
 //AppComponents
 import OptionsModal from './OptionsModal'
-import Contributors from './Contributors'
+import Contributors, { Contributor } from './Contributors'
 import TaskModule from './TaskModule'
 //OtherComponents
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Dialog, Transition } from '@headlessui/react'
+import { ColorPicker, Divider } from 'antd'
 //Icons
 import { IconContext } from 'react-icons'
 import { GiPaperClip } from 'react-icons/gi'
@@ -19,37 +20,39 @@ import Cookies from 'js-cookie'
 import axios from 'axios'
 import { RxCross1 } from 'react-icons/rx'
 import { CiEdit } from 'react-icons/ci'
-import { convertHexToRGBA, themeColors } from '../../functions'
+import { addOwnerToPeople, convertHexToRGBA, themeColors } from '../../functions'
 import UseAnimations from 'react-useanimations'
 import checkBox from 'react-useanimations/lib/checkBox'
 import { ThemeContext } from '../../Contexts/ThemeContext'
+import { People } from '../../interfaces'
+import { UserDataContext } from '../../Contexts'
+import { profilePicture } from '../../../assets'
 
 
 const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, selectionMode, projectsSelected, setProjectsSelected }: { height: number, width: number, project: any, setLoadNewData: any, isHovered: any, selectionMode: boolean, projectsSelected: Array<string>, setProjectsSelected: any }) => {
     const [isOpen, setIsOpen] = useState(false)
-    const [peopleData, setPeopleData] = useState<Array<object>>()
+    const [peopleData, setPeopleData] = useState<Array<People>>([])
     const [editMode, setEditMode] = useState(false)
 
     const session = Cookies.get('session')
-    const { _id, title, description, accentColor, tasks, completedtasks, progress, owner, attachments, comments } = project
-    let { people } = project
-    people = [...people, owner]
+    const { _id, title, description, accentColor, tasks, completedtasks, progress, owner, Dates, people, attachments, comments } = project
+    const [colorPickerValue, setColorPickerValue] = useState(accentColor)
     const [titleInputController, setTitleInputController] = useState(title)
     const [descriptionInputController, setDescriptionInputController] = useState(description)
 
+    const userData = useContext(UserDataContext)
     const { theme } = useContext(ThemeContext)
     const bgColor = themeColors(theme, 'background')
     const color = themeColors(theme, 'main')
 
-    const InputStyle = `border-2 rounded-lg p-1 w-auto`
+    const InputStyle = `border-2 rounded-xl p-1 w-auto outline-red-500 border-red-500/50`
+    const ButtonStyle = `focus:outline-none`
 
     const getPeopleInfo = async () => {
         try {
-            const response = await axios.post(`/server/api/getPeopleInfo`, { userIds: people }, {
-                headers: {
-                    Authorization: session
-                }
-            });
+            addOwnerToPeople(people, owner)
+            
+            const response = await axios.post(`/server/api/getPeopleInfo`, { userIds: people }, { headers: { Authorization: session } })
             const users = response.data.users
             setPeopleData(users)
         } catch (error) {
@@ -57,14 +60,21 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, sele
         }
     }
 
+    const authorData = peopleData[0] && {
+        _id: peopleData[0]._id,
+        userName: peopleData[0].userName,
+        fullName: peopleData[0].fullName,
+        userProfilePicture: peopleData[0].userProfilePicture || profilePicture,
+        userGithubLink: peopleData[0].userProfilePicture
+    }
+
     const handleProjectDeletion = async (projectId: string) => {
         try {
-            const response = await axios.post(`/server/api/deleteProject`, { projectId }, {
+            const response = await axios.post(`/server/api/deleteProject`, { projectId, userId: userData._id, owner }, {
                 headers: {
                     Authorization: session
                 }
             });
-
             if (!response) {
                 throw new Error('Network response was not ok');
             }
@@ -88,6 +98,10 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, sele
         setIsOpen(true)
     }
 
+    const handleColorChange = (value: any) => {
+        setColorPickerValue(value)
+    }
+
     const handleProjectSelection = () => {
         if (projectsSelected.includes(_id)) {
             const filteredList = projectsSelected.filter((project) => project != _id)
@@ -98,13 +112,15 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, sele
     }
 
     useEffect(() => {
-        getPeopleInfo()
+        if (people) {
+            getPeopleInfo()
+        }
     }, [people])
 
     return (
         <>
             <div className="flex items-center justify-center" >
-                <Project setLoadNewData={setLoadNewData} deleteProject={deleteProject} openModal={openModal} id={_id} title={title} description={description} accentColor={accentColor} progress={progress} people={peopleData} comments={comments} attachments={attachments} height={height} width={width} isHovered={isHovered} selectionMode={selectionMode} projectsSelected={projectsSelected} handleProjectSelection={handleProjectSelection} color={color} bgColor={bgColor} />
+                <Project setLoadNewData={setLoadNewData} deleteProject={deleteProject} openModal={openModal} id={_id} title={title} description={description} accentColor={accentColor} progress={progress} people={peopleData} comments={comments} attachments={attachments} owner={owner} height={height} width={width} isHovered={isHovered} selectionMode={selectionMode} projectsSelected={projectsSelected} handleProjectSelection={handleProjectSelection} setEditMode={setEditMode} color={color} bgColor={bgColor} />
             </div>
 
             <Transition appear show={isOpen} as={Fragment}>
@@ -136,29 +152,69 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, sele
                                     <Dialog.Title
                                         as="h3"
                                         className="text-lg font-medium leading-6 flex flex-row justify-between items-center w-full"
-                                        style={{ color: accentColor }}
+                                        style={{ color: colorPickerValue }}
                                     >
                                         {editMode ?
                                             <span>
                                                 <input className={InputStyle} type="text" value={titleInputController} onChange={(event) => setTitleInputController(event.target.value)} />
                                             </span>
                                             :
-                                            <span>
+                                            <div className='flex m-2'>
                                                 {title}
-                                            </span>
+                                                {/* <ColorPicker className='w-' value={colorPickerValue} onChange={handleColorChange} allowClear /> */}
+                                            </div>
                                         }
 
-                                        <div className='w-[10%] flex justify-between items-center'>
-                                            <button onClick={() => setEditMode(!editMode)}>
-                                                <IconContext.Provider value={{ size: '20' }}>
-                                                    <CiEdit />
-                                                </IconContext.Provider>
-                                            </button>
-                                            <button onClick={closeModal}>
+                                        <div className='w-[30%] flex justify-end items-center '>
+                                            <AnimatePresence>
+                                                {
+                                                    editMode &&
+                                                    <motion.div initial={{ opacity: 0, x: 100 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className='text-xs text-red-500 mr-2' >Currently Editing</motion.div>
+                                                }
+                                            </AnimatePresence>
+                                            {
+                                                owner === userData._id &&
+                                                <button className={`${ButtonStyle} mr-4 `} onClick={() => setEditMode(!editMode)}>
+                                                    <IconContext.Provider value={{ size: '20', color: editMode ? 'red' : '' }}>
+                                                        <CiEdit />
+                                                    </IconContext.Provider>
+                                                </button>
+                                            }
+                                            <button className={ButtonStyle} onClick={closeModal}>
                                                 <RxCross1 />
                                             </button>
                                         </div>
                                     </Dialog.Title>
+
+                                    <Dialog.Panel className={`text-gray-500 text-xs flex items-center`} >
+                                        {
+                                            Dates.updated ?
+                                                <span>
+                                                    Last Updated {Dates.updated}
+                                                </span>
+                                                :
+                                                <span>
+                                                    Created {Dates.created}
+                                                </span>
+                                        }
+                                        <div className={`${owner === userData._id ? 'bg-green-500' : 'bg-gray-600'} h-2 w-2 rounded-full mx-2`} ></div>
+                                        {
+                                            peopleData[0] &&
+                                            <div className='flex items-center'>
+                                                <Contributor profilelink={authorData.userGithubLink} name={authorData.fullName} avatar={authorData.userProfilePicture} linkDisabled={true} isHovering={false} row={true} alignover={false} toLeft={0} toTop={0} onHoverMargin={0} avatarSize={30} avatarShape={'circle'} bordered={false} borderColor={''} borderSize={0} />
+                                                <div className='ml-1'>
+                                                    {
+                                                        owner === userData._id ?
+                                                            'You'
+                                                            :
+                                                            authorData.fullName || authorData.userName
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    </Dialog.Panel>
+
+                                    <Divider className={` ${theme === 'dark' ? 'bg-white/20' : ''} `} />
 
                                     <Dialog.Description className={`text-${color}`}>
                                         {editMode ?
@@ -172,8 +228,15 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, sele
                                         }
                                     </Dialog.Description>
 
+                                    <Divider className={` ${theme === 'dark' ? 'bg-white/20' : ''} `} />
+
                                     <h6>Tasks</h6>
                                     <TaskModule tasks={tasks} completedTasks={completedtasks} accentColor={accentColor} />
+
+                                    <Dialog.Panel>
+                                        <Contributors contributorsData={peopleData} linkDisabled={false} avatarSize={40} avatarShape={'circle'} bordered={false} borderColor={''} borderSize={0} alignover={true} toLeft={0} toTop={0} onHoverMargin={4} row={true} />
+                                    </Dialog.Panel>
+
                                 </Dialog.Panel>
                             </Transition.Child>
                         </div>
@@ -185,7 +248,7 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, sele
 }
 
 
-const Project = ({ id, height, width, title, description, accentColor, progress, people, comments, attachments, setLoadNewData, deleteProject, openModal, isHovered, color, bgColor, selectionMode, projectsSelected, handleProjectSelection }: { id: string, height: number, width: number, title: string, description: string, accentColor: string, progress: number, people: any, comments: any, attachments: any, setLoadNewData: any, deleteProject: any, openModal: any, isHovered: string, color: string, bgColor: string, selectionMode: boolean, projectsSelected: Array<string>, handleProjectSelection: any }) => {
+const Project = ({ id, height, width, title, description, accentColor, progress, people, comments, attachments, owner, setLoadNewData, deleteProject, openModal, isHovered, color, bgColor, selectionMode, projectsSelected, handleProjectSelection, setEditMode }: { id: string, height: number, width: number, title: string, description: string, accentColor: string, progress: number, people: any, comments: any, attachments: any, owner: string, setLoadNewData: any, deleteProject: any, openModal: any, isHovered: string, color: string, bgColor: string, selectionMode: boolean, projectsSelected: Array<string>, handleProjectSelection: any, setEditMode: any }) => {
 
     return (
         <motion.div className={`${bgColor} rounded-3xl p-3 shadow-md hover:shadow-lg hover:shadow-[${accentColor}]`} animate={{ scale: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? 1.02 : isHovered ? 0.8 : 1, opacity: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? 1.06 : isHovered ? 0.8 : 1 }} style={{ height: height || 250, width: width || 250, backdropFilter: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? '' : isHovered ? 'blur(100px)' : '', }}>
@@ -196,7 +259,7 @@ const Project = ({ id, height, width, title, description, accentColor, progress,
                         <UseAnimations animation={checkBox} strokeColor={color} reverse={projectsSelected.includes(id)} onClick={handleProjectSelection} />
                     </div>
                     :
-                    <OptionsModal deleteProject={deleteProject} setLoadNewData={setLoadNewData} projectTitle={title} />
+                    <OptionsModal deleteProject={deleteProject} setLoadNewData={setLoadNewData} projectTitle={title} owner={owner} openModal={openModal} setEditMode={setEditMode} />
                 }
             </div>
             <div className=' h-[30%] flex flex-col'>
@@ -217,7 +280,7 @@ const Project = ({ id, height, width, title, description, accentColor, progress,
                 <div className='inline-flex items-start w-[70%] h-full'>
                     {
                         people &&
-                        <Contributors contributorsData={people} avatarSize={35} avatarShape={'rounded-circle'} alignover={true} onHoverMargin={10} row linkDisabled bordered={false} borderColor={''} borderSize={0} toLeft={0} toTop={0} />
+                        <Contributors contributorsData={people} avatarSize={35} avatarShape={'circle'} alignover={true} onHoverMargin={10} row linkDisabled bordered={false} borderColor={''} borderSize={0} toLeft={0} toTop={0} />
                     }
                 </div>
                 <div className=' inline-flex justify-between items-start py-2 w-[30%] h-full text-xs'>

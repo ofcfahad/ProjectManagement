@@ -61,6 +61,7 @@ function callbackGithub(req: Request, res: Response) {
     passport.authenticate('github', { failureRedirect: '/' })(req, res, async () => {
         try {
             const user = req.user as typeof User;
+
             const userId = await something(user);
             const token = jwt.sign({ userId }, process.env.SECRET_KEY!, { expiresIn: '7d' });
             // Return a client-side script that closes the window and sets the token in the main window's local storage
@@ -79,8 +80,11 @@ function callbackGithub(req: Request, res: Response) {
 
 const something = async (user: typeof User) => {
     try {
-        const findUser = await User.findOne(user)
-        return findUser?._id!
+        if (user) {
+            const findUser = await User.findOne(user)
+            return findUser?._id!
+        }
+        console.log(`from something: no user`);
     } catch (error) {
         console.log(`from something: ${error}`);
     }
@@ -98,6 +102,7 @@ passport.use(new GoogleStrategy({
         // This function will be called when the user authorizes App
         try {
             const user = await User.findOne({ userEmail: profile.emails?.[0].value });
+
             if (user) {
                 return done(null, user);
             } else {

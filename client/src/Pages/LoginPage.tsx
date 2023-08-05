@@ -83,7 +83,7 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
           <div className='w-full h-full flex'>
             <div className=' w-1/2 flex flex-col justify-between px-5 py-5 '>
               <span className='text-[300%] font-alkatra'>
-                Manage Your Projects Effeciently and Productively
+                some fancy marketing quote 
               </span>
               <div className='w-full flex justify-between items-center'>
                 <span className='font-alkatra text-[100%]'>

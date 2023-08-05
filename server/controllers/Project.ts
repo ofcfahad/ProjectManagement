@@ -7,7 +7,11 @@ import validator from 'validator'
 async function getAllProjects(req: Request, res: Response) {
     try {
         const userId = req.body.userId
-        const projects = await Project.find({ owner: userId })
+
+        const projects = await Project.find({
+            $or: [{ owner: userId }, { people: userId }]
+        }).populate('people')
+
         res.json(projects);
     }
     catch (err) {
@@ -57,15 +61,23 @@ function createProject(req: Request, res: Response) {
 
 //Delete Project
 async function deleteProject(req: Request, res: Response) {
-    const projectId = req.body.projectId;
+    const { projectId, userId, owner } = req.body;
 
     try {
-        const deletedProject = await Project.findByIdAndDelete(projectId);
-        if (!deletedProject) {
-            res.status(404).json({ error: `Project with ID ${projectId} not found` });
-            return;
+        if (userId === owner) {
+            const deletedProject = await Project.findByIdAndDelete(projectId);
+            if (!deletedProject) {
+                res.status(404).json({ error: `Project with ID ${projectId} not found` });
+                return;
+            }
+            res.status(200).json({ message: `Project with ID ${projectId} deleted successfully` });
+        } else {
+            const project = await Project.updateOne(
+                { _id: projectId },
+                { $pull: { people: userId } }
+            );
+            res.status(200).json({ message: `Project with ID ${projectId} deleted successfully` });
         }
-        res.json({ message: `Project with ID ${projectId} deleted successfully` });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
@@ -74,12 +86,16 @@ async function deleteProject(req: Request, res: Response) {
 
 const deleteManyProjects = async (req: Request, res: Response) => {
     try {
-        const ids = req.body.ids;
+        const { ids, userId } = req.body;
         const Projects: Array<string> = [];
         await Promise.all(ids.map(async (id: string) => {
             try {
-                const project = await Project.findByIdAndDelete(id)
-                Projects.push(project?.title!);
+                const project = await Project.findById(id)
+                const owner = (project?.owner._id)?.toString()
+                if (project && owner === userId) {
+                    await project.deleteOne()
+                    Projects.push(project.title!)
+                }
             } catch (error) {
                 console.log(`from deleteManyProjects's Promise: ${error}`);
             }

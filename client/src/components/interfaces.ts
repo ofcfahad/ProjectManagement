@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Project {
     title: string,
@@ -22,6 +23,13 @@ interface User {
     userGithubLink: string,
 }
 
+interface People {
+    _id: any,
+    userName: string,
+    fullName: string,
+    userProfilePicture: string,
+    userGithubLink: string
+}
 
 interface UserSettings {
     theme: string
@@ -30,5 +38,6 @@ interface UserSettings {
 export type {
     Project,
     User,
+    People,
     UserSettings
 }

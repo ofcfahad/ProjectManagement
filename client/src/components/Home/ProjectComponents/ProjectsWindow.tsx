@@ -45,7 +45,7 @@ export default function ProjectsWindow(props: any) {
         setDeleteConfirmationisOpen(false)
         setFetchingData(true)
         try {
-            const response = await axios.post('/server/api/deleteManyProjects', { ids: projectsSelected }, { headers: { Authorization: session } })
+            const response = await axios.post('/server/api/deleteManyProjects', { ids: projectsSelected, userId }, { headers: { Authorization: session } })
             if (response.status === 200) {
                 setDeletedProjects(response.data.Projects)
                 setFetchingData(false)
@@ -114,24 +114,24 @@ export default function ProjectsWindow(props: any) {
                             </Tooltip>
                         }
 
-<Confirmation button={
-    <div className='mr-2'>
-    <AnimatePresence>
-        {
-            selectionMode &&
-            <motion.button initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} exit={{ opacity: 0, x: 20 }} data-tooltip-id='deleteprojecttooltip' disabled={projectsSelected.length < 1} onMouseOver={() => setTrashHovering(true)} onMouseOut={() => setTrashHovering(false)} onClick={() => setDeleteConfirmationisOpen(true)} >
-                <UseAnimations animation={trash2} strokeColor={projectsSelected.length >= 1 && trashHovering ? 'red' : projectsSelected.length < 1 ? 'gray' : color} />
-            </motion.button>
-        }
-    </AnimatePresence>
-    {
-        toolTipisVisible &&
-        <Tooltip id='deleteprojecttooltip' delayShow={100} delayHide={0} place='top'>
-            Delete
-        </Tooltip>
-    }
-</div>
-} isOpen={deleteConfirmationisOpen} onClose={() => setDeleteConfirmationisOpen(false)} title={'You sure want to delete the selected Projects?'} description={'These Projects will be added to trash and be deleted within 7 days'} customSubmitButton={handleProjectsDeletion} customSubmitButtonTitle={'yes'} />
+                        <Confirmation button={
+                            <div className='mr-2'>
+                                <AnimatePresence>
+                                    {
+                                        selectionMode &&
+                                        <motion.button initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} exit={{ opacity: 0, x: 20 }} data-tooltip-id='deleteprojecttooltip' disabled={projectsSelected.length < 1} onMouseOver={() => setTrashHovering(true)} onMouseOut={() => setTrashHovering(false)} onClick={() => setDeleteConfirmationisOpen(true)} >
+                                            <UseAnimations animation={trash2} strokeColor={projectsSelected.length >= 1 && trashHovering ? 'red' : projectsSelected.length < 1 ? 'gray' : color} />
+                                        </motion.button>
+                                    }
+                                </AnimatePresence>
+                                {
+                                    toolTipisVisible &&
+                                    <Tooltip id='deleteprojecttooltip' delayShow={100} delayHide={0} place='top'>
+                                        Delete
+                                    </Tooltip>
+                                }
+                            </div>
+                        } isOpen={deleteConfirmationisOpen} onClose={() => setDeleteConfirmationisOpen(false)} title={'You sure want to delete the selected Projects?'} description={'These Projects will be added to trash and be deleted within 7 days'} customSubmitButton={handleProjectsDeletion} customSubmitButtonTitle={'yes'} />
 
                         <UseAnimations animation={settings2} reverse={selectionMode} data-tooltip-id='projectSettingsToolTip' className='rotate-90 cursor-pointer' strokeColor={color} onClick={() => setSelectionMode(!selectionMode)} />
                         {

@@ -13,8 +13,8 @@ const ProjectSchema = new mongoose.Schema({
         required: true
     },
     Dates: {
-        creation: {
-            type: Date,
+        created: {
+            type: String,
             default: Date.now()
         },
         started: Date

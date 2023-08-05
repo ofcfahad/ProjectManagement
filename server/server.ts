@@ -8,6 +8,8 @@ import { authenticateUser, getUserEmail, sendAOTP, verifyAOTP } from './controll
 import { authenticateGithub, authenticateGoogle, callbackGithub, callbackGoogle } from './controllers/SocialAuth'
 import { forgotPassword, getPeopleInfo, getUserData, resetPassword } from './controllers/User'
 import checkSession from './middlewares/checkSession'
+import session from 'express-session'
+import passport from 'passport';
 require('dotenv').config()
 
 
@@ -21,6 +23,18 @@ app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true
 }));
+
+app.use(
+  session({
+    secret: process.env.SECRET_KEY!,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+// Initialize Passport and session middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.listen(port, () => {
   console.log(`running on port ${port}`)
