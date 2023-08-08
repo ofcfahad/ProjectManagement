@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import '../index.css'
 //Icons
 import { CiMail } from 'react-icons/ci'
@@ -12,26 +12,29 @@ import { FiChevronDown } from 'react-icons/fi'
 //AppComponents
 import { ProjectsWindow, StatsBar, NotificationBar, TopBar } from '../components/Home'
 import { UserProfileCompletion } from '../components/Popups'
-import { ThemeContext } from '../components/Contexts/ThemeContext'
 import { themeColors } from '../components/functions'
 import { Project } from '../components/interfaces'
 //OtherComponents
 import { motion } from 'framer-motion'
 import 'react-tooltip/dist/react-tooltip.css'
+import { useProjectsData } from '../components/Contexts/Project/useProjectsData'
+import { useThemeContext } from '../components/Contexts/Theme/useThemeContext'
+import { useUserData } from '../components/Contexts/User/useUserContext'
+import { useGuestContext } from '../components/Contexts/User/GuestContext'
 
 const Home = () => {
 
     const [searchContent, setsearchContent] = useState('')
-    const [projectsData, setProjectsData] = useState<Project[]>([])
     const [searchedProjectsData, setSearchedProjectsData] = useState<Project[]>([])
     const [noSearchedProjects, setNoSearchedProjects] = useState(false)
-    const [fetchingData, setFetchingData] = useState(false)
-    const [loadNewData, setLoadNewData] = useState(false);
     const [notificationBar, setnotificationBar] = useState(false)
     const [completeProfileDialogisOpen, setCompleteProfileDialogisOpen] = useState(false)
     const [isHovered, setIsHovered] = useState('')
 
-    const { theme } = useContext(ThemeContext)
+    const { theme } = useThemeContext()
+    const { userData } = useUserData()
+    const { isGuest } = useGuestContext()
+    const { projectsData } = useProjectsData()
     const color = themeColors(theme, 'main')
     const bgColor = themeColors(theme, 'background')
 
@@ -43,9 +46,9 @@ const Home = () => {
         }
     }, [searchContent])
 
-    const startedProjects = projectsData.filter(project => project.progress < 10)
-    const ongoingProjects = projectsData.filter(project => project.progress >= 10 && project.progress < 100)
-    const completedProjects = projectsData.filter(project => project.progress === 100)
+    const startedProjects = projectsData && projectsData.filter(project => project.progress < 10)
+    const ongoingProjects = projectsData && projectsData.filter(project => project.progress >= 10 && project.progress < 100)
+    const completedProjects = projectsData && projectsData.filter(project => project.progress === 100)
 
     const projectsInfo = [
         {
@@ -95,18 +98,28 @@ const Home = () => {
         }
     ]
 
+    useEffect(() => {
+        if (!isGuest && !userData.fullName) {
+            setTimeout(() => {
+                setCompleteProfileDialogisOpen(true)
+            }, 2000);
+        }
+    }, [])
+
     return (
         <div className={`w-full h-full`}>
             {/* TOPBAR */}
-            <TopBar searchContent={searchContent} setsearchContent={setsearchContent} setFetchingData={setFetchingData} setLoadNewData={setLoadNewData} setNoSearchedProjects={setNoSearchedProjects} setSearchedProjectsData={setSearchedProjectsData} notificationBar={notificationBar} setnotificationBar={setnotificationBar} notificationData={notificationData} />
+            <TopBar searchContent={searchContent} setsearchContent={setsearchContent} setNoSearchedProjects={setNoSearchedProjects} setSearchedProjectsData={setSearchedProjectsData} notificationBar={notificationBar} setnotificationBar={setnotificationBar} notificationData={notificationData} />
             {/* MAINAPP */}
             <div className='w-full h-[90%] pt-20 font-oswald'>
                 {/* JUSTADIVTOKEEPCHILDRENALIGNED */}
                 <div className='w-full flex' style={{ height: 750 }} >
                     {/* PROJECTSSSECTION */}
-                    <ProjectsWindow searchContent={searchContent} fetchingData={fetchingData} setFetchingData={setFetchingData} loadNewData={loadNewData} setLoadNewData={setLoadNewData} isHovered={isHovered} setCompleteProfileDialogisOpen={setCompleteProfileDialogisOpen} projectsData={projectsData} setProjectsData={setProjectsData} noSearchedProjects={noSearchedProjects} setNoSearchedProjects={setNoSearchedProjects} searchedProjectsData={searchedProjectsData} setSearchedProjectsData={setSearchedProjectsData} />
+
+                    <ProjectsWindow searchContent={searchContent} isHovered={isHovered} noSearchedProjects={noSearchedProjects} setNoSearchedProjects={setNoSearchedProjects} searchedProjectsData={searchedProjectsData} setSearchedProjectsData={setSearchedProjectsData} />
+
                     {/* RIGHTBARS */}
-                    <motion.div initial={{ opacity: 0, }} animate={{ opacity: width >= 1060 ? 1 : 0, height: 750 }} transition={{ duration: 1 }} className={`hidden md:flex flex-col xxl:w-[15%] xxml:w-[20%] damnit:w-[20%] md:w-[25%] w-[20%] mr-[25px] rounded-3xl select-none`}>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: width >= 1060 ? 1 : 0, height: 750 }} transition={{ duration: 1 }} className={`hidden md:flex flex-col xxl:w-[15%] xxml:w-[20%] damnit:w-[20%] md:w-[25%] w-[20%] mr-[25px] rounded-3xl select-none`}>
                         {/* STATSIG */}
                         <StatsBar notificationBar={notificationBar} bgColor={bgColor} projectsDataLength={projectsData.length} ongoingProjects={ongoingProjects} projectsInfo={projectsInfo} isHovered={isHovered} setIsHovered={setIsHovered} />
                         {/* NOTIFICATIONBAR */}

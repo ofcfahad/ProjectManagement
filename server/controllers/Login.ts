@@ -16,7 +16,6 @@ const authenticateUser = async (req: Request, res: Response) => {
                 { userEmail: userName }
             ]
         })
-        console.log(user);
 
         if (user && await bcrypt.compare(userPassword, user.userPassword!)) {
             res.status(200).json({ message: 'success' })

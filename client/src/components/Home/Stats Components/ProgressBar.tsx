@@ -1,14 +1,13 @@
-import React from 'react';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { ThemeContext } from '../../Contexts/ThemeContext';
 import { themeColors } from '../../functions';
+import { useThemeContext } from '../../Contexts/Theme/useThemeContext';
 
 function ProgressBar({ progress, backgroundColor, borderRadius, trailColor, inprogressColor, padding, /* waitingColor, completedColor, inprogress, completed, waiting */ }: { progress: number, backgroundColor: string, borderRadius: number, trailColor: string, inprogressColor: string, padding: number }) {
   const [animatedProgress, setAnimatedProgress] = useState(0);
 
-  const { theme } = useContext(ThemeContext)
+  const { theme } = useThemeContext()
   const color = themeColors(theme, 'main')
 
   useEffect(() => {

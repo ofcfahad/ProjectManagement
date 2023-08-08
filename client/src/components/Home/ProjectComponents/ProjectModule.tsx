@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, Fragment, useEffect, useContext } from 'react'
+import { useState, Fragment, useEffect } from 'react'
 
 //AppComponents
 import OptionsModal from './OptionsModal'
@@ -11,7 +11,7 @@ import TaskModule from './TaskModule'
 //OtherComponents
 import { AnimatePresence, motion } from 'framer-motion'
 import { Dialog, Transition } from '@headlessui/react'
-import { ColorPicker, Divider } from 'antd'
+import { Divider } from 'antd'
 //Icons
 import { IconContext } from 'react-icons'
 import { GiPaperClip } from 'react-icons/gi'
@@ -23,13 +23,15 @@ import { CiEdit } from 'react-icons/ci'
 import { addOwnerToPeople, convertHexToRGBA, themeColors } from '../../functions'
 import UseAnimations from 'react-useanimations'
 import checkBox from 'react-useanimations/lib/checkBox'
-import { ThemeContext } from '../../Contexts/ThemeContext'
 import { People } from '../../interfaces'
-import { UserDataContext } from '../../Contexts'
 import { profilePicture } from '../../../assets'
+import { useUserData } from '../../Contexts/User/useUserContext'
+import { useThemeContext } from '../../Contexts/Theme/useThemeContext'
+import { useGuestContext } from '../../Contexts/User/GuestContext'
+import { useProjectsData } from '../../Contexts/Project/useProjectsData'
 
 
-const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, selectionMode, projectsSelected, setProjectsSelected }: { height: number, width: number, project: any, setLoadNewData: any, isHovered: any, selectionMode: boolean, projectsSelected: Array<string>, setProjectsSelected: any }) => {
+const ProjectModule = ({ height, width, project, isHovered, selectionMode, projectsSelected, setProjectsSelected, loadNewData }: { height: number, width: number, project: any, isHovered: any, selectionMode: boolean, projectsSelected: Array<string>, setProjectsSelected: any, loadNewData: any }) => {
     const [isOpen, setIsOpen] = useState(false)
     const [peopleData, setPeopleData] = useState<Array<People>>([])
     const [editMode, setEditMode] = useState(false)
@@ -40,8 +42,10 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, sele
     const [titleInputController, setTitleInputController] = useState(title)
     const [descriptionInputController, setDescriptionInputController] = useState(description)
 
-    const userData = useContext(UserDataContext)
-    const { theme } = useContext(ThemeContext)
+    const { userData } = useUserData()
+    const { isGuest } = useGuestContext()
+    const { removeProject } = useProjectsData()
+    const { theme } = useThemeContext()
     const bgColor = themeColors(theme, 'background')
     const color = themeColors(theme, 'main')
 
@@ -49,9 +53,14 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, sele
     const ButtonStyle = `focus:outline-none`
 
     const getPeopleInfo = async () => {
+        if (isGuest) {
+            const people = [userData]
+            setPeopleData(people)
+            return;
+        }
         try {
             addOwnerToPeople(people, owner)
-            
+
             const response = await axios.post(`/server/api/getPeopleInfo`, { userIds: people }, { headers: { Authorization: session } })
             const users = response.data.users
             setPeopleData(users)
@@ -84,7 +93,11 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, sele
     }
 
     const deleteProject = () => {
-        handleProjectDeletion(_id)
+        if (isGuest) {
+            removeProject(_id)
+        } else {
+            handleProjectDeletion(_id)
+        }
     }
 
     function closeModal() {
@@ -120,7 +133,7 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, sele
     return (
         <>
             <div className="flex items-center justify-center" >
-                <Project setLoadNewData={setLoadNewData} deleteProject={deleteProject} openModal={openModal} id={_id} title={title} description={description} accentColor={accentColor} progress={progress} people={peopleData} comments={comments} attachments={attachments} owner={owner} height={height} width={width} isHovered={isHovered} selectionMode={selectionMode} projectsSelected={projectsSelected} handleProjectSelection={handleProjectSelection} setEditMode={setEditMode} color={color} bgColor={bgColor} />
+                <Project deleteProject={deleteProject} openModal={openModal} id={_id} title={title} description={description} accentColor={accentColor} progress={progress} people={peopleData} comments={comments} attachments={attachments} owner={owner} height={height} width={width} isHovered={isHovered} selectionMode={selectionMode} projectsSelected={projectsSelected} handleProjectSelection={handleProjectSelection} setEditMode={setEditMode} color={color} bgColor={bgColor} loadNewData={loadNewData} />
             </div>
 
             <Transition appear show={isOpen} as={Fragment}>
@@ -248,7 +261,7 @@ const ProjectModule = ({ height, width, project, setLoadNewData, isHovered, sele
 }
 
 
-const Project = ({ id, height, width, title, description, accentColor, progress, people, comments, attachments, owner, setLoadNewData, deleteProject, openModal, isHovered, color, bgColor, selectionMode, projectsSelected, handleProjectSelection, setEditMode }: { id: string, height: number, width: number, title: string, description: string, accentColor: string, progress: number, people: any, comments: any, attachments: any, owner: string, setLoadNewData: any, deleteProject: any, openModal: any, isHovered: string, color: string, bgColor: string, selectionMode: boolean, projectsSelected: Array<string>, handleProjectSelection: any, setEditMode: any }) => {
+const Project = ({ id, height, width, title, description, accentColor, progress, people, comments, attachments, owner, deleteProject, openModal, isHovered, color, bgColor, selectionMode, projectsSelected, handleProjectSelection, setEditMode, loadNewData }: { id: string, height: number, width: number, title: string, description: string, accentColor: string, progress: number, people: any, comments: any, attachments: any, owner: string, deleteProject: any, openModal: any, isHovered: string, color: string, bgColor: string, selectionMode: boolean, projectsSelected: Array<string>, handleProjectSelection: any, setEditMode: any, loadNewData: any }) => {
 
     return (
         <motion.div className={`${bgColor} rounded-3xl p-3 shadow-md hover:shadow-lg hover:shadow-[${accentColor}]`} animate={{ scale: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? 1.02 : isHovered ? 0.8 : 1, opacity: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? 1.06 : isHovered ? 0.8 : 1 }} style={{ height: height || 250, width: width || 250, backdropFilter: isHovered === 'Waiting' && progress <= 10 || isHovered === 'In Progress' && progress > 10 && progress < 100 || isHovered === 'Completed' && progress === 100 || isHovered === 'Total' ? '' : isHovered ? 'blur(100px)' : '', }}>
@@ -259,7 +272,7 @@ const Project = ({ id, height, width, title, description, accentColor, progress,
                         <UseAnimations animation={checkBox} strokeColor={color} reverse={projectsSelected.includes(id)} onClick={handleProjectSelection} />
                     </div>
                     :
-                    <OptionsModal deleteProject={deleteProject} setLoadNewData={setLoadNewData} projectTitle={title} owner={owner} openModal={openModal} setEditMode={setEditMode} />
+                    <OptionsModal deleteProject={deleteProject} projectTitle={title} owner={owner} openModal={openModal} setEditMode={setEditMode} loadNewData={loadNewData} />
                 }
             </div>
             <div className=' h-[30%] flex flex-col'>

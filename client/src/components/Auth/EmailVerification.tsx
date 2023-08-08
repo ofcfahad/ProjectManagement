@@ -71,7 +71,6 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
                     setEmailIsSentAgain(emailIsSentAgain + 1)
                 } else {
                     console.log(response.data.message);
-
                 }
             } catch (error: any) {
                 setButtonDisabled('')

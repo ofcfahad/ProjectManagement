@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useContext } from "react";
 import { Divider } from 'antd'
 import { IconContext } from 'react-icons'
-import { ThemeContext } from '../../Contexts/ThemeContext'
+import { useThemeContext } from "../../Contexts/Theme/useThemeContext";
 
 const NotificationModule = ({ notificationData, height, icon, actionIcon, iconBackgroundColor, title, description }: { notificationData: any, height: number, icon: any, actionIcon: any, iconBackgroundColor: string, title: string, description: string }) => {
 
-    const { theme } = useContext(ThemeContext)
+    const { theme } = useThemeContext()
 
     const notificationfilteredData = notificationData.map((notification: any) => ({
         icon: notification.icon || icon,

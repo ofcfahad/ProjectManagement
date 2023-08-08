@@ -46,10 +46,22 @@ function addOwnerToPeople(people: Array<string>, owner: string) {
   people.unshift(owner)
 }
 
+function randomstring(length: number) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+
 export {
   protect_email,
   convertHexToRGBA,
   capitalize,
   themeColors,
-  addOwnerToPeople
+  addOwnerToPeople,
+  randomstring
 }

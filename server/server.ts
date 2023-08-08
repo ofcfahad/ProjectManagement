@@ -10,6 +10,7 @@ import { forgotPassword, getPeopleInfo, getUserData, resetPassword } from './con
 import checkSession from './middlewares/checkSession'
 import session from 'express-session'
 import passport from 'passport';
+import { disableSocialAuth } from '../developerSettings'
 require('dotenv').config()
 
 
@@ -24,17 +25,22 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(
-  session({
-    secret: process.env.SECRET_KEY!,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+if (!disableSocialAuth) {
 
-// Initialize Passport and session middleware
-app.use(passport.initialize());
-app.use(passport.session());
+  app.use(
+    session({
+      secret: process.env.SECRET_KEY!,
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
+
+  // Initialize Passport and session middleware
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+}
+
 
 app.listen(port, () => {
   console.log(`running on port ${port}`)
@@ -60,12 +66,18 @@ app.use('/api/authenticateUser', authenticateUser)
 app.use('/api/getUserEmail', getUserEmail)
 app.use('/api/sendAuthenticationOTP', sendAOTP)
 app.use('/api/verifyAuthenticationOTP', verifyAOTP)
-//Github
-app.get('/api/auth/github', authenticateGithub)
-app.get('/api/auth/callback/github', callbackGithub)
-//Google
-app.get('/api/auth/google', authenticateGoogle)
-app.get('/api/auth/callback/google', callbackGoogle)
+
+// Social Auth
+if (!disableSocialAuth) {
+
+  //Github
+  app.get('/api/auth/github', authenticateGithub)
+  app.get('/api/auth/callback/github', callbackGithub)
+  //Google
+  app.get('/api/auth/google', authenticateGoogle)
+  app.get('/api/auth/callback/google', callbackGoogle)
+
+}
 
 //Project
 app.use('/api/projectsData', checkSession, getAllProjects);

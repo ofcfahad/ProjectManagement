@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios'
 
-const fetchProjectsData = async (setFetchingData: any, setProjectsData: any, setLoadNewData: any, userId: string, session: string) => {
+const fetchProjectsData = async (userId: string, session: string) => {
     try {
-        setFetchingData(true)
         const response = await axios.post(`/server/api/projectsData`, { userId }, { headers: { Authorization: session } })
 
         if (!response) {
@@ -11,18 +10,14 @@ const fetchProjectsData = async (setFetchingData: any, setProjectsData: any, set
         }
 
         const data = await response.data
-        setProjectsData(data);
+        return data
     } catch (error) {
         console.error(error);
-    } finally {
-        setLoadNewData(false);
-        setFetchingData(false)
     }
 };
 
-const fetchSearchedProjectsData = async (setFetchingData: any, setLoadNewData: any, setNoSearchedProjects: any, setSearchedProjectsData: any, userId: string, session: string, searchContent: string) => {
+const fetchSearchedProjectsData = async (setNoSearchedProjects: any, setSearchedProjectsData: any, userId: string, session: string, searchContent: string) => {
     try {
-        setFetchingData(true)
         const response = await axios.post(`/server/api/searchedProjectsData`, { userId, searchQuery: searchContent }, { headers: { Authorization: session } })
 
         if (!response) {
@@ -39,9 +34,6 @@ const fetchSearchedProjectsData = async (setFetchingData: any, setLoadNewData: a
         }
     } catch (error) {
         console.error(error);
-    } finally {
-        setLoadNewData(false)
-        setFetchingData(false)
     }
 }
 

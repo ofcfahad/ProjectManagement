@@ -8,16 +8,16 @@ import { Menu, Transition } from '@headlessui/react'
 import { IconContext } from "react-icons";
 import { RxDotsHorizontal, } from 'react-icons/rx';
 import { CiCircleChevLeft, CiEdit, CiTrash } from 'react-icons/ci';
-import { ThemeContext } from '../../Contexts/ThemeContext';
-import { UserDataContext } from '../../Contexts';
+import { useUserData } from '../../Contexts/User/useUserContext';
+import { useThemeContext } from '../../Contexts/Theme/useThemeContext';
 
 
 export default function OptionsModal(props: any) {
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
-    const { theme } = useContext(ThemeContext)
-    const userData = useContext(UserDataContext)
+    const { theme } = useThemeContext()
+    const { userData } = useUserData()
 
     const deleteProject = () => {
         props.deleteProject()
@@ -26,7 +26,7 @@ export default function OptionsModal(props: any) {
 
     const closeDeleteModule = () => {
         setOpenDeleteModal(false)
-        props.setLoadNewData(true)
+        props.loadNewData()
     }
 
     const handleEditClick = () => {

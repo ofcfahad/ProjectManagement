@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useContext } from 'react'
 import { Listbox } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import { IconContext } from 'react-icons'
@@ -10,19 +9,21 @@ import { RxDividerVertical } from 'react-icons/rx'
 import UseAnimations from 'react-useanimations'
 import menu4 from 'react-useanimations/lib/menu4'
 import notification2 from 'react-useanimations/lib/notification2'
-import { NavbarContext, ThemeContext, UserDataContext, UserSettingsContext } from '../../Contexts'
 import { themeColors } from '../../functions'
 import { Tooltip } from 'react-tooltip'
 import SearchBar from './SearchBar'
 import { profilePicture } from '../../../assets'
+import { useSidebarContext } from '../../Contexts/SideBar/useSidebarContext'
+import { useUserData } from '../../Contexts/User/useUserContext'
+import { useThemeContext } from '../../Contexts/Theme/useThemeContext'
 
 const TopBar = (props: any) => {
 
-    const { searchContent, setsearchContent, setFetchingData, setLoadNewData, setNoSearchedProjects, setSearchedProjectsData, notificationBar, setnotificationBar, notificationData } = props
-    const { theme, toggleTheme } = useContext(ThemeContext)
-    const { expand, toggleExpand } = useContext(NavbarContext)
-    const { toolTipisVisible } = useContext(UserSettingsContext)
-    const userData = useContext(UserDataContext)
+    const { searchContent, setsearchContent, setNoSearchedProjects, setSearchedProjectsData, notificationBar, setnotificationBar, notificationData } = props
+    const { theme, toggleTheme } = useThemeContext()
+    const { expand, toggleExpand } = useSidebarContext()
+    const { userData } = useUserData()
+    const toolTipisVisible = userData.preferences.toolTipisVisible
     const color = themeColors(theme, 'main')
 
     return (
@@ -42,7 +43,7 @@ const TopBar = (props: any) => {
                             }
                         </div>
                         {/* SEARCHBAR */}
-                        <SearchBar searchContent={searchContent} setsearchContent={setsearchContent} setFetchingData={setFetchingData} setLoadNewData={setLoadNewData} setNoSearchedProjects={setNoSearchedProjects} setSearchedProjectsData={setSearchedProjectsData} />
+                        <SearchBar searchContent={searchContent} setsearchContent={setsearchContent} setNoSearchedProjects={setNoSearchedProjects} setSearchedProjectsData={setSearchedProjectsData} />
                     </div>
                     {/* RIGHT */}
                     <div className={`h-full flex xxl:w-[18%] xl:w-[20%] w-[30%]`}>

@@ -4,18 +4,18 @@ import { motion } from 'framer-motion'
 import { IconContext } from 'react-icons'
 import { HiOutlineUser } from 'react-icons/hi2'
 import ProgressBar from './ProgressBar'
-import { useContext } from 'react'
-import { UserSettingsContext } from '../../Contexts'
+import { useUserData } from '../../Contexts/User/useUserContext'
 
 const StatsBar = (props: any) => {
 
     const { notificationBar, bgColor, projectsDataLength, ongoingProjects, projectsInfo, isHovered, setIsHovered } = props
 
-    const { toolTipisVisible } = useContext(UserSettingsContext)
+    const { userData } = useUserData()
+    const toolTipisVisible = userData.preferences.toolTipisVisible
 
     const handleStatsBarClick = (id: string) => () => {
         if (isHovered === id) {
-           return setIsHovered('')
+            return setIsHovered('')
         }
         setIsHovered(id)
     }
@@ -61,7 +61,7 @@ const StatsBar = (props: any) => {
                     <div className='flex flex-wrap w-full h-[85%]'>
                         {
                             projectsInfo.map((project: any) => (
-                                <motion.div key={project.id} initial={{ opacity: 0, scale: 1.5 }} animate={{ opacity: 1, scale: isHovered === project.id ? 1.1 : 1  }} className={`w-[45%] h-[45%] ml-2 mt-1 flex flex-col justify-around px-2 rounded-lg`} style={{ background: project.backgroundColor, boxShadow: isHovered === project.id ? project.shadowColor : '', cursor: 'pointer' }} onClick={handleStatsBarClick(project.id)} >
+                                <motion.div key={project.id} initial={{ opacity: 0, scale: 1.5 }} animate={{ opacity: 1, scale: isHovered === project.id ? 1.1 : 1 }} className={`w-[45%] h-[45%] ml-2 mt-1 flex flex-col justify-around px-2 rounded-lg`} style={{ background: project.backgroundColor, boxShadow: isHovered === project.id ? project.shadowColor : '', cursor: 'pointer' }} onClick={handleStatsBarClick(project.id)} >
                                     <span className='text-gray-500'> {project.id} </span>
                                     <div className='flex justify-between items-center'>
                                         <div className={`h-[25px] w-[6px] rounded-3xl shadow-inner`} style={{ background: project.whatColor }} ></div>

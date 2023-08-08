@@ -1,29 +1,31 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Tooltip } from 'react-tooltip'
 import { CiSearch } from 'react-icons/ci'
 import { RxCross1 } from 'react-icons/rx'
 import Cookies from 'js-cookie'
-import { ThemeContext, UserDataContext, UserSettingsContext } from '../../Contexts'
 import { fetchSearchedProjectsData } from '../functions'
 import { themeColors } from '../../functions'
 import { IconContext } from 'react-icons'
+import { useUserData } from '../../Contexts/User/useUserContext'
+import { useThemeContext } from '../../Contexts/Theme/useThemeContext'
 
-const SearchBar = ({ searchContent, setsearchContent, setFetchingData, setLoadNewData, setNoSearchedProjects, setSearchedProjectsData }: { searchContent: string, setsearchContent: any, setFetchingData: any, setLoadNewData: any, setNoSearchedProjects: any, setSearchedProjectsData: any }) => {
+const SearchBar = ({ searchContent, setsearchContent, setNoSearchedProjects, setSearchedProjectsData }: { searchContent: string, setsearchContent: any, setNoSearchedProjects: any, setSearchedProjectsData: any }) => {
 
     const [isExpanded, setisExpanded] = useState(false)
     const [isFocused, setisFocused] = useState(false)
 
-    const { toolTipisVisible } = useContext(UserSettingsContext)
-    const userData = useContext(UserDataContext)
-    const { theme } = useContext(ThemeContext)
+    const { userData } = useUserData()
+
+    const toolTipisVisible = userData.preferences.toolTipisVisible
+    const { theme } = useThemeContext()
     const bgColor = themeColors(theme, 'background')
     const color = themeColors(theme, 'main')
 
     const SearchBar = document.getElementById('search_query')
-    const handleSearchIconClick = () => { isFocused && searchContent ? fetchSearchedProjectsData(setFetchingData, setLoadNewData, setNoSearchedProjects, setSearchedProjectsData, userData._id, Cookies.get('session')!, searchContent) : isFocused ? SearchBar?.focus() : null }
+    const handleSearchIconClick = () => { isFocused && searchContent ? fetchSearchedProjectsData(setNoSearchedProjects, setSearchedProjectsData, userData._id, Cookies.get('session')!, searchContent) : isFocused ? SearchBar?.focus() : null }
     const handleCrossClick = () => { setsearchContent(''), setisExpanded(false), setSearchedProjectsData([]), setNoSearchedProjects(false) }
 
     const onFocus = () => {

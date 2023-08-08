@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dialog, Disclosure, Transition } from '@headlessui/react'
 import { motion } from 'framer-motion'
-import { Fragment, useContext } from 'react'
+import { Fragment } from 'react'
 import { RxCross1 } from 'react-icons/rx'
-import { ThemeContext } from './Contexts/ThemeContext'
 import { ChevronUpIcon } from '@heroicons/react/24/outline'
+import { useThemeContext } from './Contexts/Theme/useThemeContext'
 
 export function Info({ button, title, isOpen, onClose, description }: { button: any, title: any, isOpen: boolean, onClose: any, description: string }) {
 
-    const { theme } = useContext(ThemeContext)
+    const { theme } = useThemeContext()
 
     return (
         <div>
@@ -73,9 +73,9 @@ export function Info({ button, title, isOpen, onClose, description }: { button: 
     )
 }
 
-export function DeletedInfo({ isOpen, onClose, deletedProjects }: { isOpen: boolean, onClose: any, deletedProjects: Array<string> }) {
+export function DeletedInfo({ isOpen, onClose, deletedProjects }: { isOpen: boolean, onClose: any, deletedProjects: Array<object> }) {
 
-    const { theme } = useContext(ThemeContext)
+    const { theme } = useThemeContext()
 
     return (
         <div>
@@ -132,7 +132,7 @@ export function DeletedInfo({ isOpen, onClose, deletedProjects }: { isOpen: bool
                                                         <ul>
                                                             {
                                                                 deletedProjects.map((project: any) => (
-                                                                    <li key={project}> <b>{project}</b> </li>
+                                                                    <li key={project.id}> <b>{project.title}</b> </li>
                                                                 ))
                                                             }
                                                         </ul>
@@ -155,7 +155,7 @@ export function DeletedInfo({ isOpen, onClose, deletedProjects }: { isOpen: bool
 
 export function Confirmation({ button, isOpen, onClose, title, description, customSubmitButton, customSubmitButtonTitle }: { button: any, isOpen: boolean, onClose: any, title: any, description: string, customSubmitButton: any, customSubmitButtonTitle: string }) {
 
-    const { theme } = useContext(ThemeContext)
+    const { theme } = useThemeContext()
 
     return (
         <div>
@@ -226,7 +226,7 @@ export function Confirmation({ button, isOpen, onClose, title, description, cust
 
 export const UserProfileCompletion = ({ completeProfileDialogisOpen, setCompleteProfileDialogisOpen }: { completeProfileDialogisOpen: boolean, setCompleteProfileDialogisOpen: any }) => {
 
-    const { theme } = useContext(ThemeContext)
+    const { theme } = useThemeContext()
 
     return (
         <Transition appear show={completeProfileDialogisOpen} as={Fragment}>

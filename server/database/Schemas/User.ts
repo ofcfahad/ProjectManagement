@@ -18,6 +18,10 @@ const UserSchema = new mongoose.Schema({
   userProfilePicture: s,
   userPassword: s,
   userGithubLink: s,
+  preferences: {
+    theme: s,
+    toolTipisVisible: Boolean
+  }
 })
 
 const User = mongoose.model('appUsers', UserSchema, 'appUsers')

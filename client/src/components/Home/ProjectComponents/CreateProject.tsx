@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Fragment, useCallback, useEffect, useState, useContext } from 'react'
+import { Fragment, useState } from 'react'
 //OtherComponents
 import { Dialog, Transition } from '@headlessui/react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -14,30 +14,14 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import { Info } from '../../'
 import axios from 'axios'
 import Cookies from 'js-cookie'
-import { ThemeContext } from '../../Contexts/ThemeContext'
-import { themeColors } from '../../functions'
+import { randomstring, themeColors } from '../../functions'
 import { Project } from '../../interfaces'
+import { useProjectsData } from '../../Contexts/Project/useProjectsData'
+import { useThemeContext } from '../../Contexts/Theme/useThemeContext'
+import { useUserData } from '../../Contexts/User/useUserContext'
+import { useGuestContext } from '../../Contexts/User/GuestContext'
 
 export default function CreateProject(props: any) {
-
-    const { userId } = props
-    const { theme } = useContext(ThemeContext)
-    const bgColor = themeColors(theme, 'background')
-    const color = themeColors(theme, 'main')
-
-    const defaultProject: Project = {
-        title: '',
-        description: '',
-        accentColor: 'white',
-        tasks: [''],
-        completedtasks: [''],
-        progress: 0,
-        owner: userId,
-        people: [''],
-        Dates: {},
-        attachments: 0,
-        comments: 0,
-    };
 
     const [isOpen, setIsOpen] = useState(false)
     const [titleInput, settitleInput] = useState('')
@@ -48,16 +32,21 @@ export default function CreateProject(props: any) {
     const [tasksData, setTasksData] = useState<Array<string>>([])
     const [completedTasksInput, setCompletedTasksInput] = useState('')
     const [completedTasks, setCompletedTasks] = useState<Array<string>>([])
-    const [finalProject, setFinalProject] = useState<Project>(defaultProject)
     const [optionSelected, setoptionSelected] = useState(props.reference === 'main' ? 'started' : props.reference)
     const [secondIsOpen, setSecondIsOpen] = useState(false)
-    const [handleSubmit, setHandleSubmit] = useState(false);
 
+    const { userData } = useUserData()
+    const { isGuest } = useGuestContext()
+    const userId = userData._id
+    const { theme } = useThemeContext()
+    const { addProject } = useProjectsData()
+    const bgColor = themeColors(theme, 'background')
+    const color = themeColors(theme, 'main')
+    const session = Cookies.get('session')
 
     const handleTasksInput = (event: any) => {
         setTasksInput(event.target.value)
     }
-
 
     const handleNewTask = () => {
         if (tasksData.length <= 10) {
@@ -88,27 +77,25 @@ export default function CreateProject(props: any) {
         setTasksData([])
         setCompletedTasksInput('')
         setCompletedTasks([])
-        setFinalProject(defaultProject)
         setoptionSelected('started')
-        setHandleSubmit(false)
     }
 
-    const session = Cookies.get('session')
-
-    const handleProjectPost = useCallback(async () => {
-        if (Object.keys(finalProject).length !== 0) {
+    const handleProjectPost = async (project: Project) => {
+        if (Object.keys(project).length !== 0) {
+            if (isGuest) {
+                addProject(project)
+                return;
+            }
             try {
-                await axios.post(`/server/api/createProject`, { finalProject }, { headers: { Authorization: session } });
+                await axios.post(`/server/api/createProject`, { project }, { headers: { Authorization: session } });
             } catch (error) {
                 console.log(`from handleProjectPost: ${error}`);
             }
         }
-    }, [finalProject, reset])
-
+    }
 
     const onSubmit = async (event: { preventDefault: () => void }) => {
         event.preventDefault();
-        setHandleSubmit(true)
         setSecondIsOpen(true);
         const currentDate = new Date(Date.now());
         const formattedDate = currentDate.toLocaleString('en-GB', {
@@ -119,7 +106,9 @@ export default function CreateProject(props: any) {
             minute: '2-digit',
             hour12: true
         });
+        const randomId = randomstring(15)
         const data = {
+            _id: isGuest ? randomId : undefined,
             title: projectTitle,
             description: description || `it is ${projectTitle}`,
             progress: ~~((completedTasks.length / tasksData.length) * 100),
@@ -134,20 +123,14 @@ export default function CreateProject(props: any) {
             attachments: 0,
             comments: 0
         }
-        setFinalProject(data);
+        handleProjectPost(data)
     };
-
-    useEffect(() => {
-        if (handleSubmit) {
-            handleProjectPost()
-        }
-    }, [handleSubmit, handleProjectPost]);
 
 
     const closeModule = () => {
         setSecondIsOpen(false)
         setIsOpen(false)
-        props.setLoadNewData(true)
+        props.loadNewData()
         reset()
     }
 

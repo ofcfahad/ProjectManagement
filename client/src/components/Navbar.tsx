@@ -11,12 +11,15 @@ import { appLogo } from '../assets/'
 import { IconContext } from "react-icons";
 import { CiHome, CiLogout, CiMail, CiSettings } from 'react-icons/ci'
 import { HiOutlineRectangleStack, HiOutlineUser } from 'react-icons/hi2';
+import { useSidebarContext } from './Contexts/SideBar/useSidebarContext';
 
-const Navbar = ({ expand, menuTransitionDuration, handleLogout }: { expand: boolean, menuTransitionDuration: number, handleLogout: any }) => {
+const Navbar = ({ menuTransitionDuration, handleLogout }: { menuTransitionDuration: number, handleLogout: any }) => {
 
     const url = window.location.pathname
     const [selectedIcon, setSelectedIcon] = useState(url)
     const [openLogoutConfirmation, setOpenLogoutConfirmation] = useState(false)
+
+    const { expand } = useSidebarContext()
 
     const navigationLinks = [
         {

@@ -1,5 +1,5 @@
 import Home from "./Home";
-import LoginPage from './LoginPage'
+import LoginPage from './Auth'
 import Messages from "./Messages";
 import Profile from "./Profile";
 import Settings from "./Settings";

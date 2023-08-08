@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Project {
+    _id: any,
     title: string,
     description: string,
     accentColor: string,
@@ -14,6 +15,11 @@ interface Project {
     comments: number
 }
 
+interface MinimalProject {
+    id: any,
+    title: string
+}
+
 interface User {
     _id: any,
     userName: string,
@@ -21,6 +27,10 @@ interface User {
     userEmail: string,
     userProfilePicture: string,
     userGithubLink: string,
+    preferences: {
+        theme: string,
+        toolTipisVisible: boolean
+    }
 }
 
 interface People {
@@ -37,6 +47,7 @@ interface UserSettings {
 
 export type {
     Project,
+    MinimalProject,
     User,
     People,
     UserSettings

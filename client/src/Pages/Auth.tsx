@@ -20,6 +20,8 @@ import { appHomePage, backgroundImage } from '../assets'
 import UseAnimations from 'react-useanimations'
 import arrow from 'react-useanimations/lib/arrowUp'
 import queryString from 'query-string'
+//Settings
+import { disableSocialAuth } from '../../../developerSettings'
 
 const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
 
@@ -44,6 +46,9 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
   }
 
   const handleSocialLogin = async (ref: string, setLoading: any, setReference: any) => {
+    if (disableSocialAuth) {
+      return;
+    }
     await setReference(capitalize(ref));
     setLoading(true)
 
@@ -60,6 +65,16 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
 
   const handleForgotPasswordClick = () => {
     setForgotPassword(true)
+  }
+
+  const handleGuestLoginClick = async () => {
+    event?.preventDefault()
+    try {
+      Cookies.set('session', 'loggedinasguestuser', { expires: 1 })
+      setUserLoggedIn(true)
+    } catch (error) {
+      console.log(`from handleGuestLoginClick: ${error}`);
+    }
   }
 
 
@@ -83,7 +98,7 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
           <div className='w-full h-full flex'>
             <div className=' w-1/2 flex flex-col justify-between px-5 py-5 '>
               <span className='text-[300%] font-alkatra'>
-                some fancy marketing quote 
+                some fancy marketing quote
               </span>
               <div className='w-full flex justify-between items-center'>
                 <span className='font-alkatra text-[100%]'>
@@ -98,7 +113,7 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
               className={`w-1/2 h-full flex flex-col font-josefin`}
             >
               <div className='h-[5%] flex items-center justify-end m-4'>
-                <button className='text-selectedicon h-5' onClick={() => setLoginOrRegister(!loginOrRegister)} >
+                <button className='text-selectedicon h-5' onClick={handleGuestLoginClick} >
                   i am just exploring
                 </button>
               </div>

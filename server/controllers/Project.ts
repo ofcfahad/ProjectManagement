@@ -48,7 +48,7 @@ async function getSearchedProjects(req: Request, res: Response) {
 
 //Create new Project
 function createProject(req: Request, res: Response) {
-    const projectsData = req.body.finalProject
+    const projectsData = req.body.project
 
     const newProject = new Project(projectsData)
     newProject.save()
@@ -87,14 +87,18 @@ async function deleteProject(req: Request, res: Response) {
 const deleteManyProjects = async (req: Request, res: Response) => {
     try {
         const { ids, userId } = req.body;
-        const Projects: Array<string> = [];
+        const Projects: Array<object> = [];
         await Promise.all(ids.map(async (id: string) => {
             try {
                 const project = await Project.findById(id)
                 const owner = (project?.owner._id)?.toString()
                 if (project && owner === userId) {
                     await project.deleteOne()
-                    Projects.push(project.title!)
+                    const projectInfo = {
+                        id: project._id,
+                        title: project.title
+                    }
+                    Projects.push(projectInfo)
                 }
             } catch (error) {
                 console.log(`from deleteManyProjects's Promise: ${error}`);

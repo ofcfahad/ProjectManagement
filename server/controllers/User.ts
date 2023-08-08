@@ -45,6 +45,7 @@ const getPeopleInfo = async (req: Request, res: Response) => {
                     user.googleId = undefined;
                     user.userEmail = undefined;
                     user.userPassword = undefined;
+                    user.preferences = undefined;
                 }
                 users.push(user);
             } catch (error) {
