@@ -1,4 +1,4 @@
-const disableSocialAuth = true
+const disableSocialAuth = false
 
 export {
     disableSocialAuth
