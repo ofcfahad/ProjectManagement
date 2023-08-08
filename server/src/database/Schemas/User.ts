@@ -1,18 +1,18 @@
 import mongoose from 'mongoose';
 
-const s = String
+const s = String;
 
 const UserSchema = new mongoose.Schema({
   githubId: s,
   googleId: s,
   userName: {
     type: s,
-    unique: true
+    unique: true,
   },
   fullName: s,
   userEmail: {
     type: s,
-    sparse: true
+    sparse: true,
   },
   verified: Boolean,
   userProfilePicture: s,
@@ -20,10 +20,10 @@ const UserSchema = new mongoose.Schema({
   userGithubLink: s,
   preferences: {
     theme: s,
-    toolTipisVisible: Boolean
-  }
-})
+    toolTipisVisible: Boolean,
+  },
+});
 
-const User = mongoose.model('appUsers', UserSchema, 'appUsers')
+const User = mongoose.model('appUsers', UserSchema, 'appUsers');
 
-export default User
+export default User;

@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
-      "module": "commonjs",
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
-      "target": "es6",
-      "noImplicitAny": true,
-      "moduleResolution": "node",
-      "sourceMap": true,
-      "outDir": "dist",
-      "baseUrl": ".",
-      "paths": {
-          "*": ["node_modules/*", "types/*"]
-      }
+    "outDir": "dist",
+    "sourceMap": true,
+    "target": "esnext",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "strict": true,
+    "skipLibCheck": true
   },
-  "include": ["./**/*"]
-  }
+  "include": [
+    "./*.js",
+    "src/**/*.ts",
+    "test/**/*.ts",
+  ],
+}
