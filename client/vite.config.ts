@@ -6,13 +6,13 @@ dotenv.config()
 
 const { REACT_APP_SERVER_URL } = process.env
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '^/server': {
+      '/server': {
         target: REACT_APP_SERVER_URL,
+        changeOrigin: true,
         rewrite: (path) => path.replace(/^\/server/, ''),
       },
     },

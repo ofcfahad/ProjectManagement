@@ -8,7 +8,7 @@ import randomstring from 'randomstring';
 
 const createNewUser = async (req: Request, res: Response) => {
   try {
-    const { userName, fullName, userPassword, userEmail, userProfilePicture, userGithubLink } = req.body.data;
+    const { userName, fullName, userPassword, userEmail, userProfilePicture, userGithubLink } = req.body;
         
     const existingUser = await User.findOne({ userName: userName });
     if (existingUser) {

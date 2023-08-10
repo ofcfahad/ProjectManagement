@@ -9,6 +9,7 @@ import { authenticateGithub, authenticateGoogle, callbackGithub, callbackGoogle 
 import { forgotPassword, getPeopleInfo, getUserData, resetPassword } from './controllers/User';
 import checkSession from './middlewares/checkSession';
 import session from 'express-session';
+const MongoDBStore = require('connect-mongodb-session')(session);
 import passport from 'passport';
 require('dotenv').config();
 
@@ -20,16 +21,24 @@ connectToMongo();
 
 app.use(bodyParser.json());
 app.use(express.json());
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true,
-}));
+app.use(cors());
 
 if (!disableSocialAuth) {
+
+  // Configure MongoDB session store
+  const store = new MongoDBStore({
+    uri: process.env.MONGO_URI, // Replace with your MongoDB URI
+    collection: 'userSessions' // Collection to store sessions
+  });
+
+  store.on('error', (error: Error) => {
+    console.error('MongoDB Session Store Error:', error);
+  });
 
   app.use(
     session({
       secret: process.env.SECRET_KEY!,
+      store: store,
       resave: false,
       saveUninitialized: false,
     }),
