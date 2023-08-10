@@ -8,10 +8,10 @@ import randomstring from 'randomstring';
 
 const createNewUser = async (req: Request, res: Response) => {
   try {
-    const { userName, fullName, userPassword, userEmail, userProfilePicture, userGithubLink } = req.body;
-        
-    const existingUser = await User.findOne({ userName: userName });
-    if (existingUser) {
+    const { userName, fullName, userPassword, userEmail, userProfilePicture, userGithubLink } = req.body.user;
+    
+    const existingUser = await User.find({ userName: userName });
+    if (existingUser.length > 0) {
       return res.status(409).json({ message: 'oops! Username is already taken' });
     }
 

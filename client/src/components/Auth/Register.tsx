@@ -48,14 +48,15 @@ const Register = ({ setLoading, setReference, handleLoginClick, settoEmailVerifi
                 userGithubLink: ''
             }
             
-            const response = await axios.post(`/server/api/register`, { data })
+            const response = await axios.post(`/server/api/register`, { user: data })
             const status = response.status
 
             if (status === 201) {
                 settoEmailVerification(true)
-            } else {
                 setUserAlreadyExists(false)
+                return;
             }
+            setUserAlreadyExists(true)
         } catch (error: any) {
             if (error.response && error.response.status === 409) {
                 setUserAlreadyExists(true)
