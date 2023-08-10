@@ -3,18 +3,26 @@
 This is a full-stack web application built using the MERN stack, which includes
 **MongoDB**, **Express.js**, **React.js**, and **Node.js**.
 
-**Table of Contents**
-Description
-Technologies Used
-Installation
-Usage
-Credits
-License
+## Table of Contents
 
-**Description**
+#### [Description](#description)
+
+#### [Technologies Used](#technologies)
+
+#### [Installation](#installation)
+
+#### [Usage](#usage)
+
+#### [Credits](#credits)
+
+#### [License](#license)
+
+## Description <a name="description"></a>
+
 This MERN stack application is a simple CRUD (Create, Read, Update, Delete) application that allows users to perform basic operations on a collection of data. Users can view a list of items, add new items, update existing items, and delete items. The application is built using modern web technologies and follows best practices for web development.
 
-**Technologies Used**
+## Technologies Used <a name="technologies"></a>
+
 The following technologies and libraries were used to build this MERN stack application:
 
 <div style="display: flex; flex-direction: row; ">
@@ -33,49 +41,87 @@ The following technologies and libraries were used to build this MERN stack appl
   
   <a href="https://www.nodejs.org/" style="display: flex; margin: 0 20px;">
     <img src="https://avatars.githubusercontent.com/u/9950313?s=280&v=4" alt="NodeJs" width="70" >
-  </a>
+  </a>  
 
 </div>
 
-**Frontend**:
-ChakraUi
-Emotion
-HeadlessUi
-HeroIcons
-Mui
-Ramonak => progressbar
-antd
-axios
-bootstrap
-d3-ease
-framer-motion
-js-cookie
-react-beautiful-dnd
-react-circular-progressbar
-react-move
-react-otp-input
-react-resizeable
-react-tooltip
-react-use
-react-useanimations
-tailwindcss
+#### Frontend
 
-**Backend**:
-axios
-express-session
-passportjs
-bcryptjs
-express-validator
-jsonwebtoken
-mongodb
-mongoose
-nodemailer
-randomstring
-nodemon
+[axios](https://axios-http.com/)
 
-**Installation**
+[tailwind css](https://tailwindcss.com/)
+
+[emotion](https://emotion.sh/)
+  
+[chakra ui](https://www.chakra-ui.com/)
+
+[headless ui](https://headlessui.com/)
+
+[ant design](https://ant.design/)
+
+[framer motion](https://www.framer.com/motion/)
+
+[mui](https://mui.com/)
+
+[bootstrap](https://getbootstrap.com/)
+
+[d3-ease](https://www.npmjs.com/package/d3-ease)
+
+[react-icons](https://react-icons.github.io/react-icons/)
+
+[js-cookie](https://www.npmjs.com/package/js-cookie)
+
+[react-otp-input](https://www.npmjs.com/package/react-otp-input)
+
+[react-resizable](https://www.npmjs.com/package/react-resizable)
+
+[react-move](https://www.npmjs.com/package/react-move)
+
+[react-tooltip](https://www.npmjs.com/package/react-tooltip)
+
+[react-circular-progressbar](https://www.npmjs.com/package/react-circular-progressbar)
+
+[react-use](https://www.npmjs.com/package/react-use)
+
+[useanimations](https://react.useanimations.com/)
+
+</ul>
+
+#### Backend
+
+[express-session](https://www.npmjs.com/package/express-session)
+
+[connect-mongodb-session](https://www.npmjs.com/package/connect-mongodb-session)
+
+[express-validator](https://express-validator.github.io/docs/)
+
+[jsonwebtoken](https://jwt.io/)
+
+[passportjs](https://www.passportjs.org/)
+
+[mongoose](https://mongoosejs.com/)
+
+[nodemailer](https://nodemailer.com/)
+
+[nodemon](https://www.npmjs.com/package/nodemon)
+
+[bcryptjs](https://www.npmjs.com/package/bcryptjs)
+
+[randomstring](https://www.npmjs.com/package/randomstring)
+
+[sanitize-html](https://www.npmjs.com/package/sanitize-html)
+
+[validator](https://www.npmjs.com/package/validator)
+
+[dotenv](https://www.npmjs.com/package/dotenv)
+
+[cors](https://www.npmjs.com/package/cors)
+
+[body-parser](https://www.npmjs.com/package/body-parser)
+
+## Installation <a name="installation"></a>
+
 To install and run this MERN stack application on your local machine, you need to have Node.js and MongoDB installed.
-FlatIcons
 
 Clone the repository:
 
@@ -98,24 +144,7 @@ cd projectmanagement
 cd server
   ```
 
-  Create a .env file with the following template:
-
-```
-MONGO_URI = <mongodburi>
-EMAIL = <fornodemailerauth>
-EMAIL_PASS = <fornodemailerauth>
-SECRET_KEY = <secretkeytosignandverifyjwttokens>
-
-# credentials for social auth
-GITHUB_CLIENT_ID=<githuboauthclientid>
-GITHUB_CLIENT_SECRET=<githuboauthclientsecret>
-CALLBACK_URL='http://yourserverurl/api/auth/callback'
-GOOGLE_CLIENT_ID=<.........>
-GOOGLE_CLIENT_SECRET=<...........>
-
-```
-
-  Replace the <> values
+  Create a .env file and paste the file contents from .env-example. don't forget to replace the <> values to your own
 
   Install dependencies:
 
@@ -126,13 +155,13 @@ npm install
 Start the Server:
 
 ``` bash
-nodemon server.ts
+npm run start
 ```
 
 </details>
 
 <details>
-  <summary>Client</summary>
+ <summary>Client</summary>
 
   Navigate to client directory:
 
@@ -140,13 +169,7 @@ nodemon server.ts
 cd client
   ```
 
-  Create a .env file and add:
-
-  ```
-  REACT_APP_SERVER_URL=<>
-  ```
-
-  Replace <> with your server url
+  Create a .env file and paste the file contents from .env-example. replace <> with your server url
 
   Install dependencies:
 
@@ -166,11 +189,14 @@ After starting app and server:
 
 Open your browser and navigate to <http://localhost:5173> to view the application.
 
-**Usage**
-Once you have the application running, you can use it to perform basic CRUD operations on a collection of data. You can view a list of items, add new items, update existing items, and delete items.
+## Usage <a name="usage"></a>
 
-**Credits**
+Once you have the application running, first you'll have to authenticate with your creadentials. Once authenticated you can use it to perform basic CRUD operations on a collection of data. You can view a list of items, add new items, update existing items, and delete items.
+
+## Credits <a name="credits"></a>
+
 This MERN stack application was built by Fahad as a demonstration of modern web development practices.
 
-**License**
+## License <a name="license"></a>
+
 This project is licensed under the *GNU GENERAL PUBLIC LICENSE*
