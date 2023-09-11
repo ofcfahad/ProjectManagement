@@ -15,7 +15,7 @@
     "@types/d3-ease": "^3.0.0",
     "@types/js-cookie": "^3.0.3",
     "@types/lodash": "^4.14.197",
-    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.3.0",
     "antd": "^5.8.2",
     "axios": "^1.4.0",
