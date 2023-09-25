@@ -41,10 +41,12 @@ const SearchBar = ({ searchContent, setsearchContent, setNoSearchedProjects, set
 
     return (
         <motion.div initial={{ width: 200 }} animate={{ width: isExpanded ? 500 : 200 }} transition={{ duration: 0.5 }} className='ml-5 h-[70%] flex items-center bg-transparent select-none'>
-            <div className={`w-full h-full flex rounded-full ${bgColor} items-center px-1`} onFocus={onFocus} onBlur={onBlur} >
+            <div className={`w-full h-full flex rounded-full ${bgColor} items-center px-2`} onFocus={onFocus} onBlur={onBlur} >
                 {/* ICON */}
-                <button onClick={handleSearchIconClick} className='h-full rounded-l-full px-1' data-tooltip-id='searchIconToolTip' >
-                    <CiSearch />
+                <button onClick={handleSearchIconClick} className='h-full rounded-l-full' data-tooltip-id='searchIconToolTip' >
+                    <IconContext.Provider value={{ size: '24' }}>
+                        <CiSearch />
+                    </IconContext.Provider>
                 </button>
                 {
                     toolTipisVisible &&
@@ -53,12 +55,12 @@ const SearchBar = ({ searchContent, setsearchContent, setNoSearchedProjects, set
                     </Tooltip>
                 }
                 {/* INPUT */}
-                <input type="span" placeholder='Search' id='search_query' value={searchContent} className={`px-1 py-1 focus:outline-none bg-transparent h-full w-full flex items-center text-${color} `} onChange={(event: any) => setsearchContent(event.target.value)} />
+                <input type="text" placeholder='Search' id='search_query' value={searchContent} className={`px-2 font-ubuntu focus:outline-none bg-transparent h-full w-full flex items-center text-${color} `} onChange={(event: any) => setsearchContent(event.target.value)} />
                 <div className='rounded-r-full h-full px-2'>
                     {
                         searchContent &&
                         <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className='h-full w-full' style={{ color: color }} onClick={handleCrossClick}>
-                            <IconContext.Provider value={{ size: '18' }}>
+                            <IconContext.Provider value={{ size: '20' }}>
                                 <RxCross1 />
                             </IconContext.Provider>
                         </motion.button>

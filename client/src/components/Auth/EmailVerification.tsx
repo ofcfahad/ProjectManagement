@@ -140,7 +140,7 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
         <motion.div className='flex flex-col h-full w-full px-2 bg-white/30 backdrop-blur rounded-3xl '>
             <div className='py-2 flex flex-col justify-between'>
                 <ArrowLeftIcon className='w-5 text-black cursor-pointer ' onClick={handleGoBackClick} />
-                <div className='text-[20px] mt-2 flex justify-center'>
+                <div className='text-[22px] mt-2 flex justify-center'>
                     Well let's get you verified
                 </div>
             </div>
@@ -148,8 +148,8 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
                 <motion.div className=''>
                     {
                         emailSent ?
-                            <span className=''>
-                                An Email with OTP is sent to your Email address <b>{protect_email(userEmail)}</b>
+                            <span className='text-sm font-sans'>
+                                An Email with OTP is sent to your Email address <b>{protect_email(userEmail)}</b>. Please check your spams if you can't see it in inbox.
                                 <div className='h-2'></div>
                                 <span className='text-sm'>
                                     Didn't Recieve or Email Expired? <button disabled={emailIsSentAgain >= 2} className='text-selectedicon' onClick={sendVerificationEmail}>Resend</button>
@@ -189,6 +189,7 @@ const EmailVerification = ({ userName, setUserName, userPassword, setUserPasswor
                                 }
                             </motion.button>
                         </div>
+
                     </form>
                 </motion.div>
                 <AnimatePresence>

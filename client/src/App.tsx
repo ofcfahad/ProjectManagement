@@ -98,7 +98,7 @@ function App() {
   return (
     <>
 
-      <div className={` h-[100vh] ${theme === 'dark' ? 'bg-[#4c5e81]' : 'bg-[#f2f6fe]'} `}>
+      <div className={` h-[100vh] ${theme === 'dark' ? 'bg-[#4c5e81]' : 'bg-[#f2f6fe]'} font-josefin`}>
 
         {
           loading ?

@@ -9,7 +9,7 @@ import randomstring from 'randomstring';
 const createNewUser = async (req: Request, res: Response) => {
   try {
     const { userName, fullName, userPassword, userEmail, userProfilePicture, userGithubLink } = req.body.user;
-    
+
     const existingUser = await User.find({ userName: userName });
     if (existingUser.length > 0) {
       return res.status(409).json({ message: 'oops! Username is already taken' });
@@ -110,7 +110,7 @@ const sendOTP = async (req: Request, res: Response) => {
 const verifyOTP = (req: Request, res: Response) => {
   const { userEmail, otp } = req.body;
 
-  if (!savedOtps || savedOtps[userEmail].otp !== otp || Number(savedOtps[userEmail].otpExpirationTime) < Date.now()) {
+  if (!savedOtps || !savedOtps.hasOwnProperty(userEmail) || savedOtps[userEmail].otp !== otp || Number(savedOtps[userEmail].otpExpirationTime) < Date.now()) {
     res.status(400).send('Invalid or Expired OTP');
   } else {
     res.status(200).send('OTP verified');

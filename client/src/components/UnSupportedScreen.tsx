@@ -4,7 +4,7 @@ import { SlScreenDesktop } from "react-icons/sl"
 const UnSupportedScreen = () => {
     return (
         <div className="bg-sidebarcolor w-full flex justify-center items-center" style={{ height: window.innerHeight }} >
-            <div className='text-white font-alkatra relative'>
+            <div className='text-white relative'>
                 <span>
                     <IconContext.Provider value={{ size: '100' }}>
                         <div className="mb-[-55px] ml-3.5"> {window.innerWidth} x {window.innerHeight} </div>

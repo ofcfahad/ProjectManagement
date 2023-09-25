@@ -89,12 +89,12 @@ export default function TaskModule({ tasks, completedTasks, accentColor }: { tas
                         <Tab.Panel
                             key={idx}
                             className={classNames(
-                                'rounded-xl bg-cyan-400/20 text-black p-3',
+                                'rounded-xl bg-cyan-400/20 text-black p-3 flex justify-between',
                                 'focus:outline-none'
                             )}
                         >
                             {task}
-                            <UseAnimations animation={radioButton} />
+                            <UseAnimations animation={radioButton} reverse={completedTasks.includes(task)} />
                         </Tab.Panel>
                     ))}
                 </Tab.Panels>

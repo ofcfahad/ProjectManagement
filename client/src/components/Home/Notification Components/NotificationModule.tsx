@@ -37,7 +37,7 @@ const NotificationModule = ({ notificationData, height, icon, actionIcon, iconBa
                             </div>
                             <div className=' w-[70%] h-full flex justify-center items-center pr-2'>
                                 <div className='flex flex-col flex-1 '>
-                                    <span className='font-josefin text-sm'>
+                                    <span className='text-sm'>
                                         {notification.title}
                                     </span>
                                     <span className='font-semibold'>

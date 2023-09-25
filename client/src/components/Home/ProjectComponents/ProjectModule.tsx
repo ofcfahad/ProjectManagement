@@ -35,6 +35,7 @@ const ProjectModule = ({ height, width, project, isHovered, selectionMode, proje
     const [isOpen, setIsOpen] = useState(false)
     const [peopleData, setPeopleData] = useState<Array<People>>([])
     const [editMode, setEditMode] = useState(false)
+    const [buttonHovering, setButtonHovering] = useState('')
 
     const session = Cookies.get('session')
     const { _id, title, description, accentColor, tasks, completedtasks, progress, owner, Dates, people, attachments, comments } = project
@@ -187,15 +188,15 @@ const ProjectModule = ({ height, width, project, isHovered, selectionMode, proje
                                             </AnimatePresence>
                                             {
                                                 owner === userData._id &&
-                                                <button className={`${ButtonStyle} mr-4 `} onClick={() => setEditMode(!editMode)}>
+                                                <motion.button animate={{ background: buttonHovering == 'edit' ? "whitesmoke" : "transparent" }} onMouseOver={() => setButtonHovering('edit')} onMouseOut={() => setButtonHovering('')} className={`p-1 rounded mr-4 ${ButtonStyle}`} onClick={() => setEditMode(!editMode)}>
                                                     <IconContext.Provider value={{ size: '20', color: editMode ? 'red' : '' }}>
                                                         <CiEdit />
                                                     </IconContext.Provider>
-                                                </button>
+                                                </motion.button>
                                             }
-                                            <button className={ButtonStyle} onClick={closeModal}>
+                                            <motion.button animate={{ background: buttonHovering == 'close' ? "whitesmoke" : "transparent" }} onMouseOver={() => setButtonHovering('close')} onMouseOut={() => setButtonHovering('')} className={`p-1 rounded ${ButtonStyle}`} onClick={closeModal}>
                                                 <RxCross1 />
-                                            </button>
+                                            </motion.button>
                                         </div>
                                     </Dialog.Title>
 

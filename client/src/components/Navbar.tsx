@@ -51,7 +51,7 @@ const Navbar = ({ menuTransitionDuration, handleLogout }: { menuTransitionDurati
 
 
     return (
-        <motion.div initial={{ width: 0 }} animate={{ width: expand ? 200 : 100 }} transition={{ duration: menuTransitionDuration || 0.5 }} className={`bg-sidebarcolor h-full w-full fixed font-josefin`} >
+        <motion.div initial={{ width: 0 }} animate={{ width: expand ? 200 : 100 }} transition={{ duration: menuTransitionDuration || 0.5 }} className={`bg-sidebarcolor h-full w-full fixed`} >
 
             <div className='w-full h-[10%] flex justify-center items-center'>
                 <motion.div initial={{ width: 0 }} animate={{ width: expand ? 60 : 50 }} >
@@ -69,7 +69,7 @@ const Navbar = ({ menuTransitionDuration, handleLogout }: { menuTransitionDurati
                             navigationLinks.map((link) => (
                                 <motion.li key={link.title} className={`flex justify-center`} >
                                     <motion.div animate={{ width: expand ? 100 : 35 }} whileHover={{ width: expand ? 130 : 35, }} className={`${selectedIcon === link.link ? 'bg-selectedicon hover:bg-opacity-70' : expand ? 'flex justify-center hover:bg-gradient-to-r hover:from-logoblue hover:via-logopink hover:to-logoyellow transition-colors ease-in-out delay-100 ' : 'bg-transparent'} rounded-full flex`} >
-                                        <NavLink style={{ textDecoration: 'none' }} to={link.link} className='flex rounded-xl justify-evenly items-center w-full h-full py-1' onClick={() => setSelectedIcon(link.link)}>
+                                        <NavLink style={{ textDecoration: 'none' }} to={link.link} className='flex rounded-full justify-evenly items-center w-full h-full p-1 font-ubuntu' onClick={() => setSelectedIcon(link.link)}>
                                             {link.icon}
                                             {expand && <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} exit={{ opacity: 0, x: -50 }} className={` text-white mt-[5px] `}> {link.title} </motion.span>}
                                         </NavLink>
@@ -91,7 +91,7 @@ const Navbar = ({ menuTransitionDuration, handleLogout }: { menuTransitionDurati
                                     <CiLogout />
                                 </IconContext.Provider>
                                 {expand &&
-                                    <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} exit={{ opacity: 0, x: -50 }} className={` text-white text-sm `}>
+                                    <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} exit={{ opacity: 0, x: -50 }} className={` text-white font-ubuntu `}>
                                         Logout
                                     </motion.span>
                                 }

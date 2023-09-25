@@ -29,7 +29,7 @@ const StatsBar = (props: any) => {
                     <motion.div initial={{ opacity: 0, width: 0, }} animate={{ opacity: 1, width: 200, }} transition={{ duration: 0.5 }} className={` flex h-full bg-[#ecf3ff] justify-center items-center rounded-lg cursor-pointer `} data-tooltip-id='teamBarToolTip' >
                         <motion.div initial={{ opacity: 0, scale: 0, }} animate={{ opacity: 1, scale: 1, }} transition={{ duration: 1 }} className='flex flex-col w-[70%] px-2'>
                             <span className='w-full font-sans text-sm'> SELECTED </span>
-                            <span className='text-black text-lg font-josefin'> Personal </span>
+                            <span className='text-black text-lg'> Personal </span>
                         </motion.div>
                         <div className='w-[30%] flex justify-end items-center'>
                             <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1 }} className='bg-[#ef7d11] rounded-full flex justify-center items-center mr-5'>
@@ -54,7 +54,7 @@ const StatsBar = (props: any) => {
                 </motion.div>
                 {/* PROGRESSTASKS */}
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: notificationBar ? 0 : 1, }} transition={{ duration: 0.5 }} className={`h-[40%] w-full ${notificationBar ? 'hidden' : ''} `}>
-                    <div className='font-josefin text-lg w-full h-[15%] px-2'>
+                    <div className='text-lg w-full h-[15%] px-2'>
                         <span>Projects</span>
                     </div>
 
@@ -65,7 +65,7 @@ const StatsBar = (props: any) => {
                                     <span className='text-gray-500'> {project.id} </span>
                                     <div className='flex justify-between items-center'>
                                         <div className={`h-[25px] w-[6px] rounded-3xl shadow-inner`} style={{ background: project.whatColor }} ></div>
-                                        <span className='text-2xl font-alkatra'> {project.tasksCount} </span>
+                                        <span className='text-2xl'> {project.tasksCount} </span>
                                     </div>
                                 </motion.div>
                             ))

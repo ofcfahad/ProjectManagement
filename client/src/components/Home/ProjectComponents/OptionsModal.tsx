@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Fragment, useState, useContext } from 'react';
+import { Fragment, useState } from 'react';
 //AppComponents
 import { Info } from '../../Popups'
 //OtherComponents
@@ -15,6 +15,7 @@ import { useThemeContext } from '../../Contexts/Theme/useThemeContext';
 export default function OptionsModal(props: any) {
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
+    const [buttonHovering, setButtonHovering] = useState('')
 
     const { theme } = useThemeContext()
     const { userData } = useUserData()
@@ -22,6 +23,11 @@ export default function OptionsModal(props: any) {
     const deleteProject = () => {
         props.deleteProject()
         setOpenDeleteModal(true)
+    }
+
+    const leaveProject = () => {
+        // to-do
+        console.log('leaves');
     }
 
     const closeDeleteModule = () => {
@@ -57,12 +63,12 @@ export default function OptionsModal(props: any) {
                         {
                             props.owner === userData._id ?
                                 <div>
-                                    <Info button={<button className='w-full h-full flex justify-between items-center py-1 my-1 rounded-md text-black' onClick={deleteProject}>
-                                        <span className='font-ubuntu text-sm'>
+                                    <Info button={<button className='w-full h-full flex justify-between items-center py-1 my-1 rounded-md text-black' onMouseOver={() => setButtonHovering('trash')} onMouseOut={() => setButtonHovering('')} onClick={deleteProject}>
+                                        <span className={`font-ubuntu text-sm ${buttonHovering == 'trash' ? 'text-red-500' : 'text-black'}`}>
                                             Trash
                                         </span>
                                         <div>
-                                            <IconContext.Provider value={{ color: 'black', size: '16' }}>
+                                            <IconContext.Provider value={{ color: buttonHovering == 'trash' ? 'red' : 'black', size: '18' }}>
                                                 <CiTrash />
                                             </IconContext.Provider>
                                         </div>
@@ -71,24 +77,24 @@ export default function OptionsModal(props: any) {
                                         isOpen={openDeleteModal}
                                         onClose={closeDeleteModule} title={<div className={` ${theme === 'dark' ? 'text-white' : 'text-black'} `} >{<div>Project <b> {props.projectTitle} </b> Deleted </div>} </div>} description={''} />
 
-                                    <button className='w-full h-full flex justify-between items-center py-1 my-1 rounded-md text-black' onClick={handleEditClick}>
-                                        <span className='font-ubuntu text-sm'>
+                                    <button className='w-full h-full flex justify-between items-center py-1 my-1 rounded-md text-black' onMouseOver={() => setButtonHovering('edit')} onMouseOut={() => setButtonHovering('')} onClick={handleEditClick}>
+                                        <span className={`font-ubuntu text-sm ${buttonHovering == 'edit' ? 'text-cyan-500' : 'text-black'}`}>
                                             Edit
                                         </span>
                                         <div>
-                                            <IconContext.Provider value={{ color: 'black', size: '16' }}>
+                                            <IconContext.Provider value={{ color: buttonHovering == 'edit' ? 'skyblue' : 'black', size: '18' }}>
                                                 <CiEdit />
                                             </IconContext.Provider>
                                         </div>
                                     </button>
                                 </div>
                                 :
-                                <Info button={<button className='w-full h-full flex justify-between items-center py-1 my-1 rounded-md text-black' onClick={deleteProject}>
-                                    <span className='font-ubuntu text-sm'>
+                                <Info button={<button className='w-full h-full flex justify-between items-center py-1 my-1 rounded-md text-black' onMouseOver={() => setButtonHovering('leave')} onMouseOut={() => setButtonHovering('')} onClick={leaveProject}>
+                                    <span className={`font-ubuntu text-sm ${buttonHovering == 'leave' ? 'text-orange-300' : 'text-black'}`}>
                                         Leave
                                     </span>
                                     <div>
-                                        <IconContext.Provider value={{ color: 'black', size: '20' }}>
+                                        <IconContext.Provider value={{ color: buttonHovering == 'leave' ? 'orange' : 'black', size: '20' }}>
                                             <CiCircleChevLeft />
                                         </IconContext.Provider>
                                     </div>

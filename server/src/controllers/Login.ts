@@ -10,9 +10,6 @@ const authenticateUser = async (req: Request, res: Response) => {
   try {
     const { userName, userPassword } = req.body;
 
-    console.log(`from authenticateUser: ${userName}, ${userPassword}`);
-    
-
     const user = await User.findOne({
       $or: [
         { userName: userName },

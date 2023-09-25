@@ -15,7 +15,7 @@ import UseAnimations from 'react-useanimations';
 import infinity from 'react-useanimations/lib/infinity'
 
 
-const EmailAuthentication = ({ userEmail, userPassword, handleGoBackClick, setUserLoggedIn }: { userName: string, userEmail: string, userPassword: string, handleGoBackClick: any, setUserLoggedIn: any }) => {
+const EmailAuthentication = ({ userEmail, userPassword, handleGoBackClick, setUserLoggedIn }: { userEmail: string, userPassword: string, handleGoBackClick: any, setUserLoggedIn: any }) => {
 
     const [emailSent, setEmailSent] = useState(false)
     const [otp, setOtp] = useState('');
@@ -74,7 +74,7 @@ const EmailAuthentication = ({ userEmail, userPassword, handleGoBackClick, setUs
 
 
     return (
-        <motion.div className='flex flex-col justify-between h-full w-full bg-white/30 backdrop-blur px-4 rounded-3xl font-ubuntu'>
+        <motion.div className='flex flex-col justify-between h-full w-full bg-white/30 backdrop-blur px-4 rounded-3xl'>
             <ArrowLeftIcon className='w-5 text-black cursor-pointer mt-4' onClick={handleGoBackClick} />
             <span className='text-[25px] h-[20%] mt-2'>
                 Alright, let's verify if it's you trying to login

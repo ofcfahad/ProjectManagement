@@ -19,7 +19,6 @@ import { appHomePage, backgroundImage } from '../assets'
 //Icons
 import UseAnimations from 'react-useanimations'
 import arrow from 'react-useanimations/lib/arrowUp'
-import queryString from 'query-string'
 //Settings
 import { disableSocialAuth } from '../../../developerSettings'
 
@@ -36,7 +35,6 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
   const [reference, setReference] = useState('')
   const [forgotPassword, setForgotPassword] = useState(false)
   const [resetPassword, setresetPassword] = useState(false)
-  const [token, setToken] = useState<string>()
 
   const handleArrowIconClick = () => {
     const userNameInputBar = document.getElementById('userNameInputField')
@@ -79,10 +77,7 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
 
 
   useEffect(() => {
-    const token = queryString.parse(location.search).token
-    setToken(token?.toString())
-
-    if (token) {
+    if (window.location.pathname == '/reset') {
       setresetPassword(true)
     } else {
       setresetPassword(false)
@@ -90,7 +85,7 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
   }, [])
 
   return (
-    <div className={`w-full flex flex-row `} style={{ height: window.innerHeight, backgroundImage: `url(${backgroundImage})` }} >
+    <div className={`w-full flex flex-row`} style={{ height: window.innerHeight, backgroundImage: `url(${backgroundImage})` }} >
       {
         loading ?
           <LoggingLoading reference={reference} setLoading={setLoading} />
@@ -110,7 +105,7 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
             </div>
 
             <motion.div
-              className={`w-1/2 h-full flex flex-col font-josefin`}
+              className={`w-1/2 h-full flex flex-col`}
             >
               <div className='h-[5%] flex items-center justify-end m-4'>
                 <button className='text-selectedicon h-5' onClick={handleGuestLoginClick} >
@@ -122,7 +117,7 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
                   {
                     resetPassword ?
                       <motion.div initial={{ x: 100 }} animate={{ x: 0 }} exit={{ x: -100 }} className='h-full w-full' >
-                        <ResetPassword token={token} setResetPassword={setresetPassword} />
+                        <ResetPassword setResetPassword={setresetPassword} />
                       </motion.div>
                       : forgotPassword ?
                         <motion.div initial={{ x: 100 }} animate={{ x: 0 }} exit={{ x: -100 }} className='h-full w-full' >
@@ -134,7 +129,7 @@ const LoginPage = ({ setUserLoggedIn }: { setUserLoggedIn: any }) => {
                           (
                             toEmailAuthentication && userEmail ?
                               <motion.div initial={{ x: 100 }} animate={{ x: 0 }} exit={{ x: -100 }} className='h-full w-full' >
-                                <EmailAuthentication userName={userName} userPassword={userPassword} handleGoBackClick={() => settoEmailAuthentication(false)} userEmail={userEmail} setUserLoggedIn={setUserLoggedIn} />
+                                <EmailAuthentication userPassword={userPassword} handleGoBackClick={() => settoEmailAuthentication(false)} userEmail={userEmail} setUserLoggedIn={setUserLoggedIn} />
                               </motion.div>
                               :
                               noEmail ?

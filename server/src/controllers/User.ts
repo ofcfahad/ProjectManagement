@@ -4,7 +4,6 @@ import { Request, Response } from 'express';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcryptjs';
 
-
 //Get UserData by id
 const getUserData = async (req: Request, res: Response) => {
   try {
@@ -63,9 +62,9 @@ const forgotPassword = async (req: Request, res: Response) => {
   try {
     const { EMAIL, EMAIL_PASS, SECRET_KEY } = process.env;
     const userEmail = req.body.userEmail;
+
     const user = await User.findOne({ userEmail: userEmail });
     if (user) {
-
       const token = jwt.sign({ userEmail }, SECRET_KEY!, { expiresIn: '1h' });
 
       const transporter = nodemailer.createTransport({
@@ -77,18 +76,20 @@ const forgotPassword = async (req: Request, res: Response) => {
       });
 
       const emailTemplate = (name: string, resetLink: string) => `
-    <p>Hello ${name},</p>
-    <p>We received a request to reset your password. Click the link below to reset your password:</p>
-    <a href="${resetLink}">${resetLink}</a>
-    <p>If you didn't request a password reset, please ignore this email.</p>
-    <p>Regards,<br> <b>PJM</b> </p>
-  `;
+      <p>Hello ${name},</p>
+      <p>We received a request to reset your password. Click the link below to reset your password:</p>
+      <a href="${resetLink}">Reset Password</a>
+      <p>If you didn't request a password reset, please ignore this email.</p>
+      <p>Regards,<br> <b>PJM</b> </p>
+      `;
+      
+      const url = `http://localhost:5173/reset?token=${token}`
 
       const mailOptions = {
         from: 'Project Management',
         to: userEmail,
         subject: 'Password Reset',
-        html: emailTemplate(user.fullName! || user.userName!, `http://localhost:5173/?token=${token}`),
+        html: emailTemplate(user.fullName! || user.userName!, url),
       };
 
       transporter.sendMail(mailOptions, (error, info) => {

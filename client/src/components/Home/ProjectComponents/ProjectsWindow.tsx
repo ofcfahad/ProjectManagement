@@ -100,7 +100,7 @@ export default function ProjectsWindow(props: any) {
             <div className='rounded-t-3xl h-[15%]'>
                 {/* UPPERSECTION */}
                 <div className='flex h-[50%] w-full justify-between items-center bg-transparent px-4 py-1 '>
-                    <h1 className='font-josefin text-center mt-2 pointer-events-none select-none'> Projects </h1>
+                    <h1 className='text-center mt-2 pointer-events-none select-none'> Projects </h1>
                     <div className='flex justify-between items-center'>
 
                         <motion.button initial={{ rotate: -100 }} animate={{ rotate: fetchingData ? 100 : 0, x: selectionMode ? -20 : 0 }} transition={{ duration: 1, x: { duration: 0.5 } }} disabled={selectionMode} className='mr-4' data-tooltip-id='projectsRefreshToolTip' style={{ cursor: selectionMode ? 'not-allowed' : 'pointer' }} onClick={loadNewData} >
