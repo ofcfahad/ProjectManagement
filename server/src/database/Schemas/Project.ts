@@ -9,7 +9,7 @@ const ProjectSchema = new mongoose.Schema({
   progress: Number,
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Owner',
+    ref: 'appUsers',
     required: true,
   },
   Dates: {
@@ -19,7 +19,7 @@ const ProjectSchema = new mongoose.Schema({
     },
     started: Date,
   },
-  people: Array,
+  people: [{ type: mongoose.Schema.Types.ObjectId, ref: 'appUsers' }],
   attachments: Number,
   comments: Number,
 });

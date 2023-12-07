@@ -1,14 +1,13 @@
-import Navbar from './Navbar'
+import Sidebar from './Sidebar/Sidebar'
 import Loading from './Loading'
 import UnSupportedScreen from './UnSupportedScreen'
 import LoggingLoading from './LoggingLoading'
-import { Confirmation, Info } from './Popups'
+import MenuButton from './MenuButton'
 
 export {
-    Navbar,
+    Sidebar,
     Loading,
     UnSupportedScreen,
     LoggingLoading,
-    Confirmation,
-    Info
+    MenuButton,
 }

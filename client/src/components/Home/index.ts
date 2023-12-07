@@ -7,5 +7,5 @@ export {
     ProjectsWindow,
     StatsBar,
     NotificationBar,
-    TopBar
+    TopBar,
 }

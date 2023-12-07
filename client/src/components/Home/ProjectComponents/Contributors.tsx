@@ -3,10 +3,10 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Popover } from 'antd'
 import { profilePicture } from '../../../assets/'
-import { People } from '../../interfaces'
+import { Person } from '../../Interfaces'
 
 
-export default function Contributors({ contributorsData, linkDisabled, avatarSize, avatarShape, bordered, borderColor, borderSize, alignover, toLeft, toTop, onHoverMargin, row }: { contributorsData: Array<People>, linkDisabled: boolean, avatarSize: number, avatarShape: string, bordered: boolean, borderColor: string, borderSize: number, alignover: boolean, toLeft: number, toTop: number, onHoverMargin: number, row: boolean }) {
+export default function Contributors({ contributorsData, linkDisabled, avatarSize, avatarShape, bordered, borderColor, borderSize, alignover, toLeft, toTop, onHoverMargin, row }: { contributorsData: Array<Person>, linkDisabled: boolean, avatarSize: number, avatarShape: string, bordered: boolean, borderColor: string, borderSize: number, alignover: boolean, toLeft: number, toTop: number, onHoverMargin: number, row: boolean }) {
 
     const [isHovering, setisHovering] = useState(false)
 
@@ -16,7 +16,6 @@ export default function Contributors({ contributorsData, linkDisabled, avatarSiz
         avatar: contributor.userProfilePicture || profilePicture,
         profilelink: contributor.userGithubLink,
     }))
-
 
     return (
         <motion.div initial={{ x: -50 }} animate={{ x: 0 }} transition={{ duration: 0.5 }} style={{ display: 'flex', flexDirection: row ? 'row' : 'column', alignContent: 'center', height: avatarSize || 50, }} onMouseOver={() => setisHovering(linkDisabled ? false : true)} onMouseOut={() => setisHovering(false)} >

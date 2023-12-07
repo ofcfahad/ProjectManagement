@@ -1,17 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Tooltip } from 'react-tooltip'
 import { motion } from 'framer-motion'
 import { IconContext } from 'react-icons'
 import { HiOutlineUser } from 'react-icons/hi2'
-import ProgressBar from './ProgressBar'
-import { useUserData } from '../../Contexts/User/useUserContext'
+import DashboardCircularProgressBar from './DashboardCircularProgressBar'
 
 const StatsBar = (props: any) => {
 
     const { notificationBar, bgColor, projectsDataLength, ongoingProjects, projectsInfo, isHovered, setIsHovered } = props
-
-    const { userData } = useUserData()
-    const toolTipisVisible = userData.preferences.toolTipisVisible
 
     const handleStatsBarClick = (id: string) => () => {
         if (isHovered === id) {
@@ -40,17 +35,11 @@ const StatsBar = (props: any) => {
                             </motion.div>
                         </div>
                     </motion.div>
-                    {
-                        toolTipisVisible &&
-                        <Tooltip id='teamBarToolTip' delayShow={100} delayHide={0} place='top'>
-                            Team
-                        </Tooltip>
-                    }
                 </div>
 
                 {/* PROGRESSBAR */}
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: notificationBar ? 0 : 1, }} transition={{ duration: 0.5 }} className={` h-[48%] ${notificationBar ? 'hidden' : ''} flex justify-center items-center xxl:px-0 sm:px-3 `}>
-                    <ProgressBar progress={projectsDataLength > 0 ? parseInt((ongoingProjects.length / projectsDataLength * 100).toString()) : 0} backgroundColor='#734ae333' inprogressColor='#7249e1' trailColor='#f6f5f8' borderRadius={200} padding={0} />
+                    <DashboardCircularProgressBar progress={projectsDataLength > 0 ? parseInt((ongoingProjects.length / projectsDataLength * 100).toString()) : 0} backgroundColor='#734ae333' inprogressColor='#7249e1' trailColor='#f6f5f8' borderRadius={200} />
                 </motion.div>
                 {/* PROGRESSTASKS */}
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: notificationBar ? 0 : 1, }} transition={{ duration: 0.5 }} className={`h-[40%] w-full ${notificationBar ? 'hidden' : ''} `}>

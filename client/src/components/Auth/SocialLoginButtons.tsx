@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import UseAnimations from "react-useanimations";
 import github from 'react-useanimations/lib/github'
 import { FcGoogle } from 'react-icons/fc'
 import { IoLogoGoogle } from 'react-icons/io'
 
-const SocialLoginButtons = ({ setLoading, setReference, handleSocialLogin }: { setLoading: any, setReference: any, handleSocialLogin: any }) => {
+const SocialLoginButtons = ({ setLoading, setReference, handleSocialLogin }: { setLoading: (loading: boolean) => void, setReference: (ref: string) => void, handleSocialLogin: (ref: string, setLoading: (loading: boolean) => void, setReference: (ref: string) => void) => void }) => {
 
     const [ishovering, setIsHovering] = useState('')
 
@@ -18,7 +17,7 @@ const SocialLoginButtons = ({ setLoading, setReference, handleSocialLogin }: { s
     }
 
     return (
-        <div className={`flex flex-col items-center w-full`}>
+        <div className={`flex flex-col items-center w-[300px]`}>
 
             <button className='!bg-white btn hover:shadow-lg rounded-lg w-1/2 p-0 flex justify-center items-center' onMouseOver={() => setIsHovering('github')} onMouseOut={() => setIsHovering('')} onClick={handleGithubLogin}>
                 <div className='flex justify-center items-center py-0.5'>

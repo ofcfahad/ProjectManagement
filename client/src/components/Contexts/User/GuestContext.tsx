@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
-import { User } from '../../interfaces';
+import { User } from '../../Interfaces';
 
 interface GuestContextProps {
     isGuest: boolean;

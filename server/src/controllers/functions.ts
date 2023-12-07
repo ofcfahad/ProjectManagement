@@ -1,3 +1,32 @@
+import bcrypt from 'bcryptjs';
+import jwt, { JwtPayload } from 'jsonwebtoken'
+import User from '../database/Schemas/User';
+import { Types } from 'mongoose';
+
+const createToken = (userId: Types.ObjectId) => {
+    return jwt.sign({ userId }, process.env.SECRET_KEY!, {
+        expiresIn: '7d',
+    });
+};
+
+const getUserIdbyEmail = async (userEmail: string, userPassword: string) => {
+    try {
+        const user = await User.findOne({ userEmail });
+
+        if (user && await bcrypt.compare(userPassword, user.userPassword!)) {
+            return user._id;
+        }
+    } catch (error) {
+        console.log("🚀 ~ file: functions.ts:13 ~ getUserIdbyEmail ~ error:", error)
+    }
+};
+
+const getUserIdfromToken = (token: string) => {
+    const decodedToken = jwt.verify(token, process.env.SECRET_KEY!, {
+        complete: true,
+    }) as JwtPayload;
+    return decodedToken.payload.userId; // userId from token payload
+}
 
 const shortenUrl = async (url: string) => {
     console.log('====================================');
@@ -22,5 +51,8 @@ const shortenUrl = async (url: string) => {
 }
 
 export {
+    createToken,
+    getUserIdbyEmail,
+    getUserIdfromToken,
     shortenUrl
 };

@@ -1,40 +1,61 @@
 import React, { createContext, ReactNode, useState } from 'react';
-import { User } from '../../interfaces';
+import { User } from '../../Interfaces';
+import Cookies from 'js-cookie';
+import { useApi } from '..';
 
 interface UserDataContextProps {
-    userData: User;
-    setUserData: (user: User) => void;
+    getUserData: () => User;
+    getUserDatafromDatabase: () => Promise<User>;
     setUserPreferences: (preferences: { theme: string, toolTipisVisible: boolean }) => void;
+    reset: () => void;
 }
 
 export const UserDataContext = createContext<UserDataContextProps | undefined>(undefined);
 
-const UserDataContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User>({
-        _id: undefined,
-        userName: '',
-        fullName: '',
-        userEmail: '',
-        userProfilePicture: '',
-        userGithubLink: '',
-        preferences: {
-          theme: '',
-          toolTipisVisible: false
-        }
-      });
+const guestUserData: User = {
+    _id: 'guestedId',
+    userName: 'guest',
+    fullName: 'Guest',
+    userEmail: 'guest@pjm.app',
+    userProfilePicture: '',
+    userGithubLink: '',
+    preferences: {
+        theme: 'light',
+        toolTipisVisible: false
+    }
+}
 
-    const setUserDataFunc = async (myuser: User) => {
-        setUser(myuser)
+const UserDataContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [user, setUser] = useState<User>({} as User);
+
+    const { fetchUserData } = useApi()
+
+    const getUserData = () => {
+        return user;
     };
 
-    const setUserPreferencesFunc = (preferences: { theme: string, toolTipisVisible: boolean }) => {
+    const getUserDatafromDatabase = async () => {
+        if (Cookies.get('session') === 'loggedinasguestuser') {
+            return guestUserData
+        }
+        const data = await fetchUserData()
+        setUser(data);
+        return data;
+    };
+
+    const setUserPreferences = (preferences: { theme: string, toolTipisVisible: boolean }) => {
         user.preferences = preferences;
     }
 
+    const reset = () => {
+        setUser({} as User);
+    };
+
     const contextValue: UserDataContextProps = {
-        userData: user,
-        setUserData: setUserDataFunc,
-        setUserPreferences: setUserPreferencesFunc
+        getUserData,
+        getUserDatafromDatabase,
+        setUserPreferences,
+        reset,
     };
 
     return (

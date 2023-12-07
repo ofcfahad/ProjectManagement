@@ -2,18 +2,20 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import connectToMongo from './database/db';
-import { getAllProjects, deleteProject, createProject, getSearchedProjects, deleteManyProjects } from './controllers/Project';
-import { createNewUser, notVerified, sendOTP, updateEmail, verifyOTP } from './controllers/Register';
-import { authenticateUser, getUserEmail, sendAOTP, verifyAOTP } from './controllers/Login';
+import { getAllProjects, deleteProject, createProject, getSearchedProjects } from './controllers/Project';
+import { authenticateUser, createNewUser, notVerified } from './controllers/Login';
+import { sendOTP, verifyOTP } from './controllers/MFA';
 import { authenticateGithub, authenticateGoogle, callbackGithub, callbackGoogle } from './controllers/SocialAuth';
-import { forgotPassword, getPeopleInfo, getUserData, resetPassword } from './controllers/User';
+import { findUserNames, forgotPassword, getUserData, logoutUser, resetPassword, updateEmail } from './controllers/User';
 import checkSession from './middlewares/checkSession';
 import session from 'express-session';
-const MongoDBStore = require('connect-mongodb-session')(session);
 import passport from 'passport';
-require('dotenv').config();
+import { disableSocialAuth } from '../../developerSettings'
+import { createNewChat, getChatMessages, getUserChats } from './controllers/Chats';
+import io from './controllers/socket';
 
-const disableSocialAuth = false;
+const MongoDBStore = require('connect-mongodb-session')(session);
+require('dotenv').config();
 
 const app = express();
 const port = 5000;
@@ -23,12 +25,13 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
 
+io.listen(4000);
+
 if (!disableSocialAuth) {
 
-  // Configure MongoDB session store
   const store = new MongoDBStore({
-    uri: process.env.MONGO_URI, // Replace with your MongoDB URI
-    collection: 'userSessions' // Collection to store sessions
+    uri: process.env.MONGO_URI,
+    collection: 'userSessions'
   });
 
   store.on('error', (error: Error) => {
@@ -44,7 +47,6 @@ if (!disableSocialAuth) {
     }),
   );
 
-  // Initialize Passport and session middleware
   app.use(passport.initialize());
   app.use(passport.session());
 
@@ -59,21 +61,19 @@ app.get('/', (req, res) => {
 });
 
 //User
-app.use('/api/getUserData', getUserData);
-app.use('/api/getPeopleInfo', checkSession, getPeopleInfo);
+app.use('/api/getUserData', checkSession, getUserData);
 app.use('/api/forgotPassword', forgotPassword);
 app.use('/api/resetPassword', resetPassword);
-//Register
-app.use('/api/register', createNewUser);
-app.use('/api/sendOTP', sendOTP);
-app.use('/api/verifyOTP', verifyOTP);
-app.use('/api/updateEmail', updateEmail);
-app.use('/api/notVerified', notVerified);
+app.use('/api/updateEmail', checkSession, updateEmail);
+app.use('/api/findUserNames', checkSession, findUserNames);
+app.use('/api/logout', logoutUser);
 //Login
 app.use('/api/authenticateUser', authenticateUser);
-app.use('/api/getUserEmail', getUserEmail);
-app.use('/api/sendAuthenticationOTP', sendAOTP);
-app.use('/api/verifyAuthenticationOTP', verifyAOTP);
+app.use('/api/register', createNewUser);
+app.use('/api/notVerified', notVerified);
+//MFA
+app.use('/api/sendOTP', sendOTP);
+app.use('/api/verifyOTP', verifyOTP);
 
 // Social Auth
 if (!disableSocialAuth) {
@@ -92,4 +92,8 @@ app.use('/api/projectsData', checkSession, getAllProjects);
 app.use('/api/searchedProjectsData', checkSession, getSearchedProjects);
 app.post('/api/createProject', checkSession, createProject);
 app.use('/api/deleteProject', checkSession, deleteProject);
-app.use('/api/deleteManyProjects', checkSession, deleteManyProjects);
+
+//Chat
+app.use('/api/getUserChats', checkSession, getUserChats);
+app.use('/api/getChatMessages', checkSession, getChatMessages);
+app.use('/api/createNewChat', checkSession, createNewChat);

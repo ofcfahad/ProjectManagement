@@ -1,3 +1,5 @@
+import { Person } from "./Interfaces";
+
 const protect_email = (user_email: string) => {
   let part1: string
   const splitted = user_email.split("@")
@@ -39,7 +41,7 @@ function themeColors(theme: string, ref: string) {
   return 'black'
 }
 
-function addOwnerToPeople(people: Array<string>, owner: string) {
+function addOwnerToPeople(people: Array<Person>, owner: Person) {
   if (people.includes(owner)) {
     return 0
   }

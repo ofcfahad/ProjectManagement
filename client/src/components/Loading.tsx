@@ -1,13 +1,12 @@
-import { useContext } from 'react'
 import { motion } from 'framer-motion'
 import UseAnimations from 'react-useanimations'
 import loading2 from 'react-useanimations/lib/loading2'
-import { ThemeContext } from './Contexts/Theme/ThemeContext'
+import { useTheme } from './Contexts'
 
 
 const Loading = ({ haveBackgroundColor, backgroundColor }: { haveBackgroundColor: boolean, backgroundColor: string }) => {
 
-    const { theme } = useContext(ThemeContext)
+    const { theme } = useTheme()
 
     return (
         <>

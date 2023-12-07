@@ -1,46 +1,58 @@
 import React, { createContext, ReactNode, useState } from 'react';
-import { Project } from '../../interfaces';
+import { Project } from '../../Interfaces';
+import { useApi } from '..';
 
 interface ProjectsDataContextProps {
-    projectsData: Array<Project>;
     addProject: (project: Project) => void;
     removeProject: (projectId: string) => void;
-    removeProjects: (projectIds: Array<string>) => void;
-    setProjectsData: (projects: Array<Project>) => void;
+    getProjectsData: () => Project[];
+    getProjectsDatafromDatabase: () => void;
+    reset: () => void
 }
 
 export const ProjectsDataContext = createContext<ProjectsDataContextProps | undefined>(undefined);
 
 const ProjectsDataContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [projects, setProjects] = useState<Array<Project>>([]);
+    
+    const { fetchProjectsData } = useApi();
 
-    const addProjectFunc = (project: Project) => {
+    const addProject = (project: Project) => {
         setProjects([...projects, project])
     };
-    
-    const removeProjectFunc = (projectId: string) => {
+
+    const removeProject = (projectId: string) => {
         const filteredProjects = projects.filter((project) => {
             console.log(project._id, projectId); // Debugging line
             return project._id !== projectId;
         });
         setProjects(filteredProjects)
     };
-    
-    const removeProjectsByIds = (projectIds: string[]) => {
-        const filteredProjects = projects.filter((project) => !projectIds.includes(project._id));
-        setProjects(filteredProjects);
+
+    const getProjectsData = () => {
+        return projects;
     };
 
-    const setProjectsDataFunc = (myprojects: Array<Project>) => {
-        setProjects(myprojects)
+    const getProjectsDatafromDatabase = async () => {
+        await fetchProjectsData()
+            .then((data) => {
+                setProjects(data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     };
+
+    const reset = () => {
+        setProjects([])
+    }
 
     const contextValue: ProjectsDataContextProps = {
-        projectsData: projects,
-        addProject: addProjectFunc,
-        removeProject: removeProjectFunc,
-        removeProjects: removeProjectsByIds,
-        setProjectsData: setProjectsDataFunc,
+        getProjectsData,
+        getProjectsDatafromDatabase,
+        addProject,
+        removeProject,
+        reset
     };
 
     return (

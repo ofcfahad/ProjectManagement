@@ -2,24 +2,23 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 //AppComponents
-import { Confirmation } from './Popups';
+import LogoutButton from './LogoutButton';
 //OtherComponents
 import { motion } from 'framer-motion';
 //Assets
-import { appLogo } from '../assets/'
+import { appLogo } from '../../assets'
 //Icons
 import { IconContext } from "react-icons";
-import { CiHome, CiLogout, CiMail, CiSettings } from 'react-icons/ci'
+import { CiHome, CiMail, CiSettings } from 'react-icons/ci'
 import { HiOutlineRectangleStack, HiOutlineUser } from 'react-icons/hi2';
-import { useSidebarContext } from './Contexts/SideBar/useSidebarContext';
+import { useSidebar } from '../Contexts';
 
-const Navbar = ({ menuTransitionDuration, handleLogout }: { menuTransitionDuration: number, handleLogout: any }) => {
+const Navbar = ({ menuTransitionDuration, handleLogout }: { menuTransitionDuration: number, handleLogout: () => void }) => {
 
     const url = window.location.pathname
     const [selectedIcon, setSelectedIcon] = useState(url)
-    const [openLogoutConfirmation, setOpenLogoutConfirmation] = useState(false)
 
-    const { expand } = useSidebarContext()
+    const { expand } = useSidebar()
 
     const navigationLinks = [
         {
@@ -71,7 +70,7 @@ const Navbar = ({ menuTransitionDuration, handleLogout }: { menuTransitionDurati
                                     <motion.div animate={{ width: expand ? 100 : 35 }} whileHover={{ width: expand ? 130 : 35, }} className={`${selectedIcon === link.link ? 'bg-selectedicon hover:bg-opacity-70' : expand ? 'flex justify-center hover:bg-gradient-to-r hover:from-logoblue hover:via-logopink hover:to-logoyellow transition-colors ease-in-out delay-100 ' : 'bg-transparent'} rounded-full flex`} >
                                         <NavLink style={{ textDecoration: 'none' }} to={link.link} className='flex rounded-full justify-evenly items-center w-full h-full p-1 font-ubuntu' onClick={() => setSelectedIcon(link.link)}>
                                             {link.icon}
-                                            {expand && <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} exit={{ opacity: 0, x: -50 }} className={` text-white mt-[5px] `}> {link.title} </motion.span>}
+                                            {expand && <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} exit={{ opacity: 0, x: -50 }} className={` text-white font-ubuntu text-[16px] `}> {link.title} </motion.span>}
                                         </NavLink>
                                     </motion.div>
                                 </motion.li>
@@ -83,24 +82,7 @@ const Navbar = ({ menuTransitionDuration, handleLogout }: { menuTransitionDurati
 
             {/* LOGOUT */}
             <motion.div className={`h-[10%] w-full flex justify-center items-center`}>
-                <Confirmation
-                    button={
-                        <motion.div animate={{ width: expand ? 100 : 35 }} whileHover={{ width: expand ? 130 : 35, }} className={`${expand ? 'hover:bg-gradient-to-r hover:from-logoblue hover:via-logopink hover:to-logoyellow transition-colors ease-in-out delay-100 ' : 'bg-transparent'} w-[35%] rounded-full flex`}>
-                            <button style={{ textDecoration: 'none' }} className='flex rounded-xl justify-evenly w-full items-end py-1 select-none' onClick={() => setOpenLogoutConfirmation(true)}>
-                                <IconContext.Provider value={{ color: 'white', size: '25' }}>
-                                    <CiLogout />
-                                </IconContext.Provider>
-                                {expand &&
-                                    <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} exit={{ opacity: 0, x: -50 }} className={` text-white font-ubuntu `}>
-                                        Logout
-                                    </motion.span>
-                                }
-                            </button>
-                        </motion.div>
-                    }
-                    isOpen={openLogoutConfirmation} onClose={() => setOpenLogoutConfirmation(false)}
-                    customSubmitButton={handleLogout} customSubmitButtonTitle={'yeah Log it Out!'} title={'you Sure?'} description={''}
-                />
+                <LogoutButton expand={expand} handleLogout={handleLogout} />
             </motion.div>
 
         </motion.div >

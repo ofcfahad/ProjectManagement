@@ -2,19 +2,25 @@ import { Request, Response } from 'express';
 import Project from '../database/Schemas/Project';
 import sanitizeHtml from 'sanitize-html';
 import validator from 'validator';
+import { getUserIdfromToken } from './functions';
+import { excludedFields } from './User';
+import mongoose, { isValidObjectId } from 'mongoose';
 
 //Get the Projects Data from Database
 async function getAllProjects(req: Request, res: Response) {
   try {
-    const userId = req.body.userId;
+    const token = req.headers.authorization;
+    const userId = getUserIdfromToken(token);
 
-    const projects = await Project.find({
-      $or: [{ owner: userId }, { people: userId }],
-    }).populate('people');
+    const projects = await Project.find(
+      {
+        $or: [{ owner: userId }, { people: userId }],
+      }
+    ).populate({ path: 'owner people', select: excludedFields })
 
     res.json(projects);
   } catch (err) {
-    console.error(err);
+    console.log("🚀 ~ file: Project.ts:23 ~ getAllProjects ~ err:", err)
     res.status(500).json({ message: 'Server Error' });
   }
 }
@@ -22,7 +28,10 @@ async function getAllProjects(req: Request, res: Response) {
 //Get searched Projects Data from Database
 async function getSearchedProjects(req: Request, res: Response) {
   try {
-    const { userId, searchQuery } = req.body;
+    const token = req.headers.authorization;
+    const userId = getUserIdfromToken(token);
+
+    const { searchQuery } = req.body;
 
     const sanitizedSearchQuery = sanitizeHtml(searchQuery).trim();
 
@@ -36,10 +45,11 @@ async function getSearchedProjects(req: Request, res: Response) {
       },
       owner: userId,
     };
-    const projects = await Project.find(query);
+
+    const projects = await Project.find(query).populate({ path: 'owner people', select: excludedFields });
     res.status(200).json(projects);
   } catch (err) {
-    console.error(err);
+    console.log("🚀 ~ file: Project.ts:52 ~ getSearchedProjects ~ err:", err)
     res.status(500).json({ message: 'Server Error' });
   }
 }
@@ -52,16 +62,22 @@ function createProject(req: Request, res: Response) {
   newProject.save()
     .then(() => res.status(200).send('Project Created successfully'))
     .catch((err: Error) => {
-      console.log(err);
+      console.log("🚀 ~ file: Project.ts:65 ~ createProject ~ err:", err)
       res.status(400).send(err.message);
     });
 }
 
 //Delete Project
 async function deleteProject(req: Request, res: Response) {
-  const { projectId, userId, owner } = req.body;
+  const token = req.headers.authorization;
+  const userId = getUserIdfromToken(token);
+
+  const { projectId } = req.body;
 
   try {
+    const project = await Project.findById(projectId);
+    const owner = (project?.owner._id)?.toString();
+
     if (userId === owner) {
       const deletedProject = await Project.findByIdAndDelete(projectId);
       if (!deletedProject) {
@@ -77,41 +93,14 @@ async function deleteProject(req: Request, res: Response) {
       res.status(200).json({ message: `Project with ID ${projectId} deleted successfully` });
     }
   } catch (error) {
-    console.error(error);
+    console.log("🚀 ~ file: Project.ts:96 ~ deleteProject ~ error:", error)
     res.status(500).json({ error: 'Internal server error' });
   }
 }
-
-const deleteManyProjects = async (req: Request, res: Response) => {
-  try {
-    const { ids, userId } = req.body;
-    const Projects: Array<object> = [];
-    await Promise.all(ids.map(async (id: string) => {
-      try {
-        const project = await Project.findById(id);
-        const owner = (project?.owner._id)?.toString();
-        if (project && owner === userId) {
-          await project.deleteOne();
-          const projectInfo = {
-            id: project._id,
-            title: project.title,
-          };
-          Projects.push(projectInfo);
-        }
-      } catch (error) {
-        console.log(`from deleteManyProjects's Promise: ${error}`);
-      }
-    }));
-    res.status(200).json({ Projects });
-  } catch (error) {
-    console.log(`from deleteManyProjects: ${error}`);
-  }
-};
 
 export {
   getAllProjects,
   getSearchedProjects,
   createProject,
   deleteProject,
-  deleteManyProjects,
 };

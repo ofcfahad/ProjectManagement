@@ -22,6 +22,10 @@ const UserSchema = new mongoose.Schema({
     theme: s,
     toolTipisVisible: Boolean,
   },
+  mfa: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const User = mongoose.model('appUsers', UserSchema, 'appUsers');
