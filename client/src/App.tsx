@@ -15,12 +15,10 @@ function App() {
   const { theme } = useTheme()
   const { expand } = useSidebar()
 
-
   // logouts the user
   const handleLogout = () => {
     setUserLoggedIn(false)
   }
-
 
   return (
     <div className={` h-[100vh] ${theme === 'dark' ? 'bg-[#8799A3]' : 'bg-[#f2f6fe]'} font-josefin`}>
