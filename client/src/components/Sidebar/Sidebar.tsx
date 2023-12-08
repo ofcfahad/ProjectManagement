@@ -13,7 +13,7 @@ import { CiHome, CiMail, CiSettings } from 'react-icons/ci'
 import { HiOutlineRectangleStack, HiOutlineUser } from 'react-icons/hi2';
 import { useSidebar } from '../Contexts';
 
-const Navbar = ({ menuTransitionDuration, handleLogout }: { menuTransitionDuration: number, handleLogout: () => void }) => {
+const Navbar = ({ handleLogout }: { handleLogout: () => void }) => {
 
     const url = window.location.pathname
     const [selectedIcon, setSelectedIcon] = useState(url)
@@ -50,7 +50,7 @@ const Navbar = ({ menuTransitionDuration, handleLogout }: { menuTransitionDurati
 
 
     return (
-        <motion.div initial={{ width: 0 }} animate={{ width: expand ? 200 : 100 }} transition={{ duration: menuTransitionDuration || 0.5 }} className={`bg-sidebarcolor h-full w-full fixed`} >
+        <motion.div initial={{ width: 0 }} animate={{ width: expand ? 200 : 100 }} transition={{ duration: 0.5 }} className={`bg-sidebarcolor h-full w-full fixed`} >
 
             <div className='w-full h-[10%] flex justify-center items-center'>
                 <motion.div initial={{ width: 0 }} animate={{ width: expand ? 60 : 50 }} >

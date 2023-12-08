@@ -15,7 +15,6 @@ function App() {
   const { theme } = useTheme()
   const { expand } = useSidebar()
 
-  const menuTransitionDuration = 0
 
   // logouts the user
   const handleLogout = () => {
@@ -33,8 +32,8 @@ function App() {
             :
             //MainApp
             <motion.div className="w-full h-full flex">
-              <Sidebar handleLogout={handleLogout} menuTransitionDuration={menuTransitionDuration} />
-              <motion.div animate={{ width: '100%', marginLeft: expand ? 200 : 100 }} transition={{ duration: menuTransitionDuration || 0.5, ease: "easeInOut" }} >
+              <Sidebar handleLogout={handleLogout} />
+              <motion.div animate={{ width: '100%', marginLeft: expand ? 200 : 100 }} transition={{ duration: 0.5, ease: "easeInOut" }} >
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/profile" element={<Profile />} />

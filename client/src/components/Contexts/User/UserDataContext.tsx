@@ -3,10 +3,16 @@ import { User } from '../../Interfaces';
 import Cookies from 'js-cookie';
 import { useApi } from '..';
 
+interface UserPreferences {
+    theme: string;
+    toolTipisVisible: boolean;
+}
+
 interface UserDataContextProps {
     getUserData: () => User;
     getUserDatafromDatabase: () => Promise<User>;
-    setUserPreferences: (preferences: { theme: string, toolTipisVisible: boolean }) => void;
+    getUserPreferences: () => UserPreferences;
+    setUserPreferences: (preferences: UserPreferences) => void;
     reset: () => void;
 }
 
@@ -43,8 +49,12 @@ const UserDataContextProvider: React.FC<{ children: ReactNode }> = ({ children }
         return data;
     };
 
-    const setUserPreferences = (preferences: { theme: string, toolTipisVisible: boolean }) => {
-        user.preferences = preferences;
+    const getUserPreferences = () => {
+        return user.preferences;
+    };
+
+    const setUserPreferences = (preferences: UserPreferences) => {
+        setUser({ ...user, preferences: preferences });
     }
 
     const reset = () => {
@@ -54,6 +64,7 @@ const UserDataContextProvider: React.FC<{ children: ReactNode }> = ({ children }
     const contextValue: UserDataContextProps = {
         getUserData,
         getUserDatafromDatabase,
+        getUserPreferences,
         setUserPreferences,
         reset,
     };

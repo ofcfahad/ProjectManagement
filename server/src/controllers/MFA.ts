@@ -12,7 +12,7 @@ const emailTemplate = (otp: string, otpExpirationTime: number) => `Dear Recipien
 <br /> 
   Here is your OTP <strong id="otp"> ${otp} </strong> 
 <br /> 
-  We want to remind you that for security reasons, OTP codes are valid only for <strong>${Number((otpExpirationTime - Date.now()) / (1000 * 60))}</strong> minutes. After the expiration time, your OTP code will no longer be valid, and you will need to request a new one to access our system. 
+  We want to remind you that for security reasons, OTP codes are valid only for <strong>${Number((otpExpirationTime - Date.now()) / (1000 * 60)).toFixed(0)}</strong> minutes. After the expiration time, your OTP code will no longer be valid, and you will need to request a new one to access our system. 
 <br /> 
   If you have not requested an OTP code, please ignore this email and contact our support team immediately. 
 <br /> 

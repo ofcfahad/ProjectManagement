@@ -19,17 +19,13 @@ const EmailAuthentication = ({ userEmail, userPassword, handleGoBackClick, fetch
     const [otp, setOtp] = useState('');
     const [wrongOTP, setWrongOTP] = useState(false)
     const [verifyingOTP, setVerifyingOTP] = useState(false)
+    const [sendingOTP, setSendingOTP] = useState(false)
+    const [otpSentCount, setOtpSentCount] = useState(0)
+    const [otpVerifiedCount, setOtpVerifiedCount] = useState(0)
 
     const { sendOTP, verifyOTP } = useApi()
 
     const [messageApi, contextHolder] = message.useMessage();
-
-    const success = () => {
-        messageApi.open({
-            type: 'success',
-            content: 'Email with an OTP sent!',
-        });
-    };
 
     const handleCopyAndSetOtp = async () => {
         const copiedText = await navigator.clipboard.readText();
@@ -37,14 +33,42 @@ const EmailAuthentication = ({ userEmail, userPassword, handleGoBackClick, fetch
         setOtp(_otp);
     };
 
+    const limitReachedError = () => {
+        message.error('You have reached the maximum number of OTP attempts. Please try again later.', 2.5)
+    }
+
     const SendOTP = async () => {
-        if (await sendOTP(userEmail)) {
-            success()
+        if (otpSentCount >= 2) {
+            limitReachedError()
+            return
         }
+
+        setSendingOTP(true)
+        setOtpSentCount(otpSentCount + 1)
+        messageApi
+            .open({
+                type: 'loading',
+                content: 'Sending OTP',
+                duration: 0,
+            })
+        if (await sendOTP(userEmail)) {
+            messageApi.destroy();
+            message.success('Email sent', 2.5)
+        } else {
+            messageApi.destroy();
+            message.error('Email not sent', 2.5)
+        }
+        setSendingOTP(false)
     }
 
     const VerifyOTP = async () => {
+        if (otpVerifiedCount >= 2) {
+            limitReachedError()
+            return
+        }
+
         setVerifyingOTP(true)
+        setOtpVerifiedCount(otpVerifiedCount + 1)
         if (await verifyOTP(userEmail, userPassword, otp)) {
             setWrongOTP(false)
             fetchUser()
@@ -81,7 +105,7 @@ const EmailAuthentication = ({ userEmail, userPassword, handleGoBackClick, fetch
                                 An Email with OTP is sent to your Email address <b>{protect_email(userEmail)}</b>
                             </span>
                             <span className='text-xs w-[70%]'>
-                                Didn't Recieve Email or OTP Expired? <button className='text-selectedicon' onClick={SendOTP}>Resend</button>
+                                Didn't Recieve Email or OTP Expired? <button className='text-selectedicon' onClick={SendOTP} disabled={sendingOTP || verifyingOTP}>Resend</button>
                             </span>
                         </div>
 

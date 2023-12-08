@@ -6,7 +6,7 @@ import { useApi } from '../Contexts';
 import { motion } from "framer-motion"
 import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
-import { Divider } from 'antd';
+import { Divider, message } from 'antd';
 import Cookies from 'js-cookie';
 //Icons
 import { IconContext } from "react-icons";
@@ -24,8 +24,9 @@ const Login = ({ setUserPassword, setUserEmail, setMultiFactorAuthentication, se
     const [inputIsFocused, setInputIsFocused] = useState('')
     const [response, setResponse] = useState<string>()
     const [isHovering, setisHovering] = useState('')
-
     const [loginOrRegister, setLoginOrRegister] = useState(true)
+
+    const [messageApi, contextHolder] = message.useMessage();
 
     const { authenticateUser, registerUser, sendOTP } = useApi()
 
@@ -34,10 +35,7 @@ const Login = ({ setUserPassword, setUserEmail, setMultiFactorAuthentication, se
         if (response.message === 'success') {
             setResponse('success')
             if (response.mfa && response.email) {
-                setUserEmail(response.email)
-                if (await sendOTP(response.email)) {
-                    setMultiFactorAuthentication(true)
-                }
+                await SendOTP(response.email)
             } else {
                 const token = response.token
                 if (token) {
@@ -50,7 +48,31 @@ const Login = ({ setUserPassword, setUserEmail, setMultiFactorAuthentication, se
         }
     };
 
+    const SendOTP = async (email: string) => {
+        setUserEmail(email)
+        messageApi
+            .open({
+                type: 'loading',
+                content: 'Sending OTP',
+                duration: 0,
+            })
+        if (await sendOTP(email)) {
+            messageApi.destroy();
+            message.success('Email sent', 2.5)
+            setTimeout(() => {
+                setMultiFactorAuthentication(true)
+            }, 1000)
+        } else {
+            messageApi.destroy();
+            message.error('Email not sent', 2.5)
+        }
+    }
+
     const RegisterUser = async () => {
+        if (userAlreadyExists) {
+            return
+        }
+
         const response = await registerUser(userNameInputController, userPasswordInputController)
 
         if (response.message === 'conflict') {
@@ -79,6 +101,7 @@ const Login = ({ setUserPassword, setUserEmail, setMultiFactorAuthentication, se
 
     return (
         <motion.div className='flex flex-col items-center h-full w-full gap-4'>
+            {contextHolder}
             <div className='h-[20%] flex justify-center items-center gap-2 w-full'>
                 <div className='w-1/2 relative bg-gray-600/20 rounded-xl'>
                     <motion.div
@@ -121,7 +144,7 @@ const Login = ({ setUserPassword, setUserEmail, setMultiFactorAuthentication, se
                         <div className='ml-2'>
                             <input type="text" className={`px-2 py-2 bg-transparent focus:outline-none rounded-xl autofill:bg-black `} placeholder='username' autoComplete={loginOrRegister ? 'username' : 'off'} value={userNameInputController} onChange={(event) => {
                                 setUserNameInputController(event?.target?.value ?? '')
-                                if (userNameInputController.length <= 1) {
+                                if (userAlreadyExists) {
                                     setUserAlreadyExists(false)
                                     setResponse(undefined)
                                 }
