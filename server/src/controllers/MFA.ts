@@ -78,7 +78,7 @@ const verifyOTP = async (req: Request, res: Response) => {
         }
         const userId = await getUserIdbyEmail(userEmail, userPassword);
 
-        res.status(200).json({ message: 'OTP verified', token: createToken(userId) });
+        res.status(200).json({ message: 'OTP verified', token: createToken({ userId }) });
     }
 };
 

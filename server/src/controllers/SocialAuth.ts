@@ -5,6 +5,7 @@ import { Strategy as GitHubStrategy } from 'passport-github2';
 import { Strategy as GoogleStrategy, Profile } from 'passport-google-oauth20';
 import User from '../database/Schemas/User';
 import { disableSocialAuth } from '../../../developerSettings';
+import { createToken } from './functions';
 
 const { CALLBACK_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
 
@@ -54,6 +55,7 @@ if (!disableSocialAuth) {
       const user = await User.findById(id);
       done(null, user);
     } catch (err) {
+      console.log("🚀 ~ file: SocialAuth.ts:58 ~ passport.deserializeUser ~ err:", err)
       done(err);
     }
   });
@@ -68,13 +70,9 @@ const getUserIdfromUser = async (user: typeof User) => {
     }
     console.log('from getUserIdfromUser: no user');
   } catch (error) {
-    console.log(`from getUserIdfromUser: ${error}`);
+    console.log("🚀 ~ file: SocialAuth.ts:73 ~ getUserIdfromUser ~ error:", error)
   }
 };
-
-const createToken = async (payload: object) => {
-  return jwt.sign(payload, process.env.SECRET_KEY!, { expiresIn: '7d' });
-}
 
 const authenticateGithub = passport.authenticate('github');
 
@@ -84,7 +82,7 @@ function callbackGithub(req: Request, res: Response) {
       const user = req.user as typeof User;
 
       const userId = await getUserIdfromUser(user);
-      const token = await createToken({ userId });
+      const token = createToken({ userId });
 
       // Return a client-side script that closes the window and sets the token in the main window's local storage
       res.send(`
@@ -94,6 +92,7 @@ function callbackGithub(req: Request, res: Response) {
           </script>
         `);
     } catch (err) {
+      console.log("🚀 ~ file: SocialAuth.ts:95 ~ passport.authenticate ~ err:", err)
       res.status(500).send({ message: 'Internal server error' });
     }
   });
@@ -127,6 +126,7 @@ if (!disableSocialAuth) {
           return done(null, newUser);
         }
       } catch (error) {
+        console.log("🚀 ~ file: SocialAuth.ts:129 ~ error:", error)
         return done(error);
       }
     },
@@ -142,9 +142,8 @@ function callbackGoogle(req: Request, res: Response) {
       const user = req.user as typeof User;
 
       const userId = await getUserIdfromUser(user);
-      
-      const token = await createToken({ userId });
-      
+      const token = createToken({ userId });
+
       // Return a client-side script that closes the window and sets the token in the main window's local storage
       res.send(`
               <script>
@@ -153,6 +152,7 @@ function callbackGoogle(req: Request, res: Response) {
               </script>
             `);
     } catch (err) {
+      console.log("🚀 ~ file: SocialAuth.ts:155 ~ passport.authenticate ~ err:", err)
       res.status(500).send({ message: 'Internal server error' });
     }
   });

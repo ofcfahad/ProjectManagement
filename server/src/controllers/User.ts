@@ -1,9 +1,8 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import User from '../database/Schemas/User';
 import { Request, Response } from 'express';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcryptjs';
-import { getUserIdfromToken } from './functions';
+import { createToken, getPayloadfromToken } from './functions';
 import { invalidateToken } from '../middlewares/checkSession';
 
 //Get UserData by id
@@ -11,7 +10,7 @@ const getUserData = async (req: Request, res: Response) => {
   try {
     const token = req.headers.authorization;
     try {
-      const userId = getUserIdfromToken(token); // userId from token payload
+      const userId = getPayloadfromToken(token).userId; // userId from token payload
 
       var user = await User.findById(userId); // get User by userId
       if (user?.userPassword) {
@@ -36,7 +35,7 @@ const forgotPassword = async (req: Request, res: Response) => {
 
     const user = await User.findOne({ userEmail: userEmail });
     if (user) {
-      const token = jwt.sign({ userEmail }, SECRET_KEY!, { expiresIn: '1h' });
+      const token = createToken({ userEmail }, '1h');
 
       const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -85,8 +84,7 @@ const resetPassword = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(userPassword, 10);
 
     try {
-      const decodedToken = jwt.verify(token, process.env.SECRET_KEY!, { complete: true }) as JwtPayload;
-      const userEmail = decodedToken.payload.userEmail;
+      const userEmail = getPayloadfromToken(token).userEmail;
 
       const response = await User.findOneAndUpdate({ userEmail: userEmail }, { userPassword: hashedPassword }, { new: true });
       if (response.userPassword == hashedPassword) {

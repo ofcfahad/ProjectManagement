@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 // App Components
 import ProfileModule from "../components/Messages/ProfileModule"
 import SearchBar from "../components/Messages/SearchBar";
@@ -7,7 +7,7 @@ import CreateChat from "../components/Messages/CreateChat";
 import NoChats from '../components/Messages/NoChats'
 import { MenuButton } from "../components"
 import { Chat as ChatType } from "../components/Interfaces";
-import { useApi, useTheme, useUserData } from "../components/Contexts";
+import { useApi, useChats, useTheme, useUserData } from "../components/Contexts";
 import { themeColors } from "../components/utils";
 // Other Components
 import { Tab } from "@headlessui/react";
@@ -17,22 +17,19 @@ import { getSocket } from "../components/Messages/socket";
 
 const Messages = () => {
 
-  const [chats, setChats] = useState<ChatType[]>([])
+  const { getChats } = useChats()
+
+  const [chats, setChats] = useState<ChatType[]>(getChats())
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const { getUserData } = useUserData()
   const userData = getUserData()
 
-  const { fetchUserChats, createChat } = useApi()
+  const { createChat } = useApi()
 
   const { theme } = useTheme()
   const color = themeColors(theme, 'main')
   const bgColor = themeColors(theme, 'background')
-
-  const getUserChats = useCallback(async () => {
-    const data = await fetchUserChats()
-    setChats(data)
-  }, [])
 
   const addNewChat = async (recipient: string) => {
     if (!recipient) {
@@ -58,11 +55,6 @@ const Messages = () => {
       socket.disconnect()
     };
   }, []);
-
-  useEffect(() => {
-    getUserChats()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   return (
     <div className={`w-full h-full`}>

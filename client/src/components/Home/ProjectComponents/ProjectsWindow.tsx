@@ -24,7 +24,7 @@ export default function ProjectsWindow(props: any) {
     const { searchContent, isHovered, noSearchedProjects, setNoSearchedProjects, searchedProjectsData, setSearchedProjectsData } = props
     const { theme } = useTheme()
 
-    const { getProjectsData, getProjectsDatafromDatabase } = useProjectsData()
+    const { getProjectsData, fetchProjectsDatafromDatabase } = useProjectsData()
     const projectsData = getProjectsData()
 
     const { searchProjects } = useApi()
@@ -65,8 +65,8 @@ export default function ProjectsWindow(props: any) {
 
     const loadNewData = async () => {
         setFetchingData(true)
-        if (Cookies.get('session') === 'loggedinasguestuser') {
-            getProjectsDatafromDatabase()
+        if (Cookies.get('session') != 'loggedinasguestuser') {
+            fetchProjectsDatafromDatabase()
         }
         setTimeout(() => {
             setFetchingData(false)
@@ -128,7 +128,7 @@ export default function ProjectsWindow(props: any) {
                             </div>
                         :
                         <div className='w-full h-full flex justify-center items-center'>
-                            <Loading haveBackgroundColor={false} backgroundColor={''} />
+                            <Loading haveBackgroundColor={false} backgroundColor={''} color={color} />
                         </div>
                 }
             </div>

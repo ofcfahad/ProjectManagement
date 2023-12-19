@@ -15,7 +15,7 @@ import Cookies from 'js-cookie'
 import { backgroundImage } from '../assets'
 //Settings
 import { disableSocialAuth } from '../../../developerSettings'
-import { useUserData, useTheme, useProjectsData } from '../components/Contexts'
+import { useUserData, useTheme, useProjectsData, useChats } from '../components/Contexts'
 import { User } from '../components/Interfaces'
 
 const Auth = ({ setUserLoggedIn }: { setUserLoggedIn: (loggedIn: boolean) => void }) => {
@@ -28,8 +28,11 @@ const Auth = ({ setUserLoggedIn }: { setUserLoggedIn: (loggedIn: boolean) => voi
   const [forgotPassword, setForgotPassword] = useState(false)
   const [resetPassword, setresetPassword] = useState(false)
 
+  const [authWindow, setAuthWindow] = useState<Window | null>(null)
+
   const { getUserDatafromDatabase } = useUserData()
-  const { getProjectsDatafromDatabase } = useProjectsData()
+  const { fetchProjectsDatafromDatabase } = useProjectsData()
+  const { fetchChatsDatafromDatabase } = useChats()
   const { setTheme } = useTheme()
 
   //fetches userData by id from session token
@@ -46,10 +49,10 @@ const Auth = ({ setUserLoggedIn }: { setUserLoggedIn: (loggedIn: boolean) => voi
 
       if (localUserData._id != 'guestedId') {
         // get Projects
-        getProjectsDatafromDatabase()
+        await fetchProjectsDatafromDatabase()
+        await fetchChatsDatafromDatabase()
       }
 
-      setLoading(false)
       return setUserLoggedIn(true)
     } catch (error) {
       setUserLoggedIn(false)
@@ -67,7 +70,8 @@ const Auth = ({ setUserLoggedIn }: { setUserLoggedIn: (loggedIn: boolean) => voi
     setReference(capitalize(ref));
     setLoading(true)
 
-    const authWindow = window.open(`/server/api/auth/${ref}`, '_blank')
+    setAuthWindow(window.open(`/server/api/auth/${ref}`, '_blank'))
+
     window.addEventListener('message', event => {
       if (event.origin === 'http://localhost:5000' && event.data.type === `${ref}-auth-success`) {
         Cookies.set('session', event.data.token)
@@ -75,6 +79,11 @@ const Auth = ({ setUserLoggedIn }: { setUserLoggedIn: (loggedIn: boolean) => voi
         authWindow?.close()
       }
     })
+  }
+
+  const onLoadingBackArrowClick = () => {
+    authWindow?.close()
+    setLoading(false)
   }
 
   const handleForgotPasswordClick = () => {
@@ -91,7 +100,6 @@ const Auth = ({ setUserLoggedIn }: { setUserLoggedIn: (loggedIn: boolean) => voi
     }
   }
 
-
   useEffect(() => {
     if (window.location.pathname == '/reset') {
       setresetPassword(true)
@@ -104,12 +112,11 @@ const Auth = ({ setUserLoggedIn }: { setUserLoggedIn: (loggedIn: boolean) => voi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-
   return (
     <div className={`w-full flex flex-row`} style={{ height: window.innerHeight, backgroundImage: `url(${backgroundImage})` }} >
       {
         loading ?
-          <LoggingLoading reference={reference} canPop={reference == 'main' ? false : true} setLoading={setLoading} />
+          <LoggingLoading reference={reference} canPop={reference == 'main' ? false : true} onBackArrowClick={onLoadingBackArrowClick} />
           :
           <div className='w-full h-full flex flex-col items-center p-5'>
 

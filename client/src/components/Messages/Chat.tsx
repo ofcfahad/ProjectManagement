@@ -1,19 +1,19 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, UIEventHandler } from 'react';
 import { useApi, useUserData } from '../Contexts';
 import { Chat as ChatType, Message as MessageType } from '../Interfaces';
 import Inputbar from './Inputbar';
 import Message from './Message';
 import Toolbar from './Toolbar';
+import SkeletonChat from './SkeletonChat'
 import { getSocket } from './socket';
-import axios from 'axios';
-import Cookies from 'js-cookie';
 import { motion } from 'framer-motion'
-import { Skeleton } from 'antd';
+import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/24/outline';
 
 export default function Chat({ chat }: { chat: ChatType }) {
 
     const [messages, setMessages] = useState<MessageType[]>([]);
     const [isActive, setIsActive] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
 
     const { getUserData } = useUserData();
     const userData = getUserData();
@@ -97,16 +97,34 @@ export default function Chat({ chat }: { chat: ChatType }) {
         checkforUserOnline();
     }, [getChatMessages, checkforUserOnline]);
 
-    useEffect(() => {
-        const scrollToBottom = () => {
-            if (messagesRef.current) {
-                messagesRef.current.scrollTo({
-                    top: messagesRef.current.scrollHeight,
-                    behavior: 'smooth',
-                });
-            }
-        };
+    const onScroll: UIEventHandler<HTMLDivElement> = (event) => {
+        const element = event.target as HTMLDivElement;
+        if (element.scrollTop < -500) {
+            setIsScrolled(true);
+        } else {
+            setIsScrolled(false);
+        }
+    }
 
+    const scrollToTop = () => {
+        if (messagesRef.current) {
+            messagesRef.current.scrollTo({
+                top: -messagesRef.current.scrollHeight,
+                behavior: 'smooth',
+            });
+        }
+    };
+
+    const scrollToBottom = () => {
+        if (messagesRef.current) {
+            messagesRef.current.scrollTo({
+                top: 0,
+                behavior: 'smooth',
+            });
+        }
+    };
+
+    useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
@@ -114,127 +132,26 @@ export default function Chat({ chat }: { chat: ChatType }) {
         <div className={`w-full h-full font-oswald flex flex-col`}>
 
             {/* Messages */}
-            <div className={`w-full h-[92%] flex flex-col-reverse overflow-scroll scroll-smooth`} ref={messagesRef}>
+            <div className={`w-full h-[92%] flex flex-col-reverse overflow-scroll scroll-smooth`} ref={messagesRef} onScroll={onScroll}>
                 {
                     messages.length > 0 ? messages.slice().reverse().map((message) => (
                         <Message key={message._id} message={message} />
                     ))
                         :
-                        <div className="w-full p-2 flex flex-col gap-2">
-
-                            <div className="px-4 flex justify-end gap-2">
-                                <div className='w-40'>
-                                    <Skeleton.Button active={true} size={'large'} shape={'round'} block />
-                                </div>
-                                <div className="flex items-end">
-                                    <Skeleton.Avatar active={true} size={30} shape={'circle'} />
-                                </div>
-                            </div>
-
-                            <div className="px-4 flex justify-start gap-2">
-                                <div className="flex items-end">
-                                    <Skeleton.Avatar active={true} size={30} shape={'circle'} />
-                                </div>
-                                <div className='w-40'>
-                                    <Skeleton.Input active={true} size={'small'} block />
-                                </div>
-                            </div>
-
-                            <div className="px-4 flex justify-start gap-2">
-                                <div className="flex items-end">
-                                    <Skeleton.Avatar active={true} size={30} shape={'circle'} />
-                                </div>
-                                <div className='w-40'>
-                                    <Skeleton.Image active={true} />
-                                </div>
-                            </div>
-
-                            <div className="px-4 flex justify-end gap-2">
-                                <div className='w-40'>
-                                    <Skeleton.Button active={true} size={'large'} shape={'round'} block />
-                                </div>
-                                <div className="flex items-end">
-                                    <Skeleton.Avatar active={true} size={30} shape={'circle'} />
-                                </div>
-                            </div>
-
-                            <div className="px-4 flex justify-end gap-2">
-                                <div className='w-40'>
-                                    <Skeleton.Button active={true} size={'large'} shape={'round'} block />
-                                </div>
-                                <div className="flex items-end">
-                                    <Skeleton.Avatar active={true} size={30} shape={'circle'} />
-                                </div>
-                            </div>
-
-                            <div className="px-4 flex justify-end gap-2">
-                                <div className='w-40'>
-                                    <Skeleton.Button active={true} size={'large'} shape={'round'} block />
-                                </div>
-                                <div className="flex items-end">
-                                    <Skeleton.Avatar active={true} size={30} shape={'circle'} />
-                                </div>
-                            </div>
-
-                            <div className="px-4 flex justify-start gap-2">
-                                <div className="flex items-end">
-                                    <Skeleton.Avatar active={true} size={30} shape={'circle'} />
-                                </div>
-                                <div className='w-40'>
-                                    <Skeleton.Input active={true} size={'small'} block />
-                                </div>
-                            </div>
-
-                            <div className="px-4 flex justify-start gap-2">
-                                <div className="flex items-end">
-                                    <Skeleton.Avatar active={true} size={30} shape={'circle'} />
-                                </div>
-                                <div className='w-40'>
-                                    <Skeleton.Image active={true} />
-                                </div>
-                            </div>
-
-                            <div className="px-4 flex justify-end gap-2">
-                                <div className='w-40'>
-                                    <Skeleton.Input active={true} size={'small'} block />
-                                </div>
-                                <div className="flex items-end">
-                                    <Skeleton.Avatar active={true} size={30} shape={'circle'} />
-                                </div>
-                            </div>
-
-                            <div className="px-4 flex justify-end gap-2">
-                                <div className='w-40'>
-                                    <Skeleton.Image active={true} />
-                                </div>
-                                <div className="flex items-end">
-                                    <Skeleton.Avatar active={true} size={30} shape={'circle'} />
-                                </div>
-                            </div>
-
-                            <div className="px-4 flex justify-start gap-2">
-                                <div className="flex items-end">
-                                    <Skeleton.Avatar active={true} size={30} shape={'circle'} />
-                                </div>
-                                <div className='w-40'>
-                                    <Skeleton.Button active={true} size={'large'} shape={'round'} block />
-                                </div>
-                            </div>
-
-                            <div className="px-4 flex justify-end gap-2">
-                                <div className='w-40'>
-                                    <Skeleton.Button active={true} size={'large'} shape={'round'} block />
-                                </div>
-                                <div className="flex items-end">
-                                    <Skeleton.Avatar active={true} size={30} shape={'circle'} />
-                                </div>
-                            </div>
-                        </div>
+                        <SkeletonChat />
                 }
             </div>
 
-            <motion.div className='w-40 h-7 fixed bg-red-600 rounded-full'>
-                ..
+            <motion.div animate={{ opacity: isScrolled ? 1 : 0, y: isScrolled ? 0 : 100 }} transition={{ duration: 0.5 }} className='gap-2 fixed bottom-28 flex flex-col self-center rounded-full text-black text-sm font-ubuntu'>
+                <button className='gap-2 p-2 flex justify-between bg-white/20 backdrop-blur-md rounded-full shadow-xl' disabled={!isScrolled} onClick={scrollToTop}>
+                    Scroll to Top
+                    <ArrowUpIcon className='w-5 self-center' />
+                </button>
+
+                <button className='gap-2 p-2 flex justify-between bg-white/20 backdrop-blur-md rounded-full shadow-xl' disabled={!isScrolled} onClick={scrollToBottom}>
+                    Scroll to Recent
+                    <ArrowDownIcon className='w-5 self-center' />
+                </button>
             </motion.div>
 
             {/* Toolbar */}

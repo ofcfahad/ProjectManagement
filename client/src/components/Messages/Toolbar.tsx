@@ -1,7 +1,7 @@
 import { useTheme } from '../Contexts'
 import { themeColors } from '../utils'
 import { IconContext } from 'react-icons'
-import { FcVideoCall, FcEmptyTrash, FcPhone } from "react-icons/fc";
+import { FcVideoCall, FcEmptyTrash, FcPhone, FcSearch } from "react-icons/fc";
 import { Divider } from 'antd'
 import { Person } from '../Interfaces'
 import { profilePicture } from '../../assets';
@@ -40,6 +40,10 @@ export default function Toolbar({ profile, active }: { profile: Person, active: 
 
                     <button className={`rounded p-1 flex justify-center items-center hover:bg-white/10`} onClick={() => { }}>
                         <FcEmptyTrash />
+                    </button>
+                    
+                    <button className={`rounded p-1 flex justify-center items-center hover:bg-white/10`} onClick={() => { }}>
+                        <FcSearch />
                     </button>
 
                 </IconContext.Provider>

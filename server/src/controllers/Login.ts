@@ -18,7 +18,7 @@ const authenticateUser = async (req: Request, res: Response) => {
       if (user.mfa) {
         res.status(200).json({ message: 'success', mfa: user.mfa, email: user.userEmail });
       } else {
-        const token = createToken(user._id);
+        const token = createToken({ userId: user._id });
         res.status(200).json({ message: 'success', mfa: user.mfa, token: token });
       }
     } else {
@@ -48,7 +48,7 @@ const createNewUser = async (req: Request, res: Response) => {
     });
     await newUser.save();
 
-    return res.status(201).json({ message: 'User registered', token: createToken(newUser._id) });
+    return res.status(201).json({ message: 'User registered', token: createToken({ userId: newUser._id }) });
   } catch (error) {
     console.log("🚀 ~ file: Register.ts:31 ~ createNewUser ~ error:", error)
     return res.status(500).json({ message: 'Internal server error' });
@@ -65,7 +65,7 @@ const notVerified = async (req: Request, res: Response) => {
     if (user && await bcrypt.compare(userPassword, user.userPassword!)) {
       await User.findByIdAndUpdate(userId, { verified: false });
 
-      res.status(200).json({ message: 'welcome aboard', token: createToken(userId) });
+      res.status(200).json({ message: 'welcome aboard', token: createToken({ userId }) });
     } else {
       res.status(500).send('well guess something is gone wrong');
     }

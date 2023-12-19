@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getUserIdfromToken } from './functions'
+import { getPayloadfromToken } from './functions'
 import User from '../database/Schemas/User';
 import Chat from '../database/Schemas/Chat';
 import { excludedFields } from './User';
@@ -27,6 +27,7 @@ const getAllChats = async (userId: string) => {
         var chats = await Chat.find({ participants: userId }).populate({ path: 'participants', select: excludedFields }) // get Chats by userId        
         return chats;
     } catch (error) {
+        console.log("🚀 ~ file: Chats.ts:30 ~ getAllChats ~ error:", error)
         return new Error('invalid token');
     }
 }
@@ -34,12 +35,13 @@ const getAllChats = async (userId: string) => {
 const getUserChats = async (req: Request, res: Response) => {
     try {
         const token = req.headers.authorization;
-        const userId = getUserIdfromToken(token);
+        const userId = getPayloadfromToken(token).userId;
 
         const chats = await getAllChats(userId); // get Chats by userId
 
         res.status(200).json(chats); // sends Chats as json
     } catch (error) {
+        console.log("🚀 ~ file: Chats.ts:44 ~ getUserChats ~ error:", error)
         res.status(500).json({ message: 'Server Error' });
     }
 };
@@ -61,7 +63,7 @@ const createNewChat = async (req: Request, res: Response) => {
         const token = req.headers.authorization;
         const { recipient } = req.body;
 
-        const userId = getUserIdfromToken(token); // userId from token payload
+        const userId = getPayloadfromToken(token).userId;
 
         const user = await User.findById(recipient); // get User by userId
         if (user) {
@@ -84,6 +86,7 @@ const createNewChat = async (req: Request, res: Response) => {
         }
 
     } catch (error) {
+        console.log("🚀 ~ file: Chats.ts:89 ~ createNewChat ~ error:", error)
         res.status(500).json({ message: 'Server Error' });
     }
 };

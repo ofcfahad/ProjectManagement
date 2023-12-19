@@ -6,7 +6,7 @@ interface ProjectsDataContextProps {
     addProject: (project: Project) => void;
     removeProject: (projectId: string) => void;
     getProjectsData: () => Project[];
-    getProjectsDatafromDatabase: () => void;
+    fetchProjectsDatafromDatabase: () => Promise<void>;
     reset: () => void
 }
 
@@ -14,7 +14,7 @@ export const ProjectsDataContext = createContext<ProjectsDataContextProps | unde
 
 const ProjectsDataContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [projects, setProjects] = useState<Array<Project>>([]);
-    
+
     const { fetchProjectsData } = useApi();
 
     const addProject = (project: Project) => {
@@ -33,7 +33,7 @@ const ProjectsDataContextProvider: React.FC<{ children: ReactNode }> = ({ childr
         return projects;
     };
 
-    const getProjectsDatafromDatabase = async () => {
+    const fetchProjectsDatafromDatabase = async () => {
         await fetchProjectsData()
             .then((data) => {
                 setProjects(data);
@@ -49,7 +49,7 @@ const ProjectsDataContextProvider: React.FC<{ children: ReactNode }> = ({ childr
 
     const contextValue: ProjectsDataContextProps = {
         getProjectsData,
-        getProjectsDatafromDatabase,
+        fetchProjectsDatafromDatabase,
         addProject,
         removeProject,
         reset

@@ -3,7 +3,7 @@
 import Loading from './Loading'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 
-const LoggingLoading = ({ reference, canPop = false, setLoading = () => {} }: { reference: string, canPop: boolean, setLoading: any }) => {
+const LoggingLoading = ({ reference, canPop = false, onBackArrowClick = () => { } }: { reference: string, canPop: boolean, onBackArrowClick: () => void }) => {
 
     return (
         <div className={`h-[100vh] w-full flex justify-center items-center`}>
@@ -11,7 +11,7 @@ const LoggingLoading = ({ reference, canPop = false, setLoading = () => {} }: { 
                 {
                     canPop &&
                     <div className='w-full flex items-center p-4 h-[10%]'>
-                        <ArrowLeftIcon className='w-8 cursor-pointer' onClick={() => setLoading(false)} />
+                        <ArrowLeftIcon className='w-8 cursor-pointer' onClick={onBackArrowClick} />
                     </div>
                 }
                 <div className='h-[90%] flex flex-col justify-center items-center'>

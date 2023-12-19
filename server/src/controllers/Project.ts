@@ -2,15 +2,14 @@ import { Request, Response } from 'express';
 import Project from '../database/Schemas/Project';
 import sanitizeHtml from 'sanitize-html';
 import validator from 'validator';
-import { getUserIdfromToken } from './functions';
+import { getPayloadfromToken } from './functions';
 import { excludedFields } from './User';
-import mongoose, { isValidObjectId } from 'mongoose';
 
 //Get the Projects Data from Database
 async function getAllProjects(req: Request, res: Response) {
   try {
     const token = req.headers.authorization;
-    const userId = getUserIdfromToken(token);
+    const userId = getPayloadfromToken(token).userId;
 
     const projects = await Project.find(
       {
@@ -29,7 +28,7 @@ async function getAllProjects(req: Request, res: Response) {
 async function getSearchedProjects(req: Request, res: Response) {
   try {
     const token = req.headers.authorization;
-    const userId = getUserIdfromToken(token);
+    const userId = getPayloadfromToken(token).userId;
 
     const { searchQuery } = req.body;
 
@@ -70,7 +69,7 @@ function createProject(req: Request, res: Response) {
 //Delete Project
 async function deleteProject(req: Request, res: Response) {
   const token = req.headers.authorization;
-  const userId = getUserIdfromToken(token);
+  const userId = getPayloadfromToken(token).userId;
 
   const { projectId } = req.body;
 

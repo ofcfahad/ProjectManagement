@@ -3,7 +3,7 @@ import App from './App'
 import './index.css'
 import './styles.scss'
 import { BrowserRouter } from 'react-router-dom'
-import { ApiContextProvider, ProjectsDataContextProvider, UserDataContextProvider, SidebarContextProvider, ThemeContextProvider } from './components/Contexts'
+import { ApiContextProvider, ProjectsDataContextProvider, UserDataContextProvider, SidebarContextProvider, ThemeContextProvider, ChatsContextProvider } from './components/Contexts'
 
 ReactDOM.createRoot(document.getElementById('root') as Element).render(
   // <React.StrictMode>
@@ -11,11 +11,13 @@ ReactDOM.createRoot(document.getElementById('root') as Element).render(
     <ApiContextProvider>
       <UserDataContextProvider>
         <ProjectsDataContextProvider>
-          <SidebarContextProvider>
-            <ThemeContextProvider>
-              <App />
-            </ThemeContextProvider>
-          </SidebarContextProvider>
+          <ChatsContextProvider>
+            <SidebarContextProvider>
+              <ThemeContextProvider>
+                <App />
+              </ThemeContextProvider>
+            </SidebarContextProvider>
+          </ChatsContextProvider>
         </ProjectsDataContextProvider>
       </UserDataContextProvider>
     </ApiContextProvider>
